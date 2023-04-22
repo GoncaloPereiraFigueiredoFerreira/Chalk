@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "tailwind:css": "postcss public/stylesheets/tailwind.css -o public/stylesheets/style.css"
+    "tailwind:css": "postcss public/stylesheets/tailwind.css -o public/stylesheets/style.css --watch"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
