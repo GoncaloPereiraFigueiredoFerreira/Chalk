@@ -1,6 +1,5 @@
 const fs = require('fs')
 var crypto = require('crypto')
-//const archiver = require('../Chalk/node_modules/archiver')
 
 const version = '1.0'
 const encoding = 'UTF-8'
