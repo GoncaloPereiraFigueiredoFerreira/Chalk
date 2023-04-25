@@ -18,6 +18,11 @@ let file_metadataSchema = new mongoose.Schema({
         required: true,
     },
 
+    file_type:{
+        type:String,
+        required: true,
+    },
+
     publish_date:{
         type:String,
         required: true,

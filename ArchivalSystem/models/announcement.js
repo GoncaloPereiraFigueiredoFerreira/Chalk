@@ -2,10 +2,12 @@ let mongoose = require("mongoose")
 
 let announcementSchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    publisher:{
-        type:String,
-        required: true,
+
+    origin:{
+      publisher: String,
+      channel: String,
     },
+    
     associated_file:{
         type:String,
         required: false,
