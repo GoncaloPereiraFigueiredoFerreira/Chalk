@@ -41,4 +41,4 @@ let channelSchema = new mongoose.Schema({
 })
 //Passport local-mongoose
 
-module.exports = mongoose.model('file_metadata', file_metadataSchema)
+module.exports = mongoose.model('channel', channelSchema)

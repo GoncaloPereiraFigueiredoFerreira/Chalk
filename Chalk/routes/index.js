@@ -12,10 +12,20 @@ const uploadFolder = 'uploads'
 //var fs = require('fs')
 var archiver = require('archiver')
 
-/* GET home page. */
 router.get('/', function(req, res, next) {
-    res.render('channel');
+  res.render('dashboard');
 });
+
+router.get('/channel/announcements', function(req, res, next) {
+  res.render('channel_ad');
+});
+
+router.get('/channel', function(req, res, next) {
+    res.render('channel_index');
+});
+
+
+
 
 router.post('/files', upload.single('myFile'), (req, res) => {
     var archive = archiver('zip', {zlib: {level: 9}})

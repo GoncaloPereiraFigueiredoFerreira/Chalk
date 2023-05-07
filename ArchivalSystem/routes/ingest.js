@@ -1,25 +1,34 @@
 var express = require('express');
 var router = express.Router();
-var Users = require("../controllers/users")
 
-/*
-router.get('/', function(req, res, next) {
-  Users.destroyUsers().then(()=>{  
-      Users.userTest().then(()=>{
-          Users.testPassword("goncaloff13@gmail.com","francisca134").then(()=>res.sendStatus(200))
-  }).catch(
-    err => {
-      console.log(`caught the error: ${err}`);
-      return res.sendStatus(500);
-  });
-  
-});})
-*/
+router.post("/uploadfile", function(req,res){
+
+})
 
 
-router.get('/', function(req, res, next) {
-  res.sendStatus(200);
-});
+router.post("/newpost",function(req,res){
+
+})
+
+router.post("/newcomment",function(req,res){
+
+})
+
+router.post("/newchannel",function(req,res){
+
+})
+
+router.post("/newaccount",function(req,res){
+
+})
+
+router.post("/addsubscription",function(req,res){
+
+})
+
+router.post("/remsubscription",function(req,res){
+
+})
 
 
 module.exports = router;

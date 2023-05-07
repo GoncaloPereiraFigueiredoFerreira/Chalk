@@ -8,6 +8,16 @@ let announcementSchema = new mongoose.Schema({
       channel: String,
     },
     
+    title:{
+      type:String,
+      required:true
+    },
+
+    content:{
+      type:String,
+      required:true
+    },
+    
     associated_file:{
         type:String,
         required: false,

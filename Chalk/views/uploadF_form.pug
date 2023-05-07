@@ -1,0 +1,63 @@
+extends base
+ 
+block page
+    .block.w-full.border-gray-200.rounded-lg.shadow.bg-white(class="dark:bg-gray-800")
+      h1.p-4.text-xl(class="dark:text-white") Upload file:
+      form.p-8
+        .mb-6
+          label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Name of the new Channel
+          input#name.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='' required=true)
+
+        .mb-6
+          label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Directory:
+          input#name.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='' required=true)
+
+        .mb-6
+          label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') File name:
+          input#name.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='' required=true)
+
+        .mb-6
+          .flex.flex-col
+              .flex.flex-row.justify-start.items-center
+                label.block.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Tags:
+                .flex.ml-6.items-center.w-full.space-x-2.rounded.border(class='sm:space-x- dark:bg-gray-700 dark:border-gray-600')
+                  input.bg-gray-50.border-gray-300.text-sm.w-full.border-transparent(class='sm:text-base dark:bg-gray-700 dark:text-gray-200 focus:border-transparent focus:ring-0' type='text' placeholder='Add a tag or choose some')
+              .my-3.flex.flex-wrap.-m-1
+                span.m-1.flex.flex-wrap.justify-between.items-center.text-xs.bg-gray-200.rounded.px-4.py-2.font-bold.leading-loose.cursor-pointer(class='sm:text-sm hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300')
+                  | Buyer
+                  svg.w-3.h-3.ml-4.text-gray-500(xmlns='http://www.w3.org/2000/svg' class='sm:h-4 sm:w-4 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300' viewbox='0 0 20 20' fill='currentColor')
+                    path(fill-rule='evenodd' d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z' clip-rule='evenodd')
+                span.m-1.flex.flex-wrap.justify-between.items-center.text-xs.bg-gray-200.rounded.px-4.py-2.font-bold.leading-loose.cursor-pointer(class='sm:text-sm hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300')
+                  | Friend
+                  svg.w-3.h-3.ml-4.text-gray-500(xmlns='http://www.w3.org/2000/svg' class='sm:h-4 sm:w-4 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300' viewbox='0 0 20 20' fill='currentColor')
+                    path(fill-rule='evenodd' d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z' clip-rule='evenodd')
+                span.m-1.flex.flex-wrap.justify-between.items-center.text-xs.bg-gray-200.rounded.px-4.py-2.font-bold.leading-loose.cursor-pointer(class='sm:text-sm hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300')
+                  | fast food
+                  svg.w-3.h-3.ml-4.text-gray-500(xmlns='http://www.w3.org/2000/svg' class='sm:h-4 sm:w-4 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300' viewbox='0 0 20 20' fill='currentColor')
+                    path(fill-rule='evenodd' d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z' clip-rule='evenodd')
+                span.m-1.flex.flex-wrap.justify-between.items-center.text-xs.bg-gray-200.rounded.px-4.py-2.font-bold.leading-loose.cursor-pointer(class='sm:text-sm hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300')
+                  | dog lover
+                  svg.w-3.h-3.ml-4.text-gray-500(xmlns='http://www.w3.org/2000/svg' class='sm:h-4 sm:w-4 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300' viewbox='0 0 20 20' fill='currentColor')
+                    path(fill-rule='evenodd' d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z' clip-rule='evenodd')
+                span.m-1.flex.flex-wrap.justify-between.items-center.text-xs.bg-gray-200.rounded.px-4.py-2.font-bold.leading-loose.cursor-pointer(class='sm:text-sm hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300')
+                  | motocycles
+                  svg.w-3.h-3.ml-4.text-gray-500(xmlns='http://www.w3.org/2000/svg' class='sm:h-4 sm:w-4 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300' viewbox='0 0 20 20' fill='currentColor')
+                    path(fill-rule='evenodd' d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z' clip-rule='evenodd')
+
+        
+        .mb-6
+          label.block.mb-2.text-sm.font-medium.text-gray-900(for='dropzone-file' class='dark:text-white') Choose file:
+          .flex.items-center.justify-center.w-full
+            label.flex.flex-col.items-center.justify-center.w-full.h-64.border-2.border-gray-300.border-dashed.rounded-lg.cursor-pointer.bg-gray-50(for='dropzone-file' class='dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600')
+              .flex.flex-col.items-center.justify-center.pt-5.pb-6
+                svg.w-10.h-10.mb-3.text-gray-400(aria-hidden='true' fill='none' stroke='currentColor' viewbox='0 0 24 24' xmlns='http://www.w3.org/2000/svg')
+                  path(stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12')
+                p.mb-2.text-sm.text-gray-500(class='dark:text-gray-400')
+                  span.font-semibold Click to upload
+                  |  or drag and drop
+              input#dropzone-file.hidden(type='file')
+  
+       
+
+        .flex.items-start.mb-6
+          button.text-white.bg-blue-700.font-medium.rounded-lg.text-sm.w-full.px-5.text-center(type='submit' class='hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 sm:w-auto py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800') Submit
