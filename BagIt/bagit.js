@@ -1,5 +1,6 @@
 const fs = require('fs')
 var crypto = require('crypto')
+var decompress = require('decompress')
 
 const version = '1.0'
 const encoding = 'UTF-8'
@@ -30,17 +31,53 @@ module.exports.checksum_sha256 = (file) => {
     return hash.update(fileBuffer).digest('hex')
 }
 
-module.exports.create_bag = (dirname, output_name, archive, req) => {
-    var hash256 = this.checksum_sha256(dirname + '/../' + req.file.path)
+module.exports.create_bag = (output_dir, output_name, archive, original_path, original_name, callback) => {
+    var hash256 = this.checksum_sha256(output_dir + '/../' + original_path)
 
-    this.bag_declaration(dirname + '/bagit.txt')
-    this.manifest_file(dirname + '/manifest-sha256.txt', hash256, req.file.originalname)
+    this.bag_declaration(output_dir + '/bagit.txt')
+    this.manifest_file(output_dir + '/manifest-sha256.txt', hash256, original_name)
 
     var output = fs.createWriteStream(output_name)
+    output.on('close', function () {
+        fs.unlink(original_path, (err) => { if (err) throw err });
+        fs.unlink(output_dir + '/bagit.txt', (err) => { if (err) throw err });
+        fs.unlink(output_dir + '/manifest-sha256.txt', (err) => { if (err) throw err });
+    });
     archive.pipe(output)
 
-    archive.file(req.file.path, { name: 'data/' + req.file.originalname })
-    archive.file(dirname + '/bagit.txt', { name: 'bagit.txt' })
-    archive.file(dirname + '/manifest-sha256.txt', { name: 'manifest-sha256.txt' })
+    archive.file(original_path, { name: 'data/' + original_name })
+    archive.file(output_dir + '/bagit.txt', { name: 'bagit.txt' })
+    archive.file(output_dir + '/manifest-sha256.txt', { name: 'manifest-sha256.txt' })
     archive.finalize()
+}
+
+module.exports.unpack_bag = (filename, output) => {
+    decompress(filename, output)
+        .then((files) => {
+            // get manifest encoding from bagit.txt
+            fs.readFile(output + '/bagit.txt', 'UTF-8', (err, bag) => {
+                if (err) {
+                  console.error(err);
+                }
+                var lines = bag.split('\n')
+                var encoding = lines[1].substring(29, lines[1].length)
+
+                // comparing checksum values and comparing with the file's checksum
+                fs.readFile(output + '/manifest-sha256.txt', encoding, (err, manifest) => {
+                    if (err) {
+                      console.error(err);
+                    }
+                    var hashOG = manifest.substring(0, 64)
+                    var filename = manifest.substring(65, manifest.length)
+                    var hashNew = this.checksum_sha256(output + '/data/' + filename)
+
+                    if (hashNew === hashOG){
+                        // TODO: acabar unpacking
+                    }
+                })
+            })
+        })
+        .catch((error) => {
+            throw error
+        })
 }
