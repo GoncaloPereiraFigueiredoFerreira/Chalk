@@ -5,7 +5,6 @@ router.post("/uploadfile", function(req,res){
 
 })
 
-
 router.post("/newpost",function(req,res){
 
 })

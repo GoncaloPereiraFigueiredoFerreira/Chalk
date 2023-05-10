@@ -1005,6 +1005,9 @@ input:checked + .toggle-bg{
 .bottom-2\.5{
   bottom: 0.625rem;
 }
+.bottom-3{
+  bottom: 0.75rem;
+}
 .bottom-5{
   bottom: 1.25rem;
 }
@@ -1029,14 +1032,11 @@ input:checked + .toggle-bg{
 .right-2\.5{
   right: 0.625rem;
 }
-.top-0{
-  top: 0px;
-}
 .right-5{
   right: 1.25rem;
 }
-.bottom-3{
-  bottom: 0.75rem;
+.top-0{
+  top: 0px;
 }
 .z-10{
   z-index: 10;
@@ -1058,9 +1058,6 @@ input:checked + .toggle-bg{
 }
 .col-span-8{
   grid-column: span 8 / span 8;
-}
-.row-span-full{
-  grid-row: 1 / -1;
 }
 .-m-1{
   margin: -0.25rem;
@@ -1158,9 +1155,6 @@ input:checked + .toggle-bg{
 .mt-auto{
   margin-top: auto;
 }
-.mb-auto{
-  margin-bottom: auto;
-}
 .block{
   display: block;
 }
@@ -1209,6 +1203,12 @@ input:checked + .toggle-bg{
 .h-8{
   height: 2rem;
 }
+.h-80{
+  height: 20rem;
+}
+.h-96{
+  height: 24rem;
+}
 .h-\[20rem\]{
   height: 20rem;
 }
@@ -1217,25 +1217,6 @@ input:checked + .toggle-bg{
 }
 .h-screen{
   height: 100vh;
-}
-.h-full{
-  height: 100%;
-}
-.h-12{
-  height: 3rem;
-}
-.h-auto{
-  height: auto;
-}
-.h-fit{
-  height: -moz-fit-content;
-  height: fit-content;
-}
-.h-96{
-  height: 24rem;
-}
-.h-80{
-  height: 20rem;
 }
 .max-h-64{
   max-height: 16rem;
@@ -1342,9 +1323,6 @@ input:checked + .toggle-bg{
 }
 .list-none{
   list-style-type: none;
-}
-.auto-cols-max{
-  grid-auto-columns: max-content;
 }
 .grid-cols-4{
   grid-template-columns: repeat(4, minmax(0, 1fr));

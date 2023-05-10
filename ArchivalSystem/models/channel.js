@@ -39,6 +39,5 @@ let channelSchema = new mongoose.Schema({
 
 
 })
-//Passport local-mongoose
 
 module.exports = mongoose.model('channel', channelSchema)

@@ -32,7 +32,7 @@ module.exports.getFileMetadataByPublisher = function getFileMetadataByPublisher(
 }
 
 module.exports.getFileMetadataByID = function getFileMetadataByID(ID){
-    return Metadata.find({_id:ID})
+    return Metadata.findById(ID)
 }
 
 /*

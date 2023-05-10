@@ -11,26 +11,46 @@ router.use(bodyParser.json());
  
 // Get our authenticate module
 var authenticate = require('../auth_strat');
- 
+
+//TODO: Add sessions (JWT isnt session controll...)
+
+router.get("/verify",authenticate.verifyUser,(req, res, next) =>{
+    // Add username and role to req
+    res.status(200).jsonp({"username":req.user.username,"level":req.user.level})
+ }); 
+
+ router.post("/deactivate",authenticate.verifyUser,(req, res, next) =>{
+    User.updateOne({username:req.user.username},{$set:{active:false}}).then(()=>{
+         // Add username and role to req
+        res.status(200).jsonp({"message":"Account deactivated"})
+    })
+  });
+
+
 // Get Users
 router.get('/', authenticate.verifyUser, (req, res, next) =>{
-  // Get all records
-  User.find()
-    .then((users,err) => {
+  if (req.user.level=="admin"){
+    // Get all records
+    User.find()
+      .then((users,err) => {
+        
+        if(err) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({err: err});
+        }
+        else{
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.jsonp(users);
+        }
       
-      if(err) {
-        res.statusCode = 500;
-        res.setHeader('Content-Type', 'application/json');
-        res.json({err: err});
-      }
-      else{
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.jsonp(users);
-      }
-    })
-    .catch((err) => {next(err)});
- }); 
+
+    })} 
+    else res.sendStatus(401);
+
+  })
+
 
 
 
@@ -56,18 +76,22 @@ router.post('/register', (req, res, next) => {
   });
 });
  
-// Login
+// Login TODO: Atualizar last acessed
 router.post('/login', passport.authenticate('local',{ session: false }), (req, res) => {
-    // Create a token
-    var token = authenticate.getToken({username: req.user.username});
-    // Response
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'application/json');
-    res.json({success: true, token: token, status: 'You are successfully logged in!'});
+    if (req.user.active){
+      // Create a token
+      var token = authenticate.getToken({username: req.user.username, level: req.user.level});
+      // Response
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({success: true, token: token, status: 'You are successfully logged in!'});
+    }
+    else
+      res.json({success: false, status: 'Deactivated Account'});
 });
  
 // Logout
-router.get('/logout', (req, res) => {
+router.get('/logout',authenticate.verifyUser,(req, res,next) => {
  if (req.session) {
    req.session.destroy();
    res.clearCookie('session-id');
