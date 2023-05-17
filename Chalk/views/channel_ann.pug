@@ -1,0 +1,64 @@
+extends channel_base
+
+
+block channel_cont
+      .relative
+        .bg-white.w-full.mb-12.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
+          .grid.grid-cols-4
+            
+            // Ann title list variables: titles = [{title:"",date:"",publisher:""}]
+            .border-r.border-gray-300.col-span-4(class='lg:col-span-1')
+              ul.overflow-auto(class='h-[32rem]')
+                h2.pb-6.text-3xl.text-gray-600.border-b.border-gray-300(class='dark:text-white') Announcements
+                each ann in titles
+                  li
+                    a.flex.items-center.px-1.py-2.text-sm.transition.duration-150.ease-in-out.border-b.border-gray-300.cursor-pointer(class='hover:bg-gray-100 focus:outline-none dark:hover:bg-gray-700')
+                      .w-full.pb-2(class='dark:text-white')
+                        .flex.justify-between
+                          span.block.ml-2.font-bold #{ann.title}
+                          span.block.ml-2.text-sm #{ann.date}
+                        span.block.ml-2.text-sm #{ann.publisher}
+            
+            // Complete Ann : announcement
+            .block.col-span-4(class='lg:col-span-3')
+              .w-full
+                .relative.flex.p-3.border-b.border-gray-300
+                  .my-4.mb-6.ml-6.w-full.flex.justify-between(class='dark:text-white')
+                    div
+                      h1.text-3xl.text-gray-600.font-bold.text-gray-600(class='dark:text-white')  Teste Adicionado
+                      p Docente: #{announcement.publisher}
+                    p.text-lg #{announcement.date} 
+
+                  
+                .relative.w-full.p-6.overflow-y-auto(class='h-[20rem] dark:text-white')
+                  p #{announcement.text}
+                hr
+
+                // Comment Section variables = [{author:"",date:"",text:""}]
+                .relative.w-full.overflow-y-auto(class='h-[20rem]')
+                  h2.my-4.ml-6.text-lg.text-gray-600.font-bold.text-gray-600(class="dark:text-gray-200") Secção dos Comentários
+                  each comment in announcement.comments
+                    section.bg-white.py-4.ml-6(class="dark:bg-gray-800 dark:border-gray-700 dark:text-white")
+                      .max-w-2xl.px-4.border.rounded-3xl.border-r.border-gray-400
+                          .mb-1.text-base.mt-2
+                            footer.flex.justify-between.mb-2
+                              .flex.items-center
+                                p.inline-flex.items-center.mr-3.text-sm.text-gray-900(class="dark:text-gray-200")
+                                  | #{comment.author}
+                                p.text-sm.text-gray-600
+                                  | #{comment.date}
+                            p
+                              | #{comment.text}
+                .flex.items-center.justify-between.w-full.p-3.border-gray-300
+                  button
+                    svg.w-6.h-6.text-gray-500(xmlns='http://www.w3.org/2000/svg' fill='none' viewbox='0 0 24 24' stroke='currentColor')
+                      path(stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z')
+                  input.block.w-full.py-2.pl-4.mx-3.bg-gray-100.rounded-full.outline-none(type='text' placeholder='Comment' class='focus:text-gray-700' name='message' required='')
+                  button(type='submit')
+                    svg.w-5.h-5.text-gray-500.origin-center.transform.rotate-90(xmlns='http://www.w3.org/2000/svg' viewbox='0 0 20 20' fill='currentColor')
+                      path(d='M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z')
+
+                  
+                
+
+            
