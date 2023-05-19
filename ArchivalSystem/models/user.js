@@ -1,7 +1,7 @@
 let mongoose = require("mongoose")
 
 let userSchema = new mongoose.Schema({
-    email:{
+   email:{
       type:String,
       required: true,
       unique: true
@@ -17,6 +17,10 @@ let userSchema = new mongoose.Schema({
   subscribed:{
       type:[String],
       required: true,
+  },
+   publisher:{
+    type:[String],
+    required: true,
   }
 })
 

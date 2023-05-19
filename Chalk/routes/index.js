@@ -34,6 +34,7 @@ router.get('/', function(req, res, next) {
     res.render('dashboard');
 });
 
+//Test route
 router.get('/channel/announcements', function(req, res, next) {
     res.render('channel_ann',{
       channel:{
@@ -63,28 +64,28 @@ router.get('/channel/announcements', function(req, res, next) {
 
   });
 });
+//////////////////////////////
+//TODO: REMOVE NAME
+//////////////////////////////
 
+//Test route
 router.get('/channel', function(req, res, next) {
   let folders = {
     "Teóricas":{
         type:'dir',
-        name: 'Teóricas',
         files: {
-          teste2023:{
+          'Teste de 2024':{
             type:'file',
-            name:'Teste de 2024',
             format:'PDF'
           },
           testes2022:{
             type:'dir',
-            name:'Teste de 2019',
             files:{}
           }
         }
       },
       teste2021:{
         type:'file',
-        name:'Teste de 2021',
         format:'PDF'
       }
   }
@@ -116,20 +117,6 @@ router.get('/settings', function(req, res, next) {
     res.render('settings');
 });
 
-/* 
-tmp functions 
-router.post('/files', upload.single('myFile'), (req, res) => {
-    var archive = archiver('zip', {zlib: {level: 9}})
-    bagit.create_bag(__dirname + '/../' + uploadFolder, 'target.zip', archive, req.file.path, req.file.originalname)
-    res.redirect('/')
-})
-
-router.post('/unpack', (req, res) => {
-    bagit.unpack_bag('target.zip', 'target')
-    res.redirect('/')
-})
-*/
-
 router.get("/login",(req,res)=>{
     res.render("login")
 })
@@ -140,27 +127,25 @@ router.get("/register",(req,res)=>{
 
 treeCache = {}
 
-router.get("/getChannel/:id", (req,res)=>{
+router.get("/channel/:id", (req,res)=>{
+    let channelId = req.params.id
     return Promise.all([
         // Get Channel General Info
-        axios.get(archive_location+"/acess/channel/info/:channel"),
+        axios.get(archive_location+"/acess/channel/" + channelId + "/info" ),
         // Get Channel Content Tree
-        axios.get(archive_location+"/acess/"),
+        axios.get(archive_location+"/acess/channel/"+ channelId +"/contentTree"),
         // Get Channel Announcements Titles
-        axios.get(archive_location+"")
+        axios.get(archive_location+"/acess/ann/titles/channel/" + channelId)
     ]).then((results)=>{
         chn_info = results[0]
         chn_cont = results[1]
         chn_ann  = results[2]
 
-        res.render("channel_ind",{"chn_info":chn_info,"chn_cont":chn_cont,"chn_ann":chn_ann})
-
+        res.render("channel_index",{"chn_info":chn_info,"chn_cont":chn_cont,"chn_ann":chn_ann})
     })
 
 })
 
-router.get("/getChannelTree/:id/:node", (req,res)=>{  
-})  
 
 
 module.exports = router;

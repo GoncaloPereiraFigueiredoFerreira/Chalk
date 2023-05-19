@@ -7,6 +7,10 @@ let channelSchema = new mongoose.Schema({
       type:String,
       required: true,
     },
+    banner:{
+      type:String,
+      required: true,
+    },
 
     // Código de acesso ao canal
     entry_code:{

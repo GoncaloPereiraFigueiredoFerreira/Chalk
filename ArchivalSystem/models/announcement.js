@@ -3,9 +3,14 @@ let mongoose = require("mongoose")
 let announcementSchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
 
-    origin:{
-      publisher: String,
-      channel: String,
+    channel:{
+      type:String,
+      required:true
+    },
+
+    publisher:{
+      type:String,
+      required:true
     },
     
     title:{

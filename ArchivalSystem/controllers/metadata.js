@@ -1,8 +1,9 @@
-const { default: mongoose } = require("mongoose")
+const mongoose = require("mongoose")
 let Metadata= require("../models/file_metadata")
 
 
 module.exports.addFileMetadata = function addFileMetadata(file_metadata){
+    var data = new Date().toISOString().substring(0,16)
     return Metadata.create({
         _id: new mongoose.Types.ObjectId(),
         file_size: file_metadata.file_size,
@@ -11,7 +12,7 @@ module.exports.addFileMetadata = function addFileMetadata(file_metadata){
         location:  file_metadata.location,
         checksum:  file_metadata.checksum,
         tags:      file_metadata.tags,
-        publish_date: file_metadata.date
+        publish_date: data
     })
 }
 
@@ -34,21 +35,6 @@ module.exports.getFileMetadataByPublisher = function getFileMetadataByPublisher(
 module.exports.getFileMetadataByID = function getFileMetadataByID(ID){
     return Metadata.findById(ID)
 }
-
-/*
-module.exports.addTestMetadata = function addTestMetadata(){
-    return Metadata.create({
-        _id: new mongoose.Types.ObjectId(), 
-        file_size:360,
-        publisher:"Gonçalo Ferreira",
-        file_name:"Relatório de PSD",
-        publish_date:"2001/01/23",
-        location:"localhost:7777/request/xy",
-        checksum:"okafakodfsofa",
-        tags:["Relatorio","Projeto","Entrega"]
-    })
-}
-*/
 
 
 // Please be very carefull about the execution of this method

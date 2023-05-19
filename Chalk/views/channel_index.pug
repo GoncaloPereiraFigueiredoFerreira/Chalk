@@ -54,8 +54,16 @@ block channel_cont
       for(let i in path){
           currP = path[i]
           let li = $('<li>').attr("class","inline-flex items-center text-gray-400")
-          let a = $('<a>').attr("data-nav",currP).attr("href","#").attr("class","inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white").text(currP)
-          $("ol").append(li.append(a))
+          let a = $('<a>').attr("data-nav",currP).attr("href","#").attr("class","inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white")
+          if (currP =="Home"){
+              let home= $("<object>").attr("class","w-4 h-4 mr-2 dark:invert").attr("data",'/images/svgs/home.svg').attr("type",'image/svg+xml')
+              $("ol").append(li.append(a.append(home).append($("<span>").text(currP))))
+          }
+          else {
+            let arrow= $("<object>").attr("class","w-4 h-4 mr-2 dark:invert").attr("data",'/images/svgs/arrow-right.svg').attr("type",'image/svg+xml')
+            $("ol").append(li.append([arrow, a.text(currP)]))
+          }
+           
           if (i == 0)
             current = files
           else current = current[currP].files
@@ -65,13 +73,13 @@ block channel_cont
         let file = current[i]
         if (file.type == "dir"){
           let tag = $('<td>').attr("class", "flex items-center ml-64").append($("<div>").attr("class","border rounded-lg p-1").text("Directory"))
-          let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row").text(file.name)
+          let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row").text(i)
           let tr = $('<tr>').attr("data-directory",i).attr("class","flex bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
           tableRows.append(tr.append(name).append(tag))
         } 
         else if (file.type == "file"){
           let tr = $('<tr>').attr("class","flex justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
-          let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row").text(file.name)
+          let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row").text(i)
           let format = $('<td>').attr("class","px-6 py-4").text(file.format)
           let tags = $('<td>').attr("class","px-6 py-4").text("TAGS")
           let fileSize = $('<td>').attr("class","px-6 py-4").text("FILE_SIZE")

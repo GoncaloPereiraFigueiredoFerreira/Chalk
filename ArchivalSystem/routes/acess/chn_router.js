@@ -4,26 +4,6 @@ var Channel = require("../../controllers/channel")
 var Metadata = require("../../controllers/metadata")
 
 
-// Path to acess a tree content for a channel
-router.get("/content/:channel", function(req,res,next){
-    let channel = req.params.channel;
-    Channel.getChannelContents(channel).then((contents)=>{
-        promisses2 = []
-        for(dir in contents){
-            files_metadata = []
-            promisses= []
-            for(file in dir.files){
-              promisses.push(
-                  Metadata.getFileMetadataByID(file).then((result)=>{
-                    files_metadata.push(result)
-              }))
-          }
-          promisses2.push(Promise.all(promises).then(()=>dir.files = files_metadata))  
-        }
-        Promise.all(promisses2).then(()=>res.status(200).jsonp(contents).end())  
-    })
-})
-
 
 // Path for searching a channel
 router.get("/search/:keywords", function(req,res,next){
@@ -34,9 +14,41 @@ router.get("/search/:keywords", function(req,res,next){
 })
 
 // Informations of channel without content and announcements
-router.get("/info/:channel",function(req,res){
-      Channel.getChannelInfo(req.params.channel).then((result)=>{
-          res.status(200).jsonp(result).end()
+router.get("/:channel/info",function(req,res){
+    Channel.getChannelInfo(req.params.channel).then((result)=>{
+        res.status(200).jsonp(result).end()
+  })
+})
+
+// im not sure this works
+router.get("/:channel/contentTree",function(req,res){
+    Channel.getChannelContents(req.params.channel).then((result)=>{
+        let tree = {}
+        let outer_promisses=[]
+        for (let dir of result.contents){
+            let promisses = []
+            let directories = dir.path.split("/")
+            let current_tree=tree
+            for (let d of directories){
+                if (!(d in current_tree)){
+                     current_tree[d] = {type:'dir',files:{}}
+                }
+                if (current_tree == tree) current_tree = current_tree[d]
+                else current_tree = current_tree[d]["files"]
+            }
+            for (let file of dir.files){
+              promisses.push(
+                  Metadata.getFileMetadataByID(file).then((result)=>{
+                    current_tree[result.file_name] = result
+              }))
+            }
+            outer_promisses.push(Promise.all(promisses).then((results)=>{
+                for (let metadata of result){
+                    current_tree[metadata.file_name] = metadata
+                }
+            }))
+        }
+        Promise.all(outer_promisses).then(()=>res.status(200).jsonp(tree).end()) 
     })
 })
 

@@ -5,7 +5,7 @@ var chn_router = require("./acess/chn_router")
 var usr_router = require("./acess/usr_router")
 
 
-router.use("/announcements",ann_router);
+router.use("/ann",ann_router);
 router.use("/channel",chn_router);
 router.use("/profile",usr_router);
 
