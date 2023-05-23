@@ -12,19 +12,19 @@ router.use(bodyParser.json());
 // Get our authenticate module
 var authenticate = require('../auth_strat');
 
-//TODO: Add sessions (JWT isnt session controll...)
 
-router.get("/verify",authenticate.verifyUser,(req, res, next) =>{
-    // Add username and role to req
-    res.status(200).jsonp({"username":req.user.username,"level":req.user.level})
- }); 
+// TODO: this request should be protected somehow
+router.get("/public.pem",(req,res,next)=>{
+    res.sendFile("/keys/public.pem",{root:"."})
+})
 
- router.post("/deactivate",authenticate.verifyUser,(req, res, next) =>{
+
+router.post("/deactivate",authenticate.verifyUser,(req, res, next) =>{
     User.updateOne({username:req.user.username},{$set:{active:false}}).then(()=>{
          // Add username and role to req
         res.status(200).jsonp({"message":"Account deactivated"})
     })
-  });
+});
 
 
 // Get Users

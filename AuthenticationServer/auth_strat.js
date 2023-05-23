@@ -7,7 +7,11 @@ var User = require('./models/user');
 var JwtStrategy = require('passport-jwt').Strategy;
 var ExtractJwt = require('passport-jwt').ExtractJwt;
 var LocalStrategy = require('passport-local').Strategy;
+var fs = require("fs")
  
+// Private Key
+var privateKEY  = fs.readFileSync('./keys/private.pem');
+
 // Used to create, sign, and verify tokens
 var jwt = require('jsonwebtoken');
  
@@ -19,8 +23,8 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
  
 exports.getToken = function(user) {
-   // This helps us to create the JSON Web Token
-   return jwt.sign(user, process.env.SECRET_KEY,{expiresIn: 3600});
+    // This helps us to create the JSON Web Token
+    return jwt.sign(user, privateKEY,{expiresIn: 3600, algorithm:"RS512"});
 };
  
 // Options to specify for my JWT based strategy.
@@ -30,7 +34,9 @@ var opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
  
 //Supply the secret key to be using within strategy for the sign-in.
-opts.secretOrKey = process.env.SECRET_KEY;
+opts.secretOrKey = privateKEY;
+
+opts.algorithm = ["RS512"]
  
 // JWT Strategy
 exports.jwtPassport = passport.use(new JwtStrategy(opts,

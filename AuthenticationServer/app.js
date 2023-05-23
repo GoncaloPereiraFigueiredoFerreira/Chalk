@@ -24,10 +24,40 @@ db.on("open", ()=>{
 })
 
 
+// Generate Public and Private Keys
+const { generateKeyPair } = require('crypto');
+const fs = require("fs")
+
+generateKeyPair('rsa', {
+    modulusLength: 512,
+    publicKeyEncoding: {
+      type: 'spki',
+      format: 'pem'
+    },
+    privateKeyEncoding: {
+      type: 'pkcs8',
+      format: 'pem',
+      cipher: 'aes-256-cbc',
+      passphrase: 'segredo muito escondido, que nunca ninguem alguma vez neste planeta e universo conseguirá descodificar'
+    }
+  }, (err, publicKey, privateKey) => { // Callback function
+       if(!err)
+       {
+          fs.writeFile('keys/public.pem',publicKey,err=>{
+            if (err){
+              console.error(err)
+            }})
+          fs.writeFile('keys/private.pem',privateKey,err=>{
+              if (err){
+                console.error(err)
+            }})
+
+          } 
+       else console.log("Errr is: ", err);    
+});
+
 
 var app = express();
-
-
 
 
 app.use(logger('dev'));
