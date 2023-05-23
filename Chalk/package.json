@@ -17,6 +17,7 @@
     "express": "^4.18.2",
     "flowbite": "^1.6.5",
     "http-errors": "~1.6.3",
+    "jsonwebtoken": "^9.0.0",
     "morgan": "~1.9.1",
     "multer": "*",
     "postcss-cli": "^10.1.0",

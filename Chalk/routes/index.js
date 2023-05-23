@@ -3,29 +3,32 @@ var router = express.Router();
 
 var axios = require("axios")
 
+var jwt = require("jsonwebtoken")
 var multer = require('multer')
 //var bagit = require('../../BagIt/bagit')
 
 const uploadFolder = 'uploads'
 var upload = multer({dest: 'uploads'})
 var archiver = require('archiver')
+var fs = require("fs")
 //var decompress = require('decompress')
 
 let auth_location = process.env.AUTH_SERVER
 let archive_location = process.env.ARCH_SERVER
+let public_key = ""
+
 
 function verifyAuthentication(req,res,next){
-    // Get token
-    token = ""
-    // Make a post request to the authentication request
-    axios.post(auth_location+ "/verify/"+token).then((req,res)=>{
-      
-      // Put the username in the request
+    if (public_key == ""){
+      // This should be done differently
+      axios.get(auth_location+"/public.pem",(response)=>{
+        public_key = response
+      })
+    }
+    let result = jwt.verify(req.token,public_key,{algorithms:["RS512"]})
+    console.log(result)
+    // req.username = result.username
 
-      // Put the role in the request
-      
-      next()
-    }).catch(()=>{})
 }
 
 
