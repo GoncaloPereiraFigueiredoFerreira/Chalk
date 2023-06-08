@@ -28,7 +28,6 @@ function verifyAuthentication(req,res,next){
     let result = jwt.verify(req.token,public_key,{algorithms:["RS512"]})
     console.log(result)
     // req.username = result.username
-
 }
 
 
@@ -67,9 +66,6 @@ router.get('/channel/announcements', function(req, res, next) {
 
   });
 });
-//////////////////////////////
-//TODO: REMOVE NAME
-//////////////////////////////
 
 //Test route
 router.get('/channel', function(req, res, next) {

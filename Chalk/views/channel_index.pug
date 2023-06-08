@@ -2,11 +2,11 @@ extends channel_base
 
 
 block channel_cont
-  .grid.grid-cols-8.gap-4
+  .grid.grid-cols-8.grid-rows-2.gap-4
     
     // Announcement titles
-    .mt-auto.col-span-8(class='md:col-span-3')
-      .w-full.h-96.p-4.bg-white.border.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
+    .row-span-2.col-span-8(class='md:col-span-3  md:row-span-1')
+      .p-4.bg-white.border.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
         .flex.items-center.justify-between.mb-4
           h5.text-xl.font-bold.leading-none.text-gray-900(class='dark:text-white') Announcements
           a.text-sm.font-medium.text-blue-600(href='#' class='hover:underline dark:text-blue-500')
@@ -19,7 +19,8 @@ block channel_cont
                   a.text-sm.font-medium.text-gray-900.truncate(href=ann.full class='hover:underline dark:text-blue-500')
                     | #{ann.title}
 
-    .mt-auto.col-span-8(class='md:col-span-5')
+    // Content Tab
+    .col-span-8.row-span-2(class='md:col-span-5')
       .mb-5.flex.items-center.justify-between
         h5.text-2xl.font-bold.leading-none.text-gray-900(class='dark:text-white') Content
         label.sr-only(for='table-search') Search
@@ -37,10 +38,14 @@ block channel_cont
             // Table head with current and past folders
             nav.flex.px-5.py-3.text-gray-800.bg-gray-50(class='dark:bg-gray-800 dark:border-gray-700')
               ol.inline-flex.items-center.space-x-1(class='md:space-x-3' id="dirnav")
-
-
-
             tbody
+    
+    // Important Dates
+    .row-span-2.col-span-8(class='md:col-span-3  md:row-span-1')
+      .w-full.p-4.bg-white.border.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
+        .flex.items-center.justify-between.mb-4
+          h5.text-xl.font-bold.leading-none.text-gray-900(class='dark:text-white') Important Dates
+
 
 
   script.

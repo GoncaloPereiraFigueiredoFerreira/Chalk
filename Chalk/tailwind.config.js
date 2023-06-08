@@ -5,6 +5,9 @@ module.exports = {
           ],
   theme: {
     extend: {
+      spacing: {
+        '128': '32rem',
+      }
     },
     fontFamily:{
       'pacifico': ['Pacifico','sans-serif']

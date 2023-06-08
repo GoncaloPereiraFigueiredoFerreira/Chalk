@@ -1053,6 +1053,9 @@ input:checked + .toggle-bg{
 .col-span-8{
   grid-column: span 8 / span 8;
 }
+.row-span-2{
+  grid-row: span 2 / span 2;
+}
 .-m-1{
   margin: -0.25rem;
 }
@@ -1206,9 +1209,6 @@ input:checked + .toggle-bg{
 .h-80{
   height: 20rem;
 }
-.h-96{
-  height: 24rem;
-}
 .h-\[20rem\]{
   height: 20rem;
 }
@@ -1259,6 +1259,12 @@ input:checked + .toggle-bg{
 }
 .w-screen{
   width: 100vw;
+}
+.w-128{
+  width: 32rem;
+}
+.w-44{
+  width: 11rem;
 }
 .max-w-2xl{
   max-width: 42rem;
@@ -1335,6 +1341,9 @@ input:checked + .toggle-bg{
 }
 .grid-cols-8{
   grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+.grid-rows-2{
+  grid-template-rows: repeat(2, minmax(0, 1fr));
 }
 .flex-row{
   flex-direction: row;
@@ -1418,6 +1427,9 @@ input:checked + .toggle-bg{
 }
 .overflow-hidden{
   overflow: hidden;
+}
+.overflow-visible{
+  overflow: visible;
 }
 .overflow-x-auto{
   overflow-x: auto;
@@ -1651,9 +1663,6 @@ input:checked + .toggle-bg{
 .pl-5{
   padding-left: 1.25rem;
 }
-.pr-64{
-  padding-right: 16rem;
-}
 .pt-2{
   padding-top: 0.5rem;
 }
@@ -1668,6 +1677,9 @@ input:checked + .toggle-bg{
 }
 .pt-5{
   padding-top: 1.25rem;
+}
+.pt-10{
+  padding-top: 2.5rem;
 }
 .text-left{
   text-align: left;
@@ -2199,6 +2211,10 @@ input:checked + .toggle-bg{
 
   .md\:col-span-5{
     grid-column: span 5 / span 5;
+  }
+
+  .md\:row-span-1{
+    grid-row: span 1 / span 1;
   }
 
   .md\:mb-0{

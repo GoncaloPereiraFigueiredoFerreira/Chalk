@@ -69,14 +69,20 @@ block body
                         object.h-8(class="dark:invert" data='/images/chalk.svg' type='image/svg+xml')
                         span.ml-3.self-center.text-xl.font-pacifico.whitespace-nowrap(class='sm:text-2xl dark:text-white') Chalk
                     
-                    form
+                    form#searching
                       label.mb-2.text-sm.font-medium.text-gray-900.sr-only(for='default-search' class='dark:text-white') Search
                       .relative
                         .absolute.inset-y-0.left-0.flex.items-center.pl-3.pointer-events-none
                           svg.w-5.h-5.text-gray-500(aria-hidden='true' class='dark:text-gray-400' fill='none' stroke='currentColor' viewbox='0 0 24 24' xmlns='http://www.w3.org/2000/svg')
                             path(stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z')
-                        input#default-search.block.w-full.p-4.pl-10.pr-64.text-sm.text-gray-900.border.border-gray-300.rounded-lg.bg-gray-50(type='search' class='focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' required='')
+                        input#default-search.block.w-128.p-4.pl-10.text-sm.text-gray-900.border.border-gray-300.rounded-lg.bg-gray-50(type='search' class='focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500')
                         button.text-white.absolute.bg-blue-700.font-medium.rounded-lg.text-sm.px-4.py-2(type='submit' class='right-2.5 bottom-2.5 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800') Search                   
+                      
+                      // Dropdown search
+                      #dropdown.absolute.w-128.z-24.hidden.bg-white.divide-y.divide-gray-100.rounded-lg.shadow(class='dark:bg-gray-700')
+                        ul#dropdownlist.py-2.text-sm.text-gray-700(class='dark:text-gray-200')
+                          
+
                     .flex.items-center.ml-3
                       button#theme-toggle.flex.text-gray-500.rounded-lg.text-sm(type='button' class='dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 p-2.5')
                           svg#theme-toggle-dark-icon.hidden.w-5.h-5(fill='currentColor' viewbox='0 0 20 20' xmlns='http://www.w3.org/2000/svg')
@@ -105,12 +111,12 @@ block body
           // Page
           .pt-20.mt-3.pl-5.mr-5.mb-12
               block page
-
+          // Footer
           footer.bg-white(class='dark:bg-gray-900').mt-auto
             .mx-auto.w-full.max-w-screen-xl.p-2.py-1(class='lg:py-3')
               div(class='md:flex md:justify-between')
                 .mb-6(class='md:mb-0')
-                  a.flex.items-center(href='https://localhost/7777')
+                  a.flex.items-center(href='')
                     object.h-8(class="dark:invert" data='/images/chalk.svg' type='image/svg+xml')
                     span.ml-3.self-center.text-xl.font-pacifico.whitespace-nowrap(class='sm:text-2xl dark:text-white') Chalk
                   span.text-gray-500(class='text-[10px] dark:text-gray-400')
@@ -120,7 +126,7 @@ block body
               div(class='sm:flex sm:items-center sm:justify-between')
                 span.text-sm.text-gray-500(class='sm:text-center dark:text-gray-400')
                   | &copy; 2023 
-                  a(href='https://flowbite.com/' class='hover:underline') Chalk&trade;
+                  a(href='' class='hover:underline') Chalk&trade;
                   | . All Rights Reserved.
                 .flex.mt-2.space-x-6(class='sm:justify-center sm:mt-0')
                   a.text-gray-500(href='https://github.com/GoncaloPereiraFigueiredoFerreira/RPCW-Chalk' class='hover:text-gray-900 dark:hover:text-white')
@@ -129,8 +135,7 @@ block body
                     span.sr-only GitHub account
 
 
-                
-        
+              
         script(src='/javascripts/flowbite.min.js')
         script(src="/javascripts/main.js") 
         script.
@@ -140,5 +145,42 @@ block body
             } else {
             document.documentElement.classList.remove('dark')
             }
+            document.addEventListener("click", e=>{
+              const box = document.getElementById('dropdown');
+              if (!box.contains(event.target)) {
+                  $("#dropdown").fadeOut(300);
+                }
+            }
+            )
+            const searchInput = document.querySelector("#default-search")
+            let channels = ["RPCW","SDGE","PSD","SPLN","EG","TF"]
+            let previous = 0
+            searchInput.addEventListener("input", e=>{
+                const value = e.target.value.toUpperCase();
+                //if (value < previous) channels = []
+                let shown =0
+                if (value.length > 1){
+                    if (channels.length==0){}
+                      // channels = request por channels com aqueles dois carateres
+                    $("#dropdownlist").empty()
+                    shown=0
+                    for (let ch in channels){
+                      if (channels[ch].indexOf(value)!=-1){
+                          shown+=1
+                          let a = $('<a>').attr("class","block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white").text(channels[ch])
+                          //por href para o canal
+                          $("#dropdownlist").append($('<li>').append(a))
+                      } 
+                    }
+                    if (shown>0) $("#dropdown").show(200)
+                    else $("#dropdown").hide()
+                }
+                else{
+                  $("#dropdownlist").empty()
+                  $("#dropdown").hide(200)
+                }
+                previous=value.length
+
+            })
 
 
