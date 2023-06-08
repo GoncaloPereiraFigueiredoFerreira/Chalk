@@ -4,17 +4,14 @@ block page
     .block.w-full.border-gray-200.rounded-lg.shadow.bg-white(class="dark:bg-gray-800")
       h1.p-4.text-xl(class="dark:text-white") Upload file:
       form.p-8
-        .mb-6
-          label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Name of the new Channel
-          input#name.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(id="channel_name" type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='' required=true)
-
+        
         .mb-6 
           label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Directory: 
-          input#name.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(id="channel_dir" type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='' required=true)
+          input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(id="channel_dir" type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='' required=true)
 
         .mb-6
           label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') File name:
-          input#name.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(type='file_name' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='' required=true)
+          input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(type='file_name' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='' required=true)
 
         .mb-6
           .flex.flex-col

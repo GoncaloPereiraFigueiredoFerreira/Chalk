@@ -38,7 +38,7 @@ router.get('/', function(req, res, next) {
 
 //Test route
 router.get('/channel/announcements', function(req, res, next) {
-    res.render('channel_ann',{
+    res.render('channel/announcements',{
       channel:{
         title:"RPCW",
         banner:"https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YmVhdXRpZnVsJTIwbGFuZHNjYXBlfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
@@ -90,7 +90,7 @@ router.get('/channel', function(req, res, next) {
   }
     folders=JSON.stringify(folders).replaceAll("\"","'")
 
-    res.render('channel_index',{
+    res.render('channel/index',{
       channel:{
         title:"RPCW",
         banner:"https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YmVhdXRpZnVsJTIwbGFuZHNjYXBlfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
@@ -105,6 +105,31 @@ router.get('/channel', function(req, res, next) {
       "folders":folders
 
 });
+});
+
+router.get("/uploadfile", function(req, res, next) {
+  res.render("channel/upload_file",{channel:{
+    title:"RPCW",
+    banner:"https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YmVhdXRpZnVsJTIwbGFuZHNjYXBlfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
+
+  }, })
+});
+
+router.get("/postAnn", function(req, res, next) {
+  res.render("channel/create_post",{channel:{
+    title:"RPCW",
+    banner:"https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YmVhdXRpZnVsJTIwbGFuZHNjYXBlfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
+
+  }, })
+});
+
+
+router.get("/channel/postDate", function(req, res, next) {
+  res.render("channel/create_date",{channel:{
+    title:"RPCW",
+    banner:"https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YmVhdXRpZnVsJTIwbGFuZHNjYXBlfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
+
+  }, })
 });
 
 

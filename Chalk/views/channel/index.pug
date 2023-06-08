@@ -1,4 +1,4 @@
-extends channel_base
+extends base
 
 
 block channel_cont
@@ -9,8 +9,12 @@ block channel_cont
       .p-4.bg-white.border.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
         .flex.items-center.justify-between.mb-4
           h5.text-xl.font-bold.leading-none.text-gray-900(class='dark:text-white') Announcements
-          a.text-sm.font-medium.text-blue-600(href='#' class='hover:underline dark:text-blue-500')
-            | View all
+          div
+            a.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/announcements' class='hover:underline dark:text-blue-500')
+              | View all
+            // if user level == admin
+            a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/postAnn' class='hover:underline dark:text-blue-500')
+              | Add Post
         .flow-root
           ul.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
             each ann in titles 
@@ -36,9 +40,14 @@ block channel_cont
           thead.text-xs.text-gray-700(class='dark:bg-gray-700 dark:text-gray-400')
             
             // Table head with current and past folders
-            nav.flex.px-5.py-3.text-gray-800.bg-gray-50(class='dark:bg-gray-800 dark:border-gray-700')
+            nav.flex.items-center.justify-between.px-5.py-3.text-gray-800.bg-gray-50(class='dark:bg-gray-800 dark:border-gray-700')
               ol.inline-flex.items-center.space-x-1(class='md:space-x-3' id="dirnav")
-            tbody
+
+              // if user level == admin
+              a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/uploadfile' class='hover:underline dark:text-blue-500')
+                | Add File
+
+          tbody
     
     // Important Dates
     .row-span-2.col-span-8(class='md:col-span-3  md:row-span-1')
@@ -46,6 +55,9 @@ block channel_cont
         .flex.items-center.justify-between.mb-4
           h5.text-xl.font-bold.leading-none.text-gray-900(class='dark:text-white') Important Dates
 
+          // if user level == admin
+          a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/postDate' class='hover:underline dark:text-blue-500')
+            | Add date
 
 
   script.

@@ -1,0 +1,14 @@
+extends ../base
+    
+block page
+  .relative.mb-6
+    img.rounded-lg.w-screen.max-h-64(src=channel.banner)
+    h1.absolute.text-5xl.text-white.bottom-5.left-5 #{channel.title}
+    .absolute.bottom-3.right-5.items-center.flex
+        a.inline-flex.text-white.bg-blue-700.font-medium.rounded-lg.text-sm.px-5(type='button' class='hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800') Inscreve-te
+
+        //if (user.level == admin)
+        a.ml-4.inline-flex(href="/settings")
+          object.w-6(class="dark:invert" data ='/images/svgs/settings.svg' type="image/svg+xml" style="pointer-events: none")
+
+  block channel_cont
