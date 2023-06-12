@@ -1,11 +1,27 @@
 let mongoose = require("mongoose")
 
+
+const contentSchema = mongoose.Schema({
+    path:{
+      type:String,
+      required:true,
+      index: {unique: true, dropDups: true}
+    },
+    files:{
+      type:[String],
+      required:false,
+      default:[]
+    },
+});
+
+
 let channelSchema = new mongoose.Schema({
     _id:mongoose.Types.ObjectId,
 
     name: {
       type:String,
       required: true,
+      unique:true
     },
     banner:{
       type:String,
@@ -29,19 +45,14 @@ let channelSchema = new mongoose.Schema({
         required: true,
     },
     
-
     // Directories 
     contents:{
-        type: [
-          {
-            path:String, // Formated string, that designates the path
-            files:[String] // Filemetadata ids for the files contained in said path
-          }
-        ],
-        required: true
-    },
-
+      type:[{type:contentSchema,unique:true,required:true}],
+      required: true,
+  },
 
 })
+
+
 
 module.exports = mongoose.model('channel', channelSchema)

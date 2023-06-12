@@ -3,8 +3,6 @@ var router = express.Router();
 var Channel = require("../../controllers/channel")
 var Metadata = require("../../controllers/metadata")
 
-
-
 // Path for searching a channel
 router.get("/search/:keywords", function(req,res,next){
     let keywords = req.params.channel;
