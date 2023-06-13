@@ -14,7 +14,7 @@ module.exports.remUsers = ()=>{
 }
 
 module.exports.getUserSubscriptions = (user)=>{
-    return User.find({"email":user},{subscribed:1})
+    return User.findOne({"email":user},{subscribed:1})
 }
 
 module.exports.addSubscription = (user,channelID)=>{

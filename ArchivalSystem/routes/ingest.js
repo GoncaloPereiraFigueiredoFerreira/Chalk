@@ -22,14 +22,14 @@ router.post("/newpost",function(req,res){
 })
 
 router.post("/newcomment",function(req,res){
-/**
- * newpost : POST
- * req.body:{
- *     userID,
- *     announcementID
- *     content, 
- * }
- */
+  return Announcements.addComment(req.body.user,req.body.announcement, req.body.content).then(()=>{
+    res.sendStatus(200)
+
+    }).catch((err)=>{
+        //ver erro e responder em conformidade
+        console.log(err)
+        res.sendStatus(500)
+    })
 })
 
 

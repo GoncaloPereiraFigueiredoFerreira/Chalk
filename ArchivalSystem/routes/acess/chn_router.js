@@ -3,23 +3,29 @@ var router = express.Router();
 var Channel = require("../../controllers/channel")
 var Metadata = require("../../controllers/metadata")
 
-// Path for searching a channel
+/**
+ * Search for a channel
+ */
 router.get("/search/:keywords", function(req,res,next){
-    let keywords = req.params.channel;
+    let keywords = req.params.keywords;
     Channel.searchChannel(keywords).then((result)=>{
       res.status(200).jsonp(result).end()
     })
 })
 
-// Informations of channel without content and announcements
-router.get("/:channel/info",function(req,res){
+/**
+ *  Channel Information
+ */
+router.get("/info/:channel",function(req,res){
     Channel.getChannelInfo(req.params.channel).then((result)=>{
         res.status(200).jsonp(result).end()
   })
 })
 
-// im not sure this works
-router.get("/:channel/contentTree",function(req,res){
+/**
+ *  Channeçs Content Tree
+ */
+router.get("/contentTree/:channel",function(req,res){
     Channel.getChannelContents(req.params.channel).then((result)=>{
         let tree = {}
         let outer_promisses=[]
@@ -27,13 +33,14 @@ router.get("/:channel/contentTree",function(req,res){
             let promisses = []
             let directories = dir.path.split("/")
             let current_tree=tree
+            
             for (let d of directories){
                 if (!(d in current_tree)){
                      current_tree[d] = {type:'dir',files:{}}
                 }
-                if (current_tree == tree) current_tree = current_tree[d]
-                else current_tree = current_tree[d]["files"]
+                current_tree = current_tree[d]["files"]
             }
+            
             for (let file of dir.files){
               promisses.push(
                   Metadata.getFileMetadataByID(file).then((result)=>{
@@ -41,7 +48,7 @@ router.get("/:channel/contentTree",function(req,res){
               }))
             }
             outer_promisses.push(Promise.all(promisses).then((results)=>{
-                for (let metadata of result){
+                for (let metadata of results){
                     current_tree[metadata.file_name] = metadata
                 }
             }))
@@ -51,7 +58,9 @@ router.get("/:channel/contentTree",function(req,res){
 })
 
 
-// Student list
+/**
+ *  Channel consumers
+ */
 router.get("/studentlist/:channel",function(req,res){
     Channel.getChannelConsumers(req.params.channel).then((result)=>{
         res.status(200).jsonp(result).end()

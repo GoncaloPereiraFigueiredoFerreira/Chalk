@@ -26,7 +26,7 @@ module.exports.createDir = (channel,path)=>{
     if (results.length==0){
       return Channel.updateOne({_id:channel},{ $addToSet: {"contents": {"path":path}}})
     }
-    else return null
+    else return nullmat
   })
 }
 

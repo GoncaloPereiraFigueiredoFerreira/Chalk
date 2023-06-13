@@ -21,17 +21,17 @@ module.exports.getAnnTitlesChannel = (channel)=>{
 }
 
 module.exports.getAnnByID = (id)=>{
-  Announcement.findById(id)
+  return Announcement.findOne({"_id":id})
 }
 
-module.exports.addComment = (ann, comment)=>{
+module.exports.addComment = (user,ann, comment)=>{
     var data = new Date().toISOString().substring(0,16)
     return Announcement.updateOne({_id:ann},
       {
         $push:
           {"comments" : {
-                commenter: comment.commenter,
-                comment: comment.comment,
+                commenter: user,
+                comment: comment,
                 date: data
               }
           }
