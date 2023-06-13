@@ -13,14 +13,14 @@ block channel_cont
             a.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/announcements' class='hover:underline dark:text-blue-500')
               | View all
             // if user level == admin
-            a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/postAnn' class='hover:underline dark:text-blue-500')
+            a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/'+channel._id+'/addpost' class='hover:underline dark:text-blue-500')
               | Add Post
         .flow-root
           ul.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
             each ann in titles 
               li.py-3(class='sm:py-4')
                 .flex.items-center.space-x-4
-                  a.text-sm.font-medium.text-gray-900.truncate(href=ann.full class='hover:underline dark:text-blue-500')
+                  a.text-sm.font-medium.text-gray-900.truncate(href="/channel/posts/"+channel._id+"?post="+ann._id class='hover:underline dark:text-blue-500')
                     | #{ann.title}
 
     // Content Tab
@@ -56,7 +56,7 @@ block channel_cont
           h5.text-xl.font-bold.leading-none.text-gray-900(class='dark:text-white') Important Dates
 
           // if user level == admin
-          a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/postDate' class='hover:underline dark:text-blue-500')
+          a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/'+channel._id+'/adddate' class='hover:underline dark:text-blue-500')
             | Add date
 
 

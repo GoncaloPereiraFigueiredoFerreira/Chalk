@@ -12,7 +12,7 @@ block channel_cont
                 h2.pb-6.text-3xl.text-gray-600.border-b.border-gray-300(class='dark:text-white') Announcements
                 each ann in titles
                   li
-                    a.flex.items-center.px-1.py-2.text-sm.transition.duration-150.ease-in-out.border-b.border-gray-300.cursor-pointer(class='hover:bg-gray-100 focus:outline-none dark:hover:bg-gray-700')
+                    a.flex.items-center.px-1.py-2.text-sm.transition.duration-150.ease-in-out.border-b.border-gray-300.cursor-pointer(href="/channel/posts/"+channel._id+"?post="+ann._id class='hover:bg-gray-100 focus:outline-none dark:hover:bg-gray-700')
                       .w-full.pb-2(class='dark:text-white')
                         .flex.justify-between
                           span.block.ml-2.font-bold #{ann.title}
@@ -31,7 +31,7 @@ block channel_cont
 
                   
                 .relative.w-full.p-6.overflow-y-auto(class='h-[20rem] dark:text-white')
-                  p #{announcement.text}
+                  p #{announcement.content}
                 hr
 
                 // Comment Section variables = [{author:"",date:"",text:""}]
@@ -44,11 +44,11 @@ block channel_cont
                             footer.flex.justify-between.mb-2
                               .flex.items-center
                                 p.inline-flex.items-center.mr-3.text-sm.text-gray-900(class="dark:text-gray-200")
-                                  | #{comment.author}
+                                  | #{comment.commenter}
                                 p.text-sm.text-gray-600
                                   | #{comment.date}
                             p
-                              | #{comment.text}
+                              | #{comment.comment}
                 .flex.items-center.justify-between.w-full.p-3.border-gray-300
                   button
                     svg.w-6.h-6.text-gray-500(xmlns='http://www.w3.org/2000/svg' fill='none' viewbox='0 0 24 24' stroke='currentColor')

@@ -1,174 +1,81 @@
-var express = require('express');
-var router = express.Router();
-
-var axios = require("axios")
-
-var jwt = require("jsonwebtoken")
-var multer = require('multer')
-//var bagit = require('../../BagIt/bagit')
-
-const uploadFolder = 'uploads'
-var upload = multer({dest: 'uploads'})
-var archiver = require('archiver')
-var fs = require("fs")
-//var decompress = require('decompress')
+const express = require('express');
+const router = express.Router();
+const axios = require("axios")
 
 let auth_location = process.env.AUTH_SERVER
 let archive_location = process.env.ARCH_SERVER
-let public_key = ""
 
+router.get('/', (req, res, next) =>{
+  res.render('dashboard');
+});
 
-function verifyAuthentication(req,res,next){
-    if (public_key == ""){
-      // This should be done differently
-      axios.get(auth_location+"/public.pem",(response)=>{
-        public_key = response
+router.get("/channel/posts/:chID", (req, res, next)=> {
+  let ann = req.query.post
+  let chn = req.params.chID
+  let promisses = []
+  promisses.push(axios.get(archive_location+"/acess/channel/info/"+chn))
+  promisses.push(axios.get(archive_location+"/acess/posts/channel/"+chn))
+  Promise.all(promisses).then(results=>{
+    let info = results[0].data
+    let titles = results[1].data
+    if (ann!=undefined){
+      axios.get(archive_location+"/acess/posts/"+ann).then((post)=>{
+        res.render("channel/announcements",{channel:info,titles:titles,announcement:post.data})
       })
     }
-    let result = jwt.verify(req.token,public_key,{algorithms:["RS512"]})
-    console.log(result)
-    // req.username = result.username
-}
-
-
-
-router.get('/', function(req, res, next) {
-    res.render('dashboard');
-});
-
-//Test route
-router.get('/channel/announcements', function(req, res, next) {
-    res.render('channel/announcements',{
-      channel:{
-        title:"RPCW",
-        banner:"https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YmVhdXRpZnVsJTIwbGFuZHNjYXBlfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
-
-      }, 
-      titles:[
-        {
-          title:"Teste Adicionado",
-          publisher:"JCR",
-          date: "22/03/2001"
-      }],
-      announcement:{
-        title:"Teste Adicionado",
-        publisher:"JCR",
-        date: "22/03/2001",
-        text:"Novo teste foi adicionado aos conteúdos",
-        comments:[
-          {
-            author:"Gonçalo Ferreira",
-            date: "22/03/2001",
-            text:"Nice!"
-          }
-        ]
-      }
-
-  });
-});
-
-//Test route
-router.get('/channel', function(req, res, next) {
-  let folders = {
-    "Teóricas":{
-        type:'dir',
-        files: {
-          'Teste de 2024':{
-            type:'file',
-            format:'PDF'
-          },
-          testes2022:{
-            type:'dir',
-            files:{}
-          }
-        }
-      },
-      teste2021:{
-        type:'file',
-        format:'PDF'
-      }
-  }
-    folders=JSON.stringify(folders).replaceAll("\"","'")
-
-    res.render('channel/index',{
-      channel:{
-        title:"RPCW",
-        banner:"https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YmVhdXRpZnVsJTIwbGFuZHNjYXBlfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
-
-      }, 
-      titles:[
-        {
-          title:"Teste Adicionado",
-          publisher:"JCR",
-          date: "22/03/2001"
-      }],
-      "folders":folders
-
-});
-});
-
-router.get("/uploadfile", function(req, res, next) {
-  res.render("channel/upload_file",{channel:{
-    title:"RPCW",
-    banner:"https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YmVhdXRpZnVsJTIwbGFuZHNjYXBlfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
-
-  }, })
-});
-
-router.get("/postAnn", function(req, res, next) {
-  res.render("channel/create_post",{channel:{
-    title:"RPCW",
-    banner:"https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YmVhdXRpZnVsJTIwbGFuZHNjYXBlfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
-
-  }, })
-});
-
-
-router.get("/channel/postDate", function(req, res, next) {
-  res.render("channel/create_date",{channel:{
-    title:"RPCW",
-    banner:"https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YmVhdXRpZnVsJTIwbGFuZHNjYXBlfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
-
-  }, })
-});
-
-
-router.get('/dashboard', function(req, res, next) {
-    res.redirect('/')
-});
-
-router.get('/settings', function(req, res, next) {
-    res.render('settings');
-});
-
-router.get("/login",(req,res)=>{
-    res.render("login")
+    else if (titles.length != 0){
+      let id = titles[0]._id
+      axios.get(archive_location+"/acess/posts/"+id).then((post)=>{
+          console.log(post.data.comments)
+          res.render("channel/announcements",{channel:info,titles:titles,announcement:post.data})
+      })
+    }
+    else
+      res.render("channel/announcements",{channel:info,titles:titles,announcement:{}})
+  })  
 })
 
-router.get("/register",(req,res)=>{
-  res.render("register")
+router.get("/channel/:chID",(req, res, next)=>{
+  let promises = []
+  let chn = req.params.chID
+  promises.push(axios.get(archive_location+"/acess/channel/info/"+chn))
+  promises.push(axios.get(archive_location+"/acess/channel/contentTree/"+chn))
+  promises.push(axios.get(archive_location+"/acess/posts/channel/"+chn))
+  Promise.all(promises).then(results=>{
+    folders=JSON.stringify(results[1].data).replaceAll("\"","'")
+    res.render("channel/index",{channel:results[0].data,folders:folders,titles:results[2].data})
+  })
+});
+
+router.get("/search/:keywords",(req,res,next)=>{
+  axios.get(archive_location+"/acess/channel/search/"+req.params.keywords).then(results=>{
+      res.status(200).jsonp(results.data).end()
+  })
 })
 
-treeCache = {}
 
-router.get("/channel/:id", (req,res)=>{
-    let channelId = req.params.id
-    return Promise.all([
-        // Get Channel General Info
-        axios.get(archive_location+"/acess/channel/" + channelId + "/info" ),
-        // Get Channel Content Tree
-        axios.get(archive_location+"/acess/channel/"+ channelId +"/contentTree"),
-        // Get Channel Announcements Titles
-        axios.get(archive_location+"/acess/ann/titles/channel/" + channelId)
-    ]).then((results)=>{
-        chn_info = results[0]
-        chn_cont = results[1]
-        chn_ann  = results[2]
+///FORMS
+router.get("/channel/:chID/addpost",(req,res,next)=>{
+  let chn = req.params.chID
+  axios.get(archive_location+"/acess/channel/info/"+chn).then((resp)=>{
+    res.render("channel/create_post",{channel:resp.data})
+  })
+});
 
-        res.render("channel_index",{"chn_info":chn_info,"chn_cont":chn_cont,"chn_ann":chn_ann})
-    })
+router.post("/channel/:chID/addpost",(req,res,next)=>{
 
-})
+});
+
+router.get("/channel/:chID/adddate",(req,res,next)=>{
+  let chn = req.params.chID
+  axios.get(archive_location+"/acess/channel/info/"+chn).then((resp)=>{
+    res.render("channel/create_date",{channel:resp.data})
+  })
+});
+
+router.post("/channel/:chID/adddate",(req,res,next)=>{
+
+});
 
 
 
