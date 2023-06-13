@@ -3,20 +3,30 @@ var router = express.Router();
 var Users = require("../controllers/users")
 var Channels = require("../controllers/channel");
 var Announcements = require('../controllers/announcements');
-
+var Dates = require("../controllers/important_dates")
 
 
 router.post("/uploadfile", function(req,res){
 
 })
 
+router.post("/newdate",function(req,res){
+  return Dates.createImportantDate(req.body.date).then(()=>{
+    res.sendStatus(200)
+  }).catch((err)=>{
+      //ver erro e responder em conformidade
+      console.log(err)
+      res.sendStatus(500)
+  })
+})
+
 router.post("/newpost",function(req,res){
     //Should check if user is compatible with channel, and existance of channel and user
     return Announcements.createNewAnn(req.body.user,req.body.announcement).then(()=>{
       res.sendStatus(200)
-
     }).catch((err)=>{
         //ver erro e responder em conformidade
+        console.log(err)
         res.sendStatus(500)
     })
 })
@@ -24,7 +34,6 @@ router.post("/newpost",function(req,res){
 router.post("/newcomment",function(req,res){
   return Announcements.addComment(req.body.user,req.body.announcement, req.body.content).then(()=>{
     res.sendStatus(200)
-
     }).catch((err)=>{
         //ver erro e responder em conformidade
         console.log(err)
@@ -36,7 +45,6 @@ router.post("/newcomment",function(req,res){
 router.post("/addFile",function(req,res){
   return Channels.addFile(req.body.channel,req.body.path,req.body.file).then(()=>{
     res.sendStatus(200)
-
 }).catch((err)=>{
     //ver erro e responder em conformidade
     console.log(err)
