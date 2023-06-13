@@ -4,16 +4,6 @@ let Announcements = require("../../controllers/announcements")
 let User = require("../../controllers/users")
 
 
-/**
- * Acess a specific announcement post
- */
-router.get("/:annID",function(req,res,next){
-  let ann = req.params.annID;
-  Announcements.getAnnByID(ann).then((result)=>{
-    res.status(200).jsonp(result).end()
-  })
-})
-
 
 
 /**
@@ -50,6 +40,14 @@ router.get("/channel/:channelID", function(req,res,next){
 })
 
 
-
+/**
+ * Acess a specific announcement post
+ */
+router.get("/:annID",function(req,res,next){
+  let ann = req.params.annID;
+  Announcements.getAnnByID(ann).then((result)=>{
+    res.status(200).jsonp(result).end()
+  })
+})
 
 module.exports = router;

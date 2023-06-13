@@ -29,3 +29,4 @@ router.get("/user/:chnID",(req,res)=>{
     })
 
 
+module.exports = router;
