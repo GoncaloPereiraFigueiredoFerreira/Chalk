@@ -59,6 +59,19 @@ block channel_cont
           a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/'+channel._id+'/adddate' class='hover:underline dark:text-blue-500')
             | Add date
 
+        .flow-root
+          ul.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
+            each date in dates
+              li.py-3(class='sm:py-4')
+                .flex.items-center.space-x-4
+                  p.text-sm.font-medium.text-gray-900.truncate(class="dark:text-white")
+                    | #{date.date}
+                  p.font-medium.text-gray-900.truncate(class="dark:text-white")
+                    | #[strong #{date.title}]
+                p.mt-2.text-xs.font-medium.text-gray-600.truncate(class="dark:text-white")
+                    | #{date.description}
+          
+
 
   script.
     var files = #{folders};

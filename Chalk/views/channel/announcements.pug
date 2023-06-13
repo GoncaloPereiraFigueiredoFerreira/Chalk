@@ -25,7 +25,7 @@ block channel_cont
                 .relative.flex.p-3.border-b.border-gray-300
                   .my-4.mb-6.ml-6.w-full.flex.justify-between(class='dark:text-white')
                     div
-                      h1.text-3xl.text-gray-600.font-bold.text-gray-600(class='dark:text-white')  Teste Adicionado
+                      h1.text-3xl.text-gray-600.font-bold.text-gray-600(class='dark:text-white') #{announcement.title}
                       p Docente: #{announcement.publisher}
                     p.text-lg #{announcement.date} 
 
@@ -49,16 +49,19 @@ block channel_cont
                                   | #{comment.date}
                             p
                               | #{comment.comment}
-                .flex.items-center.justify-between.w-full.p-3.border-gray-300
-                  button
-                    svg.w-6.h-6.text-gray-500(xmlns='http://www.w3.org/2000/svg' fill='none' viewbox='0 0 24 24' stroke='currentColor')
-                      path(stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z')
-                  input.block.w-full.py-2.pl-4.mx-3.bg-gray-100.rounded-full.outline-none(type='text' placeholder='Comment' class='focus:text-gray-700' name='message' required='')
-                  button(type='submit')
-                    svg.w-5.h-5.text-gray-500.origin-center.transform.rotate-90(xmlns='http://www.w3.org/2000/svg' viewbox='0 0 20 20' fill='currentColor')
-                      path(d='M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z')
-
-                  
                 
+                .flex.items-center.justify-between.w-full.p-3.border-gray-300
+                    form(id="commentForm" method="POST" action="/channel/posts/addcomment?announcement="+announcement._id+"&channel="+channel._id)
+                    button
+                      svg.w-6.h-6.text-gray-500(xmlns='http://www.w3.org/2000/svg' fill='none' viewbox='0 0 24 24' stroke='currentColor')
+                        path(stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z')
+                    
+                    input.block.w-full.py-2.pl-4.mx-3.bg-gray-100.rounded-full.outline-none(form="commentForm" name="comment" type='text' placeholder='Comment' class='focus:text-gray-700'  required='')
+                    button(type='submit' form="commentForm")
+                      svg.w-5.h-5.text-gray-500.origin-center.transform.rotate-90(xmlns='http://www.w3.org/2000/svg' viewbox='0 0 20 20' fill='currentColor')
+                        path(d='M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z')
 
-            
+                    
+                  
+
+              

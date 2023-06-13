@@ -175,8 +175,7 @@ block body
                           for (let ch in channels){
                             if (channels[ch].name.indexOf(value)!=-1){
                                 shown+=1
-                                let a = $('<a>').attr("class","block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white").text(channels[ch].name)
-                                //por href para o canal
+                                let a = $('<a>').attr("href","/channel/"+channels[ch]._id).attr("class","block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white").text(channels[ch].name)
                                 $("#dropdownlist").append($('<li>').append(a))
                             } 
                           }
