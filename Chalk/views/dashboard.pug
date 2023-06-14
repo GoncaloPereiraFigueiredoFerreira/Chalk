@@ -1,7 +1,67 @@
 extends base
     
 block page
-    p WORK IN PROGRESS! 
-    p #[a(href="/channel") Channel]
-    p #[a(href="/register") Register]
-    p #[a(href="/login") Login]
+    // Image
+    .m-20.mb-2.mt-4.p-4.bg-white.border.border-gray-200.rounded-lg.flex
+      
+      img.mt-4.w-36.rounded-full(src="https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-photo-183042379.jpg")
+      .mt-10.ml-6.w-full.flex.justify-between
+        h1.text-4xl Welcome Gonçalo Ferreira!
+        .mt-16.ml-4
+          p #[a(href="#") Criar canal]
+          p #[a(href="#") Editar Perfil]
+
+    .mt-4.mr-20.ml-20
+      .grid.grid-cols-4.gap-1
+        .col-start-1.bg-white.rounded-lg.pb-64
+          .m-4
+            h2.text-3xl Channels
+            ul.ml-4.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
+              li.py-3(class='sm:py-4')
+                .flex.items-center.space-x-4
+                  a.text-sm.font-medium.text-gray-900.truncate(href="#") RPCW
+              li.py-3(class='sm:py-4')
+                .flex.items-center.space-x-4
+                  a.text-sm.font-medium.text-gray-900.truncate(href="#") SDGE
+        .col-start-2.col-span-2.bg-white.rounded-lg
+          .m-4
+            h2.text-3xl Announcements
+            ul.ml-4.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
+              li.py-3(class='sm:py-4')
+                .flex.items-center.space-x-4.justify-between
+                  div
+                    a.text-gray-900.truncate(href="#" class='hover:underline dark:text-blue-500')
+                      | Novo teste adicionado
+                    p.mt-2.text-xs.text-gray-600.truncate(class="dark:text-white")
+                      | Por: jcr@di.uminho.pt
+                  p.text-sm.font-medium.text-gray-900.truncate(class="dark:text-white")
+                    | 13/06/2023
+              li.py-3(class='sm:py-4')
+                .flex.items-center.space-x-4.justify-between
+                  div
+                    a.text-gray-900.truncate(href="#" class='hover:underline dark:text-blue-500')
+                      | Novo teste adicionado
+                    p.mt-2.text-xs.text-gray-600.truncate(class="dark:text-white")
+                      | Por: jcr@di.uminho.pt
+                  p.text-sm.font-medium.text-gray-900.truncate(class="dark:text-white")
+                    | 13/06/2023
+        .col-start-4.bg-white.rounded-lg
+          .m-4
+            h2.text-3xl Important Dates
+            ul.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
+              li.py-3(class='sm:py-4')
+                  .flex.items-center.space-x-4
+                    p.text-sm.font-medium.text-gray-900.truncate(class="dark:text-white")
+                      | 13/03/2001
+                    p.font-medium.text-gray-900.truncate(class="dark:text-white")
+                      | #[strong Default]
+                  p.mt-2.text-xs.font-medium.text-gray-600.truncate(class="dark:text-white")
+                      | Data importante
+              li.py-3(class='sm:py-4')
+                  .flex.items-center.space-x-4
+                    p.text-sm.font-medium.text-gray-900.truncate(class="dark:text-white")
+                      | 13/03/2001
+                    p.font-medium.text-gray-900.truncate(class="dark:text-white")
+                      | #[strong Default]
+                  p.mt-2.text-xs.font-medium.text-gray-600.truncate(class="dark:text-white")
+                      | Data importante

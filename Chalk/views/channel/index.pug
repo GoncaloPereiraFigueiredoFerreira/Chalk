@@ -2,15 +2,15 @@ extends base
 
 
 block channel_cont
-  .grid.grid-cols-8.grid-rows-2.gap-4
+  .grid.grid-cols-8.grid-rows-3.gap-4
     
     // Announcement titles
-    .row-span-2.col-span-8(class='md:col-span-3  md:row-span-1')
+    .col-span-8(class='md:col-span-3  md:row-start-1')
       .p-4.bg-white.border.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
         .flex.items-center.justify-between.mb-4
           h5.text-xl.font-bold.leading-none.text-gray-900(class='dark:text-white') Announcements
           div
-            a.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/announcements' class='hover:underline dark:text-blue-500')
+            a.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/posts/'+channel._id class='hover:underline dark:text-blue-500')
               | View all
             // if user level == admin
             a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/'+channel._id+'/addpost' class='hover:underline dark:text-blue-500')
@@ -19,12 +19,18 @@ block channel_cont
           ul.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
             each ann in titles 
               li.py-3(class='sm:py-4')
-                .flex.items-center.space-x-4
-                  a.text-sm.font-medium.text-gray-900.truncate(href="/channel/posts/"+channel._id+"?post="+ann._id class='hover:underline dark:text-blue-500')
-                    | #{ann.title}
+                .flex.items-center.space-x-4.justify-between
+                  div
+                    a.text-gray-900.truncate(href="/channel/posts/"+channel._id+"?post="+ann._id class='hover:underline dark:text-blue-500')
+                      | #{ann.title}
+                    p.mt-2.text-xs.text-gray-600.truncate(class="dark:text-white")
+                      | Por: #{ann.publisher}
+
+                  p.text-sm.font-medium.text-gray-900.truncate(class="dark:text-white")
+                    | #{ann.date}
 
     // Content Tab
-    .col-span-8.row-span-2(class='md:col-span-5')
+    .col-span-8(class='md:col-start-4 md:col-end-9 md:row-start-1 md:row-end-3')
       .mb-5.flex.items-center.justify-between
         h5.text-2xl.font-bold.leading-none.text-gray-900(class='dark:text-white') Content
         label.sr-only(for='table-search') Search
@@ -50,7 +56,7 @@ block channel_cont
           tbody
     
     // Important Dates
-    .row-span-2.col-span-8(class='md:col-span-3  md:row-span-1')
+    .row-span-2.col-span-8(class='md:col-span-3  md:row-start-2')
       .w-full.p-4.bg-white.border.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
         .flex.items-center.justify-between.mb-4
           h5.text-xl.font-bold.leading-none.text-gray-900(class='dark:text-white') Important Dates
@@ -68,7 +74,7 @@ block channel_cont
                     | #{date.date}
                   p.font-medium.text-gray-900.truncate(class="dark:text-white")
                     | #[strong #{date.title}]
-                p.mt-2.text-xs.font-medium.text-gray-600.truncate(class="dark:text-white")
+                p.mt-1.text-xs.text-gray-600.truncate(class="dark:text-white")
                     | #{date.description}
           
 
