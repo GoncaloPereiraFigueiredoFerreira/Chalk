@@ -6,6 +6,8 @@ const mongoose = require("mongoose"),
 var User = new Schema({
       username: String,
       level: String,
+      first_name:String,
+      last_name:String,
       active: Boolean,
       date_created: String,
       last_acess: String

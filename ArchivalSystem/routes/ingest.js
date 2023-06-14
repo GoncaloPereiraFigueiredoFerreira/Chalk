@@ -78,11 +78,12 @@ router.post("/newchannel",function(req,res){
 })
 
 router.post("/newaccount",function(req,res){
-  return Users.createUser(req.body.user).then(()=>{
+  return Users.createUser(req.body).then(()=>{
       res.sendStatus(200)
 
   }).catch((err)=>{
       //ver erro e responder em conformidade
+      console.log(err)
       res.sendStatus(500)
   })
 })

@@ -14,7 +14,8 @@ function verifyAuthentication(req,res,next){
       axios.get(auth_location+"/public.pem").then((response)=>{
         public_key = response.data
         let result = jwt.verify(req.cookies.token,public_key,{algorithm:"RS512"})
-        req.user = {username:result.username,level:result.level}
+        req.user = {username:result.username,level:result.level,first_name:result.first_name,last_name:result.last_name}
+        console.log(result)
         next()
       }).catch(err=>{
         req.user = {}
@@ -22,18 +23,14 @@ function verifyAuthentication(req,res,next){
       })
     }else{
       let result = jwt.verify(req.cookies.token,public_key,{algorithms:["RS512"]})
-      req.user = {username:result.username,level:result.level}
+      req.user = {username:result.username,level:result.level,first_name:result.first_name,last_name:result.last_name}
       next()
     }
   }
-  else{
-    next()
 }
-    
-}
-
+  
 router.get('/',verifyAuthentication,(req, res, next) =>{
-  res.render('dashboard');
+  res.render('dashboard',{user:req.user});
 });
 
 router.get("/search/:keywords",(req,res,next)=>{
@@ -72,10 +69,15 @@ router.post("/login",(req,res,next)=>{
 });
 
 router.post("/register",(req,res,next)=>{
-  axios.post(auth_location+"/register",req.body).then(res=>{
+  axios.post(auth_location+"/register",req.body).then(resp=>{
     //respond to client
-    if (req.data.sucess){
-      res.redirect("/")
+    if (resp.data.success){
+      loggedIn[resp.data.token]=1
+      res.cookie("token",resp.data.token)
+      axios.post(archive_location+"/ingest/newaccount",{"email":req.body.email}).then(()=>{
+        res.redirect("/")
+      }).catch(err=>console.log(err))
+      
     }
     else{
       // should have some kind of warning that login failled for some reason
@@ -87,7 +89,7 @@ router.post("/register",(req,res,next)=>{
   })
 });
 
-router.get("/logout",(req,res,next)=>{
+router.get("/logout",verifyAuthentication,(req,res,next)=>{
   delete loggedIn[res.cookies.token]
   res.clearCookie("token");
   res.redirect("login")
@@ -95,42 +97,45 @@ router.get("/logout",(req,res,next)=>{
 
 /// Channel Routes
 
-router.get("/channel/posts/:chID", (req, res, next)=> {
+router.get("/channel/posts/:chID",verifyAuthentication, (req, res, next)=> {
   let ann = req.query.post
   let chn = req.params.chID
   let promisses = []
-  promisses.push(axios.get(archive_location+"/acess/channel/info/"+chn))
+  promisses.push(axios.get(archive_location+"/acess/channel/info/"+chn+"?user="+req.user.username)) //add query string to query if user is subscribed to channel
   promisses.push(axios.get(archive_location+"/acess/posts/channel/"+chn))
   Promise.all(promisses).then(results=>{
     let info = results[0].data
+    req.user.subscribed=info.subscribed
     let titles = results[1].data
     if (ann!=undefined){
       axios.get(archive_location+"/acess/posts/"+ann).then((post)=>{
-        res.render("channel/announcements",{channel:info,titles:titles,announcement:post.data})
+        res.render("channel/announcements",{user:req.user,channel:info,titles:titles,announcement:post.data})
       })
     }
     else if (titles.length != 0){
       let id = titles[0]._id
       axios.get(archive_location+"/acess/posts/"+id).then((post)=>{
           console.log(post.data.comments)
-          res.render("channel/announcements",{channel:info,titles:titles,announcement:post.data})
+          res.render("channel/announcements",{user:req.user,channel:info,titles:titles,announcement:post.data})
       })
     }
     else
-      res.render("channel/announcements",{channel:info,titles:titles,announcement:{}})
+      res.render("channel/announcements",{user:req.user,channel:info,titles:titles,announcement:{}})
   })  
 })
 
-router.get("/channel/:chID",(req, res, next)=>{
+router.get("/channel/:chID",verifyAuthentication,(req, res, next)=>{
   let promises = []
   let chn = req.params.chID
-  promises.push(axios.get(archive_location+"/acess/channel/info/"+chn))
+  promises.push(axios.get(archive_location+"/acess/channel/info/"+chn+"?user="+req.user.username))
   promises.push(axios.get(archive_location+"/acess/channel/contentTree/"+chn))
   promises.push(axios.get(archive_location+"/acess/posts/channel/"+chn))
   promises.push(axios.get(archive_location+"/acess/dates/channel/"+chn))
   Promise.all(promises).then(results=>{
     folders=JSON.stringify(results[1].data).replaceAll("\"","'")
+    req.user.subscribed=results[0].data.subscribed
     res.render("channel/index",{
+      user:req.user,
       channel:results[0].data,
       folders:folders,
       titles:results[2].data,
@@ -140,17 +145,18 @@ router.get("/channel/:chID",(req, res, next)=>{
 });
 
 /// Forms
-router.get("/channel/:chID/addpost",(req,res,next)=>{
+router.get("/channel/:chID/addpost",verifyAuthentication,(req,res,next)=>{
   let chn = req.params.chID
-  axios.get(archive_location+"/acess/channel/info/"+chn).then((resp)=>{
-    res.render("channel/create_post",{channel:resp.data})
+  axios.get(archive_location+"/acess/channel/info/"+chn+"?user="+req.user.username).then((resp)=>{
+    req.user.subscribed=resp.data.subscribed
+    res.render("channel/create_post",{user:req.user,channel:resp.data})
   })
 });
 
-router.post("/channel/:chID/addpost",(req,res,next)=>{
+router.post("/channel/:chID/addpost",verifyAuthentication,(req,res,next)=>{
   axios.post(archive_location+"/ingest/newpost",
   {
-    user:"default@need2.change",
+    user:req.user.username,
     announcement:{
       title:req.body.title,
       content:req.body.content,
@@ -158,20 +164,21 @@ router.post("/channel/:chID/addpost",(req,res,next)=>{
     }
   
   }).then(()=>{
-      res.redirect("/channel/"+req.params.chID)
+      res.redirect("/channel/"+req.params.chID,{user:req.user})
   }).catch((err)=>{
 
   })
 });
 
-router.get("/channel/:chID/adddate",(req,res,next)=>{
+router.get("/channel/:chID/adddate",verifyAuthentication,(req,res,next)=>{
   let chn = req.params.chID
-  axios.get(archive_location+"/acess/channel/info/"+chn).then((resp)=>{
-    res.render("channel/create_date",{channel:resp.data})
+  axios.get(archive_location+"/acess/channel/info/"+chn+"?user="+req.user.username).then((resp)=>{
+    req.user.subscribed=resp.data.subscribed
+    res.render("channel/create_date",{user:req.user,channel:resp.data})
   })
 });
 
-router.post("/channel/:chID/adddate",(req,res,next)=>{
+router.post("/channel/:chID/adddate",verifyAuthentication,(req,res,next)=>{
     axios.post(archive_location+"/ingest/newdate",
     {
       date:{
@@ -182,18 +189,18 @@ router.post("/channel/:chID/adddate",(req,res,next)=>{
       }
     
     }).then(()=>{
-        res.redirect("/channel/"+req.params.chID)
+        res.redirect("/channel/"+req.params.chID,{user:req.user})
     }).catch((err)=>{
   
     })
 
 });
 
-router.post("/channel/posts/addcomment",(req,res,next)=>{
+router.post("/channel/posts/addcomment",verifyAuthentication,(req,res,next)=>{
 
   axios.post(archive_location+"/ingest/newcomment",
   {
-    user:"defaultUser@nothing.com",
+    user: req.user.first_name + " " + req.user.last_name,
     announcement: req.query.announcement,
     channel:req.query.channel,
     content:req.body.comment
@@ -204,5 +211,23 @@ router.post("/channel/posts/addcomment",(req,res,next)=>{
   })
 });
 
+
+router.get("/channel/:chID/subscribe",verifyAuthentication,(req,res,next)=>{
+  axios.post(archive_location+"/ingest/addsubscription",
+  {
+    user: req.user.username,
+    channel:req.params.chID
+  }).then(()=>{res.redirect("back")})
+  .catch((err)=>{})
+});
+
+router.get("/channel/:chID/unsubscribe",verifyAuthentication,(req,res,next)=>{
+  axios.post(archive_location+"/ingest/remsubscription",
+  {
+    user: req.user.username,
+    channel:req.params.chID
+  }).then(()=>{res.redirect("back")})
+  .catch((err)=>{})
+});
 
 module.exports = router;

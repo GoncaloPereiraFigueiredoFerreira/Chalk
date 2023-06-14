@@ -5,7 +5,10 @@ block page
     img.rounded-lg.w-screen.max-h-60(src="https://d347bo4ltvvnaz.cloudfront.net/images/preview/Easter_PalmLeaf_Banner_1920x500.jpg")
     h1.absolute.text-5xl.text-white.bottom-5.left-5 #[a(href="/channel/"+ channel._id) #{channel.name}]
     .absolute.bottom-3.right-5.items-center.flex
-        a.inline-flex.text-white.bg-blue-700.font-medium.rounded-lg.text-sm.px-5(type='button' class='hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800') Inscreve-te
+        if !user.subscribed
+          a.inline-flex.text-white.bg-blue-700.font-medium.rounded-lg.text-sm.px-5(href="/channel/"+channel._id+"/subscribe" type='button' class='hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800') Subscribe
+        else 
+          a.inline-flex.text-white.bg-red-700.font-medium.rounded-lg.text-sm.px-5(href="/channel/"+channel._id+"/unsubscribe" type='button' class='hover:bg-red-800 focus:ring-4 focus:ring-red-300 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800') Unsubscribe
 
         //if (user.level == admin)
         a.ml-4.inline-flex(href="/settings")

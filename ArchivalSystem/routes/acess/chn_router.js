@@ -17,8 +17,14 @@ router.get("/search/:keywords", function(req,res,next){
  *  Channel Information
  */
 router.get("/info/:channel",function(req,res){
+    let user = req.query.user
     Channel.getChannelInfo(req.params.channel).then((result)=>{
-        res.status(200).jsonp(result).end()
+
+        let msg={
+          _id:result._id,name:result.name,publishers:result.publishers,subscribed:result.consumers.includes(user)
+        }
+        console.log(msg)
+        res.status(200).jsonp(msg).end()
   })
 })
 

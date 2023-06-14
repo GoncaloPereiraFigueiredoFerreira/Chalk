@@ -57,7 +57,15 @@ router.get('/', authenticate.verifyUser, (req, res, next) =>{
 router.post('/register', (req, res, next) => {
   var data = new Date().toISOString().substring(0,16)
   // Create User
-  User.register(new User({username: req.body.email, level:"user",active:true,date_created:data,last_acess:data}),
+  User.register(new User({
+    username: req.body.email, 
+    first_name:req.body.first_name,
+    last_name:req.body.last_name,
+    level:"user",
+    active:true,
+    date_created:data,
+    last_acess:data
+  }),
     req.body.password, (err, user) => {
     if(err) {
       console.log(err)
@@ -66,7 +74,7 @@ router.post('/register', (req, res, next) => {
       res.json({success: false,err: err});
     }
     else {
-      var token = authenticate.getToken({username: req.body.email, level: "user"});
+      var token = authenticate.getToken({username: req.body.email, level: "user", first_name:req.body.first_name, last_name:req.body.last_name});
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
       res.json({success: true, token: token});
