@@ -12,7 +12,7 @@ var passport = require('passport');
 var mongoose = require("mongoose")
 var connectString = "mongodb://127.0.0.1/ChalkAuth"
 
-mongoose.connect(connectString,  {useNewUrlParser:true, useUnifiedTopology:true})
+mongoose.connect(connectString,{useNewUrlParser:true, useUnifiedTopology:true})
 var db = mongoose.connection
 
 db.on("error", (err)=> {
@@ -29,20 +29,18 @@ const { generateKeyPair } = require('crypto');
 const fs = require("fs")
 
 generateKeyPair('rsa', {
-    modulusLength: 512,
+    modulusLength: 4096,
     publicKeyEncoding: {
-      type: 'spki',
+      type: 'pkcs1',
       format: 'pem'
     },
     privateKeyEncoding: {
-      type: 'pkcs8',
+      type: 'pkcs1',
       format: 'pem',
-      cipher: 'aes-256-cbc',
-      passphrase: 'segredo muito escondido, que nunca ninguem alguma vez neste planeta e universo conseguirá descodificar'
     }
-  }, (err, publicKey, privateKey) => { // Callback function
+  }, (err, publicKey, privateKey) => { 
        if(!err)
-       {
+       {/***  suspended functionality
           fs.writeFile('keys/public.pem',publicKey,err=>{
             if (err){
               console.error(err)
@@ -50,8 +48,7 @@ generateKeyPair('rsa', {
           fs.writeFile('keys/private.pem',privateKey,err=>{
               if (err){
                 console.error(err)
-            }})
-
+            }})*/
           } 
        else console.log("Errr is: ", err);    
 });

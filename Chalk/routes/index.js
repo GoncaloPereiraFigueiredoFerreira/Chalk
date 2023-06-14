@@ -1,13 +1,99 @@
 const express = require('express');
 const router = express.Router();
 const axios = require("axios")
+const jwt = require("jsonwebtoken")
 
 let auth_location = process.env.AUTH_SERVER
 let archive_location = process.env.ARCH_SERVER
+let public_key = ""
+let loggedIn = {}
 
-router.get('/', (req, res, next) =>{
+function verifyAuthentication(req,res,next){
+  if (req.cookies.token){
+    if (public_key == ""){
+      axios.get(auth_location+"/public.pem").then((response)=>{
+        public_key = response.data
+        let result = jwt.verify(req.cookies.token,public_key,{algorithm:"RS512"})
+        req.user = {username:result.username,level:result.level}
+        next()
+      }).catch(err=>{
+        req.user = {}
+        next()
+      })
+    }else{
+      let result = jwt.verify(req.cookies.token,public_key,{algorithms:["RS512"]})
+      req.user = {username:result.username,level:result.level}
+      next()
+    }
+  }
+  else{
+    next()
+}
+    
+}
+
+router.get('/',verifyAuthentication,(req, res, next) =>{
   res.render('dashboard');
 });
+
+router.get("/search/:keywords",(req,res,next)=>{
+  axios.get(archive_location+"/acess/channel/search/"+req.params.keywords).then(results=>{
+      res.status(200).jsonp(results.data).end()
+  })
+});
+
+/// Login and Register Pages
+
+router.get("/login",(req,res,next)=>{
+  res.render("login")
+});
+
+router.get("/register",(req,res,next)=>{
+  res.render("register")
+});
+
+router.post("/login",(req,res,next)=>{
+  console.log(req.body)
+  axios.post(auth_location+"/login",req.body).then(resp=>{
+    console.log(resp.data)
+    if (resp.data.success){
+      loggedIn[resp.data.token]=1
+      res.cookie("token",resp.data.token)
+      res.redirect("/")
+    }
+    else{
+      // should have some kind of warning that login failled for some reason
+      res.redirect("/login")
+    }
+  }).catch((err)=>{
+
+    res.redirect("/login")
+  })
+});
+
+router.post("/register",(req,res,next)=>{
+  axios.post(auth_location+"/register",req.body).then(res=>{
+    //respond to client
+    if (req.data.sucess){
+      res.redirect("/")
+    }
+    else{
+      // should have some kind of warning that login failled for some reason
+      res.redirect("/register")
+    }
+  }).catch((err)=>{
+      console.log(err)
+      res.redirect("/register")
+  })
+});
+
+router.get("/logout",(req,res,next)=>{
+  delete loggedIn[res.cookies.token]
+  res.clearCookie("token");
+  res.redirect("login")
+})
+
+/// Channel Routes
 
 router.get("/channel/posts/:chID", (req, res, next)=> {
   let ann = req.query.post
@@ -53,14 +139,7 @@ router.get("/channel/:chID",(req, res, next)=>{
   })
 });
 
-router.get("/search/:keywords",(req,res,next)=>{
-  axios.get(archive_location+"/acess/channel/search/"+req.params.keywords).then(results=>{
-      res.status(200).jsonp(results.data).end()
-  })
-})
-
-
-///FORMS
+/// Forms
 router.get("/channel/:chID/addpost",(req,res,next)=>{
   let chn = req.params.chID
   axios.get(archive_location+"/acess/channel/info/"+chn).then((resp)=>{

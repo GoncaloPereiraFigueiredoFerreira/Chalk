@@ -53,25 +53,23 @@ router.get('/', authenticate.verifyUser, (req, res, next) =>{
 
 
 
-
 // Register User
 router.post('/register', (req, res, next) => {
   var data = new Date().toISOString().substring(0,16)
   // Create User
-  User.register(new User({username: req.body.username, level:req.body.level,active:true,date_created:data,last_acess:data}),
+  User.register(new User({username: req.body.email, level:"user",active:true,date_created:data,last_acess:data}),
     req.body.password, (err, user) => {
     if(err) {
+      console.log(err)
       res.statusCode = 500;
       res.setHeader('Content-Type', 'application/json');
-      res.json({err: err});
+      res.json({success: false,err: err});
     }
     else {
-      // Use passport to authenticate User
-      passport.authenticate('local',{ session: false })(req, res, () => {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json({success: true, status: 'Registration Successful!'});
-      });
+      var token = authenticate.getToken({username: req.body.email, level: "user"});
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({success: true, token: token});
     }
   });
 });
@@ -80,7 +78,7 @@ router.post('/register', (req, res, next) => {
 router.post('/login', passport.authenticate('local',{ session: false }), (req, res) => {
     if (req.user.active){
       // Create a token
-      var token = authenticate.getToken({username: req.user.username, level: req.user.level});
+      var token = authenticate.getToken({username: req.user.username, level: "basic"});
       // Response
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
@@ -90,7 +88,20 @@ router.post('/login', passport.authenticate('local',{ session: false }), (req, r
       res.json({success: false, status: 'Deactivated Account'});
 });
  
-// Logout
+router.get("/auth/google/callback",
+  passport.authenticate("google", { session: false }),
+  (req, res) => {
+    var token = authenticate.getToken({username: req.user.username, level: "basic"});
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({success: true, token: token, status: 'You are successfully logged in!'});
+
+  }
+)
+
+
+
+// Logout // this wont be necessary
 router.get('/logout',authenticate.verifyUser,(req, res,next) => {
  if (req.session) {
    req.session.destroy();
