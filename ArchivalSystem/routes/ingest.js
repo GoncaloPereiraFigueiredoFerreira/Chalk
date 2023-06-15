@@ -3,11 +3,17 @@ var router = express.Router();
 var Users = require("../controllers/users")
 var Channels = require("../controllers/channel");
 var Announcements = require('../controllers/announcements');
+var Metadata = require('../controllers/metadata');
 
 
 
 router.post("/uploadfile", function(req,res){
+  console.log('uploading file...')
+  console.log(req.body)
 
+  return Metadata.addFileMetadata(req.body)
+          .then(() => res.sendStatus(200))
+          .catch((err) => {console.log(err); res.sendStatus(500)})
 })
 
 router.post("/newpost",function(req,res){

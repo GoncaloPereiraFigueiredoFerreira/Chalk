@@ -31,24 +31,28 @@ module.exports.checksum_sha256 = (file) => {
     return hash.update(fileBuffer).digest('hex')
 }
 
-module.exports.create_bag = (output_dir, output_name, archive, original_path, original_name, callback) => {
-    var hash256 = this.checksum_sha256(output_dir + '/../' + original_path)
+module.exports.create_bag = (archive, original_path, new_name, output_dir) => {
+    return new Promise((resolve, reject) => {
+        var hash256 = this.checksum_sha256(original_path)
 
-    this.bag_declaration(output_dir + '/bagit.txt')
-    this.manifest_file(output_dir + '/manifest-sha256.txt', hash256, original_name)
+        this.bag_declaration(output_dir + '/bagit.txt')
+        this.manifest_file(output_dir + '/manifest-sha256.txt', hash256, new_name)
+    
+        var output = fs.createWriteStream(output_dir + '/' + hash256 + '.zip')
+        output.on('close', function () {
+            fs.unlink(original_path, (err) => { if (err) throw err });
+            fs.unlink(output_dir + '/bagit.txt', (err) => { if (err) throw err });
+            fs.unlink(output_dir + '/manifest-sha256.txt', (err) => { if (err) throw err });
 
-    var output = fs.createWriteStream(output_name)
-    output.on('close', function () {
-        fs.unlink(original_path, (err) => { if (err) throw err });
-        fs.unlink(output_dir + '/bagit.txt', (err) => { if (err) throw err });
-        fs.unlink(output_dir + '/manifest-sha256.txt', (err) => { if (err) throw err });
-    });
-    archive.pipe(output)
-
-    archive.file(original_path, { name: 'data/' + original_name })
-    archive.file(output_dir + '/bagit.txt', { name: 'bagit.txt' })
-    archive.file(output_dir + '/manifest-sha256.txt', { name: 'manifest-sha256.txt' })
-    archive.finalize()
+            resolve(hash256);
+        });
+        archive.pipe(output)
+    
+        archive.file(original_path, { name: 'data/' + new_name })
+        archive.file(output_dir + '/bagit.txt', { name: 'bagit.txt' })
+        archive.file(output_dir + '/manifest-sha256.txt', { name: 'manifest-sha256.txt' })
+        archive.finalize()
+    })
 }
 
 module.exports.unpack_bag = (filename, output) => {
