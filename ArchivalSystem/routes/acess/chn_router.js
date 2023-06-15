@@ -31,7 +31,7 @@ router.get("/info/:channel",function(req,res){
 })
 
 /**
- *  Channeçs Content Tree
+ *  Channels Content Tree
  */
 router.get("/contentTree/:channel",function(req,res){
     Channel.getChannelContents(req.params.channel).then((result)=>{
@@ -55,11 +55,7 @@ router.get("/contentTree/:channel",function(req,res){
                     current_tree[result.file_name] = result
               }))
             }
-            outer_promisses.push(Promise.all(promisses).then((results)=>{
-                for (let metadata of results){
-                    current_tree[metadata.file_name] = metadata
-                }
-            }))
+            outer_promisses.push(Promise.all(promisses))
         }
         Promise.all(outer_promisses).then(()=>res.status(200).jsonp(tree).end()) 
     })

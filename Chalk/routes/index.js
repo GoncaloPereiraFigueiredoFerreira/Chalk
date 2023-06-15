@@ -50,17 +50,18 @@ function verifyAuthentication(req,res,next){
 router.get('/',verifyAuthentication,(req, res, next) =>{
   let promises = []
   promises.push(axios.get(archive_location+"/acess/profile/subscriptions/"+req.user.username))
+  promises.push(axios.get(archive_location+"/acess/profile/publisher/"+req.user.username))
   promises.push(axios.get(archive_location+"/acess/posts/user/"+req.user.username))
   promises.push(axios.get(archive_location+"/acess/dates/user/"+req.user.username))
   Promise.all(promises).then((results)=>{
-    console.log(results[0].data)
     console.log(results[1].data)
-    console.log(results[2].data)
+
     res.render('dashboard',{
             user:req.user,
-            channels:results[0].data,
-            anns: results[1].data,
-            dates:results[2].data         
+            subchannels:results[0].data,
+            pubchannels:results[1].data,
+            anns: results[2].data,
+            dates:results[3].data         
           });
   })
   

@@ -19,7 +19,14 @@ block page
             .ml-4
               h4 Subscribed to:
               ul.ml-4.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
-                each sub in channels
+                each sub in subchannels
+                  li.py-3(class='sm:py-4')
+                    .flex.items-center.space-x-4
+                      a.text-sm.font-medium.text-gray-900.truncate(href="/channel/"+sub._id) #{sub.name}
+              
+              h4 Managed:
+              ul.ml-4.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
+                each sub in pubchannels
                   li.py-3(class='sm:py-4')
                     .flex.items-center.space-x-4
                       a.text-sm.font-medium.text-gray-900.truncate(href="/channel/"+sub._id) #{sub.name}
