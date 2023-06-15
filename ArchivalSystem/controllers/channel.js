@@ -57,7 +57,7 @@ module.exports.createNewChannel = function createNewChannel(channel){
 
 //TODO: treat error
 module.exports.getChannelInfo = function getChannelInfo(channel){
-    return Channel.findById(channel,{_id:1,name:1,publishers:1,consumers:1}).then((channel)=>{
+    return Channel.findById(channel,{_id:1,banner:1,name:1,publishers:1,consumers:1}).then((channel)=>{
           return channel
     }).catch((err)=>{})
 }

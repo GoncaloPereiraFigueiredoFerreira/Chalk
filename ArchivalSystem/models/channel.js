@@ -5,7 +5,6 @@ const contentSchema = mongoose.Schema({
     path:{
       type:String,
       required:true,
-      index: {unique: true, dropDups: true}
     },
     files:{
       type:[String],
@@ -47,7 +46,7 @@ let channelSchema = new mongoose.Schema({
     
     // Directories 
     contents:{
-      type:[{type:contentSchema,unique:true,required:true}],
+      type:[{type:contentSchema}],
       required: true,
   },
 

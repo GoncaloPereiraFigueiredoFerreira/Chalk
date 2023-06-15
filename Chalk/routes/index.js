@@ -8,29 +8,62 @@ let archive_location = process.env.ARCH_SERVER
 let public_key = ""
 let loggedIn = {}
 
-function verifyAuthentication(req,res,next){
-  if (req.cookies.token){
+function updatePublicKey(){
+  return new Promise((resolve,reject)=>{
     if (public_key == ""){
       axios.get(auth_location+"/public.pem").then((response)=>{
         public_key = response.data
-        let result = jwt.verify(req.cookies.token,public_key,{algorithm:"RS512"})
-        req.user = {username:result.username,level:result.level,first_name:result.first_name,last_name:result.last_name}
-        console.log(result)
-        next()
-      }).catch(err=>{
-        req.user = {}
-        next()
+        resolve()
       })
-    }else{
-      let result = jwt.verify(req.cookies.token,public_key,{algorithms:["RS512"]})
-      req.user = {username:result.username,level:result.level,first_name:result.first_name,last_name:result.last_name}
-      next()
     }
+    else{resolve()}
+  })
+
+  
+}
+
+
+function verifyToken(token){
+  try{
+    return jwt.verify(token,public_key,{algorithm:"RS512"})
+  }
+  catch(err){
+    console.log(err.message)
+    return {}
+  }
+}
+
+function verifyAuthentication(req,res,next){
+  if (req.cookies.token){
+      updatePublicKey().then(()=>{
+        let result = verifyToken(req.cookies.token)
+        req.user = {username:result.username,level:result.level,first_name:result.first_name,last_name:result.last_name}
+        next()  
+      })
+  }
+  else{
+      req.user = {}
+      next() 
   }
 }
   
 router.get('/',verifyAuthentication,(req, res, next) =>{
-  res.render('dashboard',{user:req.user});
+  let promises = []
+  promises.push(axios.get(archive_location+"/acess/profile/subscriptions/"+req.user.username))
+  promises.push(axios.get(archive_location+"/acess/posts/user/"+req.user.username))
+  promises.push(axios.get(archive_location+"/acess/dates/user/"+req.user.username))
+  Promise.all(promises).then((results)=>{
+    console.log(results[0].data)
+    console.log(results[1].data)
+    console.log(results[2].data)
+    res.render('dashboard',{
+            user:req.user,
+            channels:results[0].data,
+            anns: results[1].data,
+            dates:results[2].data         
+          });
+  })
+  
 });
 
 router.get("/search/:keywords",(req,res,next)=>{
@@ -90,7 +123,7 @@ router.post("/register",(req,res,next)=>{
 });
 
 router.get("/logout",verifyAuthentication,(req,res,next)=>{
-  delete loggedIn[res.cookies.token]
+  delete loggedIn[req.cookies.token]
   res.clearCookie("token");
   res.redirect("login")
 })
@@ -145,6 +178,18 @@ router.get("/channel/:chID",verifyAuthentication,(req, res, next)=>{
 });
 
 /// Forms
+router.get("/createChannel",verifyAuthentication,(req,res,next)=>{
+  res.render("createChn_form",{user:req.user})
+})
+
+router.post("/createChannel",verifyAuthentication,(req,res,next)=>{
+  req.body.publishers=[req.user.username]
+  axios.post(archive_location+"/ingest/newchannel",{channel:req.body}).then((response)=>{
+    res.redirect("/channel/"+response.data._id)
+  })
+})
+
+
 router.get("/channel/:chID/addpost",verifyAuthentication,(req,res,next)=>{
   let chn = req.params.chID
   axios.get(archive_location+"/acess/channel/info/"+chn+"?user="+req.user.username).then((resp)=>{
@@ -164,7 +209,7 @@ router.post("/channel/:chID/addpost",verifyAuthentication,(req,res,next)=>{
     }
   
   }).then(()=>{
-      res.redirect("/channel/"+req.params.chID,{user:req.user})
+      res.redirect("/channel/"+req.params.chID)
   }).catch((err)=>{
 
   })
@@ -189,7 +234,7 @@ router.post("/channel/:chID/adddate",verifyAuthentication,(req,res,next)=>{
       }
     
     }).then(()=>{
-        res.redirect("/channel/"+req.params.chID,{user:req.user})
+        res.redirect("/channel/"+req.params.chID)
     }).catch((err)=>{
   
     })
@@ -218,7 +263,7 @@ router.get("/channel/:chID/subscribe",verifyAuthentication,(req,res,next)=>{
     user: req.user.username,
     channel:req.params.chID
   }).then(()=>{res.redirect("back")})
-  .catch((err)=>{})
+  .catch((err)=>{console.log(err)})
 });
 
 router.get("/channel/:chID/unsubscribe",verifyAuthentication,(req,res,next)=>{

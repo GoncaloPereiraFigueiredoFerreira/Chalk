@@ -86,7 +86,7 @@ router.post('/register', (req, res, next) => {
 router.post('/login', passport.authenticate('local',{ session: false }), (req, res) => {
     if (req.user.active){
       // Create a token
-      var token = authenticate.getToken({username: req.user.username, level: "basic"});
+      var token = authenticate.getToken({username: req.user.username, level: "user", first_name:req.user.first_name, last_name:req.user.last_name});
       // Response
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');

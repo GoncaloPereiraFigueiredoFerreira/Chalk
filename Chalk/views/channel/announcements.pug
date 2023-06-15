@@ -37,19 +37,20 @@ block channel_cont
                 // Comment Section variables = [{author:"",date:"",text:""}]
                 .relative.w-full.overflow-y-auto(class='h-[20rem]')
                   h2.my-4.ml-6.text-lg.text-gray-600.font-bold.text-gray-600(class="dark:text-gray-200") Secção dos Comentários
-                  each comment in announcement.comments
-                    section.bg-white.py-4.ml-6(class="dark:bg-gray-800 dark:border-gray-700 dark:text-white")
-                      .max-w-2xl.px-4.border.rounded-3xl.border-r.border-gray-400
-                          .mb-1.text-base.mt-2
-                            footer.flex.justify-between.mb-2
-                              .flex.items-center
-                                p.inline-flex.items-center.mr-3.text-sm.text-gray-900(class="dark:text-gray-200")
-                                  | #{comment.commenter}
-                                p.text-sm.text-gray-600
-                                  | #{comment.date}
-                            p
-                              | #{comment.comment}
-                
+                  if announcement.comments
+                    each comment in announcement.comments
+                      section.bg-white.py-4.ml-6(class="dark:bg-gray-800 dark:border-gray-700 dark:text-white")
+                        .max-w-2xl.px-4.border.rounded-3xl.border-r.border-gray-400
+                            .mb-1.text-base.mt-2
+                              footer.flex.justify-between.mb-2
+                                .flex.items-center
+                                  p.inline-flex.items-center.mr-3.text-sm.text-gray-900(class="dark:text-gray-200")
+                                    | #{comment.commenter}
+                                  p.text-sm.text-gray-600
+                                    | #{comment.date}
+                              p
+                                | #{comment.comment}
+                  
                 .flex.items-center.justify-between.w-full.p-3.border-gray-300
                     form(id="commentForm" method="POST" action="/channel/posts/addcomment?announcement="+announcement._id+"&channel="+channel._id)
                     button

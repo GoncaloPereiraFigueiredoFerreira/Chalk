@@ -12,19 +12,19 @@ let User = require("../../controllers/users")
 router.get("/user/:userID", function(req,res,next){
     let user = req.params.userID;
     User.getUserSubscriptions(user).then(subs=>{
-      
       promisses = []
-      for(let sub of subs.subscribed){
-        promisses.push(Announcements.getAnnTitlesChannel(sub))
+      for(let sub of subs){
+        promisses.push(Announcements.getAnnTitlesChannel(sub._id))
       }
       Promise.all(promisses).then(results=>{
-        let ann = []
-        for (let posts of results){
-          posts.forEach(p => {
-            ann.push(p)
-          });}
-
-        res.status(200).jsonp(ann).end()}).catch((err)=>{console.log(err);res.sendStatus(500)})
+        let anns = []
+        for(let i in subs){
+            let ann={}
+            ann.channel={name:subs[i].name,_id:subs[i]._id}
+            ann.posts = results[i]
+            anns.push(ann)
+        }
+        res.status(200).jsonp(anns).end()}).catch((err)=>{console.log(err);res.sendStatus(500)})
     })
 })
 

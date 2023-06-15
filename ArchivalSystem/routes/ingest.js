@@ -67,10 +67,11 @@ router.post("/newdir",function(req,res){
 
 
 router.post("/newchannel",function(req,res){
-  return Channels.createNewChannel(req.body.channel).then(()=>{
-    res.sendStatus(200)
+  return Channels.createNewChannel(req.body.channel).then((result)=>{
+    res.status(200).jsonp(result).end()
 
 }).catch((err)=>{
+  console.log(err)
     //ver erro e responder em conformidade
     res.sendStatus(500)
 })
@@ -100,6 +101,7 @@ router.post("/addsubscription",function(req,res){
         ]).then(()=>{
           res.sendStatus(200)
         }).catch((err)=>{
+          console.log(err)
           //ver erro e responder em conformidade
           res.sendStatus(500)
       })
