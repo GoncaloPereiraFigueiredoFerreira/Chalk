@@ -1,4 +1,5 @@
 let User= require("../models/user")
+let Channel = require("../models/channel")
 
 module.exports.getUsers = ()=>{
     return User.find()
@@ -14,7 +15,19 @@ module.exports.remUsers = ()=>{
 }
 
 module.exports.getUserSubscriptions = (user)=>{
-    return User.findOne({"email":user},{subscribed:1})
+    return new Promise((resolve,reject)=>{
+      User.findOne({"email":user},{subscribed:1}).then(result=>{
+       
+        let promises=[]
+        for(let sub of result.subscribed){
+          promises.push(Channel.find({_id:sub},{name:1}))
+        }
+        Promise.all(promises).then((results)=>{
+          if (results.length==0) resolve([])
+          else resolve(results[0])
+        }).catch(err=>console.log(err))
+    }).catch(err=>console.log(err))
+    }) 
 }
 
 module.exports.addSubscription = (user,channelID)=>{
@@ -29,8 +42,6 @@ module.exports.remSubscription = (user,channelID)=>{
 module.exports.createUser=(user)=>{
   return User.create({
       email: user.email,
-      first_name:user.first_name,
-      last_name:user.last_name,
       subscribed:[],
       publisher:[]
   })

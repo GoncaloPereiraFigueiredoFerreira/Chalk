@@ -4,11 +4,11 @@ extends base
 block channel_cont
     .block.w-full.border-gray-200.rounded-lg.shadow.bg-white(class="dark:bg-gray-800")
       h1.p-4.text-xl(class="dark:text-white") Create a new Announcement:
-      form.p-8
+      form.p-8(method="POST")
    
         .mb-6
-          label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Announcement Title:
-          input#title.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Subject of the Announcement' required=true)
+          label.block.mb-2.text-sm.font-medium.text-gray-900(for='title' class='dark:text-white') Announcement Title:
+          input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(name="title" type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Subject of the Announcement' required=true)
         
         .mb-6  
           label.block.mb-2.text-sm.font-medium.text-gray-900(for='editor' class='dark:text-white') Post:
@@ -36,7 +36,7 @@ block channel_cont
                     svg.w-5.h-5(aria-hidden='true' fill='currentColor' viewbox='0 0 20 20' xmlns='http://www.w3.org/2000/svg')
                       path(fill-rule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z' clip-rule='evenodd')
                     span.sr-only Add emoji            
-            textarea#post-text.block.w-full.text-sm.text-gray-800.bg-white.border-0(rows='8' class='dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400' placeholder='' required='')
+            textarea.block.w-full.text-sm.text-gray-800.bg-white.border-0(name="content" rows='8' class='dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400' placeholder='' required='')
 
        
         .flex.items-start.mb-6

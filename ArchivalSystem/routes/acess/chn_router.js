@@ -17,9 +17,17 @@ router.get("/search/:keywords", function(req,res,next){
  *  Channel Information
  */
 router.get("/info/:channel",function(req,res){
-    Channel.getChannelInfo(req.params.channel).then((result)=>{
-        res.status(200).jsonp(result).end()
-  })
+    let user = req.query.user
+      Channel.getChannelInfo(req.params.channel).then((result)=>{
+        if (result!=undefined){
+        let msg={
+          _id:result._id,banner:result.banner,name:result.name,publishers:result.publishers,subscribed:result.consumers.includes(user)
+        }
+        res.status(200).jsonp(msg).end()}
+        else{
+          res.status(404).end()
+        }
+      }) 
 })
 
 /**

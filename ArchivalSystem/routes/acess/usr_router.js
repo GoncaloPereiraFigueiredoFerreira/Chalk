@@ -4,8 +4,11 @@ var User = require("../../controllers/users")
 
 // List of subscription
 router.get("/subscriptions/:user", function (req,res){
-    User.getUserSubscriptions().then(results=>{
+    User.getUserSubscriptions(req.params.user).then(results=>{
         res.status(200).jsonp(results).end()
+    }).catch((err)=>{
+        console.log(err)
+        res.status(200).end()
     })
 })
 

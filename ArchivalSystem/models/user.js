@@ -6,14 +6,6 @@ let userSchema = new mongoose.Schema({
       required: true,
       unique: true
   },
-   first_name:{
-      type:String,
-      required: true
-   },
-   last_name:{
-      type:String,
-      required: true
-   },
   subscribed:{
       type:[String],
       required: true,

@@ -18,16 +18,11 @@ block body
                   .pt-2
                       ul.space-y-2.font-medium
                         li
-                          a.flex.items-center.p-2.text-gray-900.rounded-lg(href='/dashboard' class='dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700')
+                          a.flex.items-center.p-2.text-gray-900.rounded-lg(href='/' class='dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700')
                             svg.w-6.h-6.text-gray-500.transition.duration-75(aria-hidden='true' class='dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white' fill='currentColor' viewbox='0 0 20 20' xmlns='http://www.w3.org/2000/svg')
                               path(d='M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z')
                               path(d='M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z')
                             span.ml-3 Dashboard
-                        li
-                          a.flex.items-center.p-2.text-gray-900.rounded-lg(href='/channel/announcements' class='dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700')
-                            svg.flex-shrink-0.w-6.h-6.text-gray-500.transition.duration-75(aria-hidden='true' class='dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white' fill='currentColor' viewbox='0 0 20 20' xmlns='http://www.w3.org/2000/svg')
-                              path(d='M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z')
-                            span.flex-1.ml-3.whitespace-nowrap Anúncios
                         li
                           button.flex.items-center.w-full.p-2.text-gray-900.transition.duration-75.rounded-lg.group(type='button' class='hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700' aria-controls='dropdown-example' data-collapse-toggle='dropdown-example')
                             svg.flex-shrink-0.w-6.h-6.text-gray-500.transition.duration-75(aria-hidden='true' class='group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white' fill='currentColor' viewbox='0 0 20 20' xmlns='http://www.w3.org/2000/svg')
@@ -45,7 +40,7 @@ block body
                   .mt-auto
                       ul.items-end.align-bottom.pt-4.pb-6.space-y-2.font-medium.border-t.border-gray-200(class='dark:border-gray-700')
                         li
-                          a.flex.items-center.p-2.text-gray-900.transition.duration-75.rounded-lg.group(href='#' class='hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white')
+                          a.flex.items-center.p-2.text-gray-900.transition.duration-75.rounded-lg.group(href='/logout' class='hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white')
                             svg.flex-shrink-0.w-5.h-5.text-gray-500.transition.duration-75(aria-hidden='true' class='group-hover:text-gray-900 dark:group-hover:text-white dark:text-gray-400' focusable='false' data-prefix='fas' data-icon='gem' role='img' xmlns='http://www.w3.org/2000/svg' viewbox='0 0 512 512')
                               path(fill='currentColor' d='M378.7 32H133.3L256 182.7L378.7 32zM512 192l-107.4-141.3L289.6 192H512zM107.4 50.67L0 192h222.4L107.4 50.67zM244.3 474.9C247.3 478.2 251.6 480 256 480s8.653-1.828 11.67-5.062L510.6 224H1.365L244.3 474.9z')
                             span.ml-4 Sign Out
@@ -94,20 +89,20 @@ block body
                         div
                           button.flex.text-sm.bg-gray-800.rounded-full(type='button' class='focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600' aria-expanded='false' data-dropdown-toggle='dropdown-user')
                             span.sr-only Open user menu
-                            img.w-8.h-8.rounded-full(src='https://flowbite.com/docs/images/people/profile-picture-5.jpg' alt='user photo')
+                            img.w-8.h-8.rounded-full(src='https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-photo-183042379.jpg' alt='user photo')
                         #dropdown-user.z-50.hidden.my-4.text-base.list-none.bg-white.divide-y.divide-gray-100.rounded.shadow(class='dark:bg-gray-700 dark:divide-gray-600')
                           .px-4.py-3(role='none')
                             p.text-sm.text-gray-900(class='dark:text-white' role='none')
-                              | Neil Sims
+                              | #{user.first_name}  #{user.last_name}
                             p.text-sm.font-medium.text-gray-900.truncate(class='dark:text-gray-300' role='none')
-                              | neil.sims@flowbite.com
+                              | #{user.username}
                           ul.py-1(role='none')
                             li
-                              a.block.px-4.py-2.text-sm.text-gray-700(href='/dashboard' class='hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white' role='menuitem') Dashboard
+                              a.block.px-4.py-2.text-sm.text-gray-700(href='/' class='hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white' role='menuitem') Dashboard
                             li
                               a.block.px-4.py-2.text-sm.text-gray-700(href='/settings' class='hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white' role='menuitem') Settings
                             li
-                              a.block.px-4.py-2.text-sm.text-gray-700(href='#' class='hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white' role='menuitem') Sign out            
+                              a.block.px-4.py-2.text-sm.text-gray-700(href='/logout' class='hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white' role='menuitem') Sign out            
           // Page
           .pt-20.mt-3.pl-5.mr-5.mb-12
               block page
@@ -175,8 +170,7 @@ block body
                           for (let ch in channels){
                             if (channels[ch].name.indexOf(value)!=-1){
                                 shown+=1
-                                let a = $('<a>').attr("class","block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white").text(channels[ch].name)
-                                //por href para o canal
+                                let a = $('<a>').attr("href","/channel/"+channels[ch]._id).attr("class","block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white").text(channels[ch].name)
                                 $("#dropdownlist").append($('<li>').append(a))
                             } 
                           }

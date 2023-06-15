@@ -2,29 +2,35 @@ extends base
 
 
 block channel_cont
-  .grid.grid-cols-8.grid-rows-2.gap-4
+  .grid.grid-cols-8.grid-rows-3.gap-4
     
     // Announcement titles
-    .row-span-2.col-span-8(class='md:col-span-3  md:row-span-1')
+    .col-span-8(class='md:col-span-3  md:row-start-1')
       .p-4.bg-white.border.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
         .flex.items-center.justify-between.mb-4
           h5.text-xl.font-bold.leading-none.text-gray-900(class='dark:text-white') Announcements
           div
-            a.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/announcements' class='hover:underline dark:text-blue-500')
+            a.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/posts/'+channel._id class='hover:underline dark:text-blue-500')
               | View all
-            // if user level == admin
-            a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/'+channel._id+'/addpost' class='hover:underline dark:text-blue-500')
-              | Add Post
+            if channel.publishers.includes(user.username)
+              a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/'+channel._id+'/addpost' class='hover:underline dark:text-blue-500')
+                | Add Post
         .flow-root
           ul.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
             each ann in titles 
               li.py-3(class='sm:py-4')
-                .flex.items-center.space-x-4
-                  a.text-sm.font-medium.text-gray-900.truncate(href="/channel/posts/"+channel._id+"?post="+ann._id class='hover:underline dark:text-blue-500')
-                    | #{ann.title}
+                .flex.items-center.space-x-4.justify-between
+                  div
+                    a.text-gray-900.truncate(href="/channel/posts/"+channel._id+"?post="+ann._id class='hover:underline dark:text-blue-500')
+                      | #{ann.title}
+                    p.mt-2.text-xs.text-gray-600.truncate(class="dark:text-white")
+                      | Por: #{ann.publisher}
+
+                  p.text-sm.font-medium.text-gray-900.truncate(class="dark:text-white")
+                    | #{ann.date}
 
     // Content Tab
-    .col-span-8.row-span-2(class='md:col-span-5')
+    .col-span-8(class='md:col-start-4 md:col-end-9 md:row-start-1 md:row-end-3')
       .mb-5.flex.items-center.justify-between
         h5.text-2xl.font-bold.leading-none.text-gray-900(class='dark:text-white') Content
         label.sr-only(for='table-search') Search
@@ -43,21 +49,34 @@ block channel_cont
             nav.flex.items-center.justify-between.px-5.py-3.text-gray-800.bg-gray-50(class='dark:bg-gray-800 dark:border-gray-700')
               ol.inline-flex.items-center.space-x-1(class='md:space-x-3' id="dirnav")
 
-              // if user level == admin
-              a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/uploadfile' class='hover:underline dark:text-blue-500')
-                | Add File
+              if channel.publishers.includes(user.username)
+                a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/uploadfile' class='hover:underline dark:text-blue-500')
+                  | Add File
 
           tbody
     
     // Important Dates
-    .row-span-2.col-span-8(class='md:col-span-3  md:row-span-1')
+    .row-span-2.col-span-8(class='md:col-span-3  md:row-start-2')
       .w-full.p-4.bg-white.border.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
         .flex.items-center.justify-between.mb-4
           h5.text-xl.font-bold.leading-none.text-gray-900(class='dark:text-white') Important Dates
 
-          // if user level == admin
-          a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/'+channel._id+'/adddate' class='hover:underline dark:text-blue-500')
-            | Add date
+          if channel.publishers.includes(user.username)
+            a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/'+channel._id+'/adddate' class='hover:underline dark:text-blue-500')
+              | Add date
+
+        .flow-root
+          ul.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
+            each date in dates
+              li.py-3(class='sm:py-4')
+                .flex.items-center.space-x-4
+                  p.text-sm.font-medium.text-gray-900.truncate(class="dark:text-white")
+                    | #{date.date}
+                  p.font-medium.text-gray-900.truncate(class="dark:text-white")
+                    | #[strong #{date.title}]
+                p.mt-1.text-xs.text-gray-600.truncate(class="dark:text-white")
+                    | #{date.description}
+          
 
 
   script.
@@ -77,7 +96,7 @@ block channel_cont
               $("ol").append(li.append(a.append(home).append($("<span>").text(currP))))
           }
           else {
-            let arrow= $("<object>").attr("class","w-4 h-4 mr-2 dark:invert").attr("data",'/images/svgs/arrow-right.svg').attr("type",'image/svg+xml')
+            let arrow= $("<span>").attr("class","mr-2 font-medium").text(">")
             $("ol").append(li.append([arrow, a.text(currP)]))
           }
            
@@ -91,11 +110,11 @@ block channel_cont
         if (file.type == "dir"){
           let tag = $('<td>').attr("class", "flex items-center ml-64").append($("<div>").attr("class","border rounded-lg p-1").text("Directory"))
           let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row").text(i)
-          let tr = $('<tr>').attr("data-directory",i).attr("class","flex bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
+          let tr = $('<tr>').attr("data-directory",i).attr("class","cursor-pointer flex bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
           tableRows.append(tr.append(name).append(tag))
         } 
         else if (file.type == "file"){
-          let tr = $('<tr>').attr("class","flex justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
+          let tr = $('<tr>').attr("class","flex cursor-pointer justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
           let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row").text(i)
           let format = $('<td>').attr("class","px-6 py-4").text(file.format)
           let tags = $('<td>').attr("class","px-6 py-4").text("TAGS")

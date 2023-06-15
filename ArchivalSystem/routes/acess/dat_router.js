@@ -12,18 +12,20 @@ router.get("/channel/:chnID",(req,res)=>{
     })
 })
 
-router.get("/user/:chnID",(req,res)=>{
-    User.getUserSubscriptions().then(results=>{
+router.get("/user/:user",(req,res)=>{
+    User.getUserSubscriptions(req.params.user).then(subs=>{
         let promisses = []
-        for (let sub in results.subscribed){
-          promisses.push(Dates.findByChannel(sub))
+        for (let sub of subs){
+          promisses.push(Dates.findByChannel(sub._id))
         }
         Promise.all(promisses).then((results)=>{
           let dates = []
-          for (let posts of results){
-            posts.forEach(p => {
-              dates.push(p)
-            });}
+          for(let i in subs){
+              let date = {}
+              date.channel= {name:subs[i].name,_id:subs[i]._id}
+              date.dates = results[i]
+              dates.push(date)
+          }
           res.status(200).jsonp(dates).end()}).catch((err)=>{console.log(err);res.sendStatus(500)})
       })
     })

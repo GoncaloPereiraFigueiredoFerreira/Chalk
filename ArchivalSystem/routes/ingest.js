@@ -4,7 +4,7 @@ var Users = require("../controllers/users")
 var Channels = require("../controllers/channel");
 var Announcements = require('../controllers/announcements');
 var Metadata = require('../controllers/metadata');
-
+var Dates = require("../controllers/important_dates")
 
 
 router.post("/uploadfile", function(req,res){
@@ -16,13 +16,23 @@ router.post("/uploadfile", function(req,res){
           .catch((err) => {console.log(err); res.sendStatus(500)})
 })
 
+router.post("/newdate",function(req,res){
+  return Dates.createImportantDate(req.body.date).then(()=>{
+    res.sendStatus(200)
+  }).catch((err)=>{
+      //ver erro e responder em conformidade
+      console.log(err)
+      res.sendStatus(500)
+  })
+})
+
 router.post("/newpost",function(req,res){
     //Should check if user is compatible with channel, and existance of channel and user
     return Announcements.createNewAnn(req.body.user,req.body.announcement).then(()=>{
       res.sendStatus(200)
-
     }).catch((err)=>{
         //ver erro e responder em conformidade
+        console.log(err)
         res.sendStatus(500)
     })
 })
@@ -30,7 +40,6 @@ router.post("/newpost",function(req,res){
 router.post("/newcomment",function(req,res){
   return Announcements.addComment(req.body.user,req.body.announcement, req.body.content).then(()=>{
     res.sendStatus(200)
-
     }).catch((err)=>{
         //ver erro e responder em conformidade
         console.log(err)
@@ -42,7 +51,6 @@ router.post("/newcomment",function(req,res){
 router.post("/addFile",function(req,res){
   return Channels.addFile(req.body.channel,req.body.path,req.body.file).then(()=>{
     res.sendStatus(200)
-
 }).catch((err)=>{
     //ver erro e responder em conformidade
     console.log(err)
@@ -65,10 +73,11 @@ router.post("/newdir",function(req,res){
 
 
 router.post("/newchannel",function(req,res){
-  return Channels.createNewChannel(req.body.channel).then(()=>{
-    res.sendStatus(200)
+  return Channels.createNewChannel(req.body.channel).then((result)=>{
+    res.status(200).jsonp(result).end()
 
 }).catch((err)=>{
+  console.log(err)
     //ver erro e responder em conformidade
     res.sendStatus(500)
 })
@@ -76,11 +85,12 @@ router.post("/newchannel",function(req,res){
 })
 
 router.post("/newaccount",function(req,res){
-  return Users.createUser(req.body.user).then(()=>{
+  return Users.createUser(req.body).then(()=>{
       res.sendStatus(200)
 
   }).catch((err)=>{
       //ver erro e responder em conformidade
+      console.log(err)
       res.sendStatus(500)
   })
 })
@@ -97,6 +107,7 @@ router.post("/addsubscription",function(req,res){
         ]).then(()=>{
           res.sendStatus(200)
         }).catch((err)=>{
+          console.log(err)
           //ver erro e responder em conformidade
           res.sendStatus(500)
       })
