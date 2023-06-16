@@ -2,39 +2,40 @@ extends base
     
 block page
     // Image
-    .m-16.mb-2.mt-4.p-4.bg-white.border.border-gray-200.rounded-lg.flex
+    .m-16.mb-2.mt-4.p-4.bg-white.border.border-gray-200.rounded-lg.flex(class= 'dark:bg-gray-800 dark:border-gray-700')
       
       img.mt-4.w-36.rounded-full(src="https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-photo-183042379.jpg")
       .mt-10.ml-6.w-full.flex.justify-between
-        h1.text-4xl Welcome #{user.first_name} #{user.last_name}!
-        .mt-16.ml-4
+        h1.text-4xl(class='dark:text-white') Welcome #{user.first_name} #{user.last_name}!
+        .mt-16.ml-4(class='dark:text-white')
           p #[a(href="/createChannel") Criar canal]
           p #[a(href="#") Editar Perfil]
 
     .mt-4.mr-16.ml-16
       .grid.grid-cols-5.gap-2
-        .col-start-1.bg-white.rounded-lg.pb-64
+        .col-start-1.bg-white.rounded-lg.pb-64(class= 'dark:bg-gray-800 dark:border-gray-700')
           .m-4
-            h2.text-3xl Channels
+            h2.text-3xl(class='dark:text-white') Channels
             .ml-4
-              h4 Subscribed to:
+            if subchannels.length !=0
+              h4(class='dark:text-white') Subscribed to:
               ul.ml-4.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
                 each sub in subchannels
                   li.py-3(class='sm:py-4')
                     .flex.items-center.space-x-4
-                      a.text-sm.font-medium.text-gray-900.truncate(href="/channel/"+sub._id) #{sub.name}
-              
-              h4 Managed:
-              ul.ml-4.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
+                      a.text-sm.font-medium.text-gray-900.truncate(href="/channel/"+sub._id class='dark:text-white') #{sub.name}
+            if pubchannels.length !=0  
+              h4(class='dark:text-white') Managed:
+              ul.ml-4.divide-y.divide-gray-200(role='list' class='dark:divide-gray-400')
                 each sub in pubchannels
                   li.py-3(class='sm:py-4')
                     .flex.items-center.space-x-4
-                      a.text-sm.font-medium.text-gray-900.truncate(href="/channel/"+sub._id) #{sub.name}
+                      a.text-sm.font-medium.text-gray-900.truncate(href="/channel/"+sub._id class='dark:text-white') #{sub.name}
 
-        .col-start-2.col-span-3.bg-white.rounded-lg
+        .col-start-2.col-span-3.bg-white.rounded-lg(class= 'dark:bg-gray-800 dark:border-gray-700')
           .m-4
-            h2.text-3xl Announcements
-            ul.ml-4.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
+            h2.text-3xl(class='dark:text-white') Announcements
+            ul.ml-4.divide-y.divide-gray-200(role='list' class='dark:divide-gray-400')
               each chn in anns
                 h3.mt-2.text-xl #{chn.channel.name}
                 each post in chn.posts
@@ -48,19 +49,19 @@ block page
                       p.text-sm.font-medium.text-gray-900.truncate(class="dark:text-white")
                         | #{post.date}
              
-        .col-start-5.bg-white.rounded-lg
+        .col-start-5.bg-white.rounded-lg(class= 'dark:bg-gray-800 dark:border-gray-700')
           .m-4
-            h2.text-3xl Important Dates
-            ul.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
-              each chn in dates
-                h3.mt-2.text-xl #{chn.channel.name}
-                each date in chn.dates
+            h2.text-3xl(class='dark:text-white') Important Dates
+            ul.divide-y.divide-gray-200(role='list' class='dark:divide-gray-400')
+              each date in dates
                   li.py-3(class='sm:py-4')
-                      .flex.items-center.space-x-4
-                        p.text-sm.font-medium.text-gray-900.truncate(class="dark:text-white")
-                          | #{date.date}
+                    .flex.items-center.justify-between
+                      h3.mt-2.text-xl.font-medium(class='dark:text-white') #{date.channel}
+                      .overflow-hidden.w-32
                         p.font-medium.text-gray-900.truncate(class="dark:text-white")
-                          | #[strong #{date.title}]
-                      p.mt-2.text-xs.font-medium.text-gray-600.truncate(class="dark:text-white")
-                          | #{date.description}
+                          | #{date.date.title}
+                        p.mt-2.text-xs.font-medium.text-gray-600.truncate(class="dark:text-white")
+                          | #{date.date.description}
+                      p.text-sm.font-medium.text-gray-900.truncate(class="dark:text-white")
+                        | #{date.date.date}
               
