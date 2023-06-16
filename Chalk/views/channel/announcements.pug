@@ -6,20 +6,42 @@ block channel_cont
         .bg-white.w-full.mb-12.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
           .grid.grid-cols-4
             
-            // Ann title list variables: titles = [{title:"",date:"",publisher:""}]
+            // Announcement titles
             .border-r.border-gray-300.col-span-4(class='lg:col-span-1')
               ul.overflow-auto(class='h-[32rem]')
-                h2.pb-6.text-3xl.text-gray-600.border-b.border-gray-300(class='dark:text-white') Announcements
+                .flex.justify-between.items-center.pb-6.border-b.border-gray-300
+                  h2.text-3xl.text-gray-600(class='dark:text-white') Announcements
+                  if channel.publishers.includes(user.username)
+                    a.mt-2.mr-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/'+channel._id+'/addpost' class='hover:underline dark:text-blue-500')
+                      | Add Post
                 each ann in titles
-                  li
-                    a.flex.items-center.px-1.py-2.text-sm.transition.duration-150.ease-in-out.border-b.border-gray-300.cursor-pointer(href="/channel/posts/"+channel._id+"?post="+ann._id class='hover:bg-gray-100 focus:outline-none dark:hover:bg-gray-700')
-                      .w-full.pb-2(class='dark:text-white')
-                        .flex.justify-between
-                          span.block.ml-2.font-bold #{ann.title}
-                          span.block.ml-2.text-sm #{ann.date}
-                        span.block.ml-2.text-sm #{ann.publisher}
+                  li.flex.justify-between.overflow-hidden.transition.duration-150.ease-in-out.border-b.border-gray-300(class='hover:bg-gray-100 focus:outline-none dark:hover:bg-gray-700')
+                      a.w-full.flex.items-center.px-1.py-2.text-sm(href="/channel/posts/"+channel._id+"?post="+ann._id )
+                        .w-full.pb-2(class='dark:text-white')
+                          .flex.justify-between
+                            span.block.ml-2.font-bold #{ann.title}
+                            span.block.ml-2.text-sm #{ann.date}
+                          .flex.justify-between
+                            span.block.ml-2.text-sm #{ann.publisher} 
+                      if channel.publishers.includes(user.username)            
+                        .flex.justify-end.mr-4
+                          a(href="/channel/posts/"+channel._id+"/edit?post="+ann._id).w-12     
+                            svg(style="pointer-events: all;" fill='#000000' height='64px' width='64px' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewbox='-348.88 -348.88 1046.64 1046.64' xml:space='preserve')
+                              g(stroke-width='0')
+                                g(stroke-linecap='round' stroke-linejoin='round')
+                                  g
+                                    g
+                                      path(d='M333.988,11.758l-0.42-0.383C325.538,4.04,315.129,0,304.258,0c-12.187,0-23.888,5.159-32.104,14.153L116.803,184.231 c-1.416,1.55-2.49,3.379-3.154,5.37l-18.267,54.762c-2.112,6.331-1.052,13.333,2.835,18.729c3.918,5.438,10.23,8.685,16.886,8.685 c0,0,0.001,0,0.001,0c2.879,0,5.693-0.592,8.362-1.76l52.89-23.138c1.923-0.841,3.648-2.076,5.063-3.626L336.771,73.176 C352.937,55.479,351.69,27.929,333.988,11.758z M130.381,234.247l10.719-32.134l0.904-0.99l20.316,18.556l-0.904,0.99 L130.381,234.247z M314.621,52.943L182.553,197.53l-20.316-18.556L294.305,34.386c2.583-2.828,6.118-4.386,9.954-4.386 c3.365,0,6.588,1.252,9.082,3.53l0.419,0.383C319.244,38.922,319.63,47.459,314.621,52.943z')
+                                      path(d='M303.85,138.388c-8.284,0-15,6.716-15,15v127.347c0,21.034-17.113,38.147-38.147,38.147H68.904 c-21.035,0-38.147-17.113-38.147-38.147V100.413c0-21.034,17.113-38.147,38.147-38.147h131.587c8.284,0,15-6.716,15-15 s-6.716-15-15-15H68.904c-37.577,0-68.147,30.571-68.147,68.147v180.321c0,37.576,30.571,68.147,68.147,68.147h181.798 c37.576,0,68.147-30.571,68.147-68.147V153.388C318.85,145.104,312.134,138.388,303.85,138.388z')
+                          a(href="/channel/posts/"+channel._id+"/delete?post="+ann._id).w-12   
+                            svg(width='64px' height='64px' viewbox='-798.72 -798.72 2621.44 2621.44' xmlns='http://www.w3.org/2000/svg' fill='#000000' stroke='#000000')
+                              g#SVGRepo_bgCarrier(stroke-width='0')
+                                g#SVGRepo_tracerCarrier(stroke-linecap='round' stroke-linejoin='round')
+                                  g#SVGRepo_iconCarrier
+                                    path(fill='#ff0000' d='M195.2 195.2a64 64 0 0 1 90.496 0L512 421.504 738.304 195.2a64 64 0 0 1 90.496 90.496L602.496 512 828.8 738.304a64 64 0 0 1-90.496 90.496L512 602.496 285.696 828.8a64 64 0 0 1-90.496-90.496L421.504 512 195.2 285.696a64 64 0 0 1 0-90.496z')
+
             
-            // Complete Ann : announcement
+            // Complete Ann
             .block.col-span-4(class='lg:col-span-3')
               .w-full
                 .relative.flex.p-3.border-b.border-gray-300

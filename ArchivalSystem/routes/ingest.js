@@ -74,7 +74,7 @@ router.post("/newdir",function(req,res){
 
 router.post("/newchannel",function(req,res){
   return Channels.createNewChannel(req.body.channel).then((result)=>{
-    Users.addPublisher(req.body.channel.publishers[0],result).then(()=>{
+    Users.addPublisher(req.body.channel.publishers[0],result._id).then(()=>{
       res.status(200).jsonp(result).end()
   })
     

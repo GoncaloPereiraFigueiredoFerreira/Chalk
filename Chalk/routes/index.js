@@ -54,7 +54,6 @@ router.get('/',verifyAuthentication,(req, res, next) =>{
   promises.push(axios.get(archive_location+"/acess/posts/user/"+req.user.username))
   promises.push(axios.get(archive_location+"/acess/dates/user/"+req.user.username))
   Promise.all(promises).then((results)=>{
-    console.log(results[1].data)
 
     res.render('dashboard',{
             user:req.user,
@@ -180,7 +179,8 @@ router.get("/channel/:chID",verifyAuthentication,(req, res, next)=>{
 
 /// Forms
 router.get("/createChannel",verifyAuthentication,(req,res,next)=>{
-  res.render("createChn_form",{user:req.user})
+  
+  res.render("createChn_form",{user:req.user,defaultV:{},edit:false})
 })
 
 router.post("/createChannel",verifyAuthentication,(req,res,next)=>{
@@ -190,19 +190,40 @@ router.post("/createChannel",verifyAuthentication,(req,res,next)=>{
   })
 })
 
+router.get("/channel/:chID/edit",verifyAuthentication,(req,res,next)=>{
+  axios.get(archive_location+"/acess/channel/info/"+chn).then((response)=>{
+    res.render("createChn_form",{user:req.user,defaultV:response.data,edit:true})
+  })
+})
+
+router.post("/channel/:chID/edit",verifyAuthentication,(req,res,next)=>{
+  let id = req.params.chID
+  axios.put(archive_location+"/manage/channel/"+id,{channel:req.body}).then((response)=>{
+    res.redirect("/channel/"+id)
+  })
+})
+
+router.get("/channel/:chID/delete",verifyAuthentication,(req,res,next)=>{
+  let id = req.params.chID
+  axios.delete(archive_location+"/manage/channel/"+id).then((response)=>{
+    res.redirect("/")
+  })
+})
+
+
 
 router.get("/channel/:chID/addpost",verifyAuthentication,(req,res,next)=>{
   let chn = req.params.chID
   axios.get(archive_location+"/acess/channel/info/"+chn+"?user="+req.user.username).then((resp)=>{
     req.user.subscribed=resp.data.subscribed
-    res.render("channel/create_post",{user:req.user,channel:resp.data})
+    res.render("channel/create_post",{user:req.user,channel:resp.data,defaultV:{},edit:false})
   })
 });
 
 router.post("/channel/:chID/addpost",verifyAuthentication,(req,res,next)=>{
   axios.post(archive_location+"/ingest/newpost",
   {
-    user:req.user.username,
+    user:req.user.first_name + " " + req.user.last_name,
     announcement:{
       title:req.body.title,
       content:req.body.content,
@@ -213,6 +234,34 @@ router.post("/channel/:chID/addpost",verifyAuthentication,(req,res,next)=>{
       res.redirect("/channel/"+req.params.chID)
   }).catch((err)=>{
 
+  })
+});
+
+
+router.get("/channel/posts/:chID/edit",verifyAuthentication,(req,res,next)=>{
+  let chn = req.params.chID
+  let ann = req.query.post
+  axios.get(archive_location+"/acess/channel/info/"+chn).then((resp)=>{
+    axios.get(archive_location+"/acess/posts/"+ann).then((resp2)=>{
+      res.render("channel/create_post",{user:req.user,channel:resp.data,defaultV:resp2.data,edit:true})
+    })  
+  })
+});
+
+router.post("/channel/posts/:chID/edit",verifyAuthentication,(req,res,next)=>{
+    let ann = req.query.post
+    console.log(ann)
+    axios.put(archive_location+"/manage/posts/"+ann,req.body).then(()=>{
+      res.redirect("/channel/"+req.params.chID)
+    })
+
+});
+
+router.get("/channel/posts/:chID/delete",verifyAuthentication,(req,res,next)=>{
+  let ann = req.query.post
+  console.log(ann)
+  axios.delete(archive_location+"/manage/posts/"+ann).then(()=>{
+    res.redirect("/channel/"+req.params.chID)
   })
 });
 
@@ -242,6 +291,15 @@ router.post("/channel/:chID/adddate",verifyAuthentication,(req,res,next)=>{
 
 });
 
+router.get("/channel/:chID/remdate",verifyAuthentication,(req,res,next)=>{
+  let date = req.query.date
+  axios.delete(archive_location+"/manage/dates/"+date).then(()=>{
+    res.redirect("/channel/"+req.params.chID)
+  })
+});
+
+
+
 router.post("/channel/posts/addcomment",verifyAuthentication,(req,res,next)=>{
 
   axios.post(archive_location+"/ingest/newcomment",
@@ -256,6 +314,7 @@ router.post("/channel/posts/addcomment",verifyAuthentication,(req,res,next)=>{
   }).catch((err)=>{
   })
 });
+
 
 
 router.get("/channel/:chID/subscribe",verifyAuthentication,(req,res,next)=>{

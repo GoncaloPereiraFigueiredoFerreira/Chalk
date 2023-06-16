@@ -9,7 +9,6 @@ module.exports.existsUser = (email)=>{
     return User.exists({"email":email})
 }
 
-
 module.exports.remUsers = ()=>{
   return User.deleteMany()
 }
@@ -20,12 +19,11 @@ module.exports.getUserPublisher = (user)=>{
       let promises=[]
       if (result!=null){
         for(let sub of result.publisher){
-          promises.push(Channel.find({_id:sub},{name:1}))
+          promises.push(Channel.findOne({_id:sub},{name:1}))
         }
       }
       Promise.all(promises).then((results)=>{
-        if (results.length==0) resolve([])
-        else resolve(results[0])
+        resolve(results)
       }).catch(err=>console.log(err))
   }).catch(err=>console.log(err))
   }) 
@@ -38,12 +36,11 @@ module.exports.getUserSubscriptions = (user)=>{
         let promises=[]
         if (result!=null){
           for(let sub of result.subscribed){
-            promises.push(Channel.find({_id:sub},{name:1}))
+            promises.push(Channel.findOne({_id:sub},{name:1}))
           }
         }
         Promise.all(promises).then((results)=>{
-          if (results.length==0) resolve([])
-          else resolve(results[0])
+            resolve(results)
         }).catch(err=>console.log(err))
     }).catch(err=>console.log(err))
     }) 
@@ -60,8 +57,6 @@ module.exports.remSubscription = (user,channelID)=>{
 module.exports.addPublisher = (user,channelID)=>{
   return User.updateOne({"email":user},{$addToSet :{"publisher":channelID}})
 }
-
-
 
 module.exports.createUser=(user)=>{
   return User.create({
