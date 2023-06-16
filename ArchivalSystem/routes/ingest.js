@@ -8,11 +8,15 @@ var Dates = require("../controllers/important_dates")
 
 
 router.post("/uploadfile", function(req,res){
-  console.log('uploading file...')
   console.log(req.body)
 
-  return Metadata.addFileMetadata(req.body)
-          .then(() => res.sendStatus(200))
+  return Metadata.addFileMetadata(req.body.file)
+          .then((res_file) => { 
+            console.log(res_file)
+            Channels.addFile(req.body.channel,req.body.path,res_file._id)
+              .then(() => { res.sendStatus(200) })
+              .catch((err)=>{ console.log(err); res.sendStatus(500) })
+          })
           .catch((err) => {console.log(err); res.sendStatus(500)})
 })
 
@@ -49,13 +53,14 @@ router.post("/newcomment",function(req,res){
 
 
 router.post("/addFile",function(req,res){
+  console.log(req.body)
   return Channels.addFile(req.body.channel,req.body.path,req.body.file).then(()=>{
     res.sendStatus(200)
-}).catch((err)=>{
-    //ver erro e responder em conformidade
-    console.log(err)
-    res.sendStatus(500)
-})
+  }).catch((err)=>{
+      //ver erro e responder em conformidade
+      console.log(err)
+      res.sendStatus(500)
+  })
 })
 
 

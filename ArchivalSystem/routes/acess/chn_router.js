@@ -44,7 +44,7 @@ router.get("/contentTree/:channel",function(req,res){
             
             for (let d of directories){
                 if (!(d in current_tree)){
-                     current_tree[d] = {type:'dir',files:{}}
+                     current_tree[d] = {type:'dir', files:{}}
                 }
                 current_tree = current_tree[d]["files"]
             }
@@ -52,16 +52,14 @@ router.get("/contentTree/:channel",function(req,res){
             for (let file of dir.files){
               promisses.push(
                   Metadata.getFileMetadataByID(file).then((result)=>{
-                    current_tree[result.file_name] = result
+                    current_tree[result.file_name] = {type: 'file', metadata: result}
+                    return result
               }))
             }
-            outer_promisses.push(Promise.all(promisses).then((results)=>{
-                for (let metadata of results){
-                    current_tree[metadata.file_name] = metadata
-                }
-            }))
+
+            outer_promisses.push(Promise.all(promisses))
         }
-        Promise.all(outer_promisses).then(()=>res.status(200).jsonp(tree).end()) 
+        Promise.all(outer_promisses).then(()=> { res.status(200).jsonp(tree).end() }) 
     })
 })
 

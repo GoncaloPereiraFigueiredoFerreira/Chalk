@@ -1,5 +1,6 @@
 var express = require('express');
 var fs = require("fs")
+var archiver = require('archiver')
 var bagit = require('../bagit/bagit')
 
 const storageFolder = 'storage'
@@ -12,31 +13,39 @@ var router = express.Router();
 
 
 router.post("/uploadfile", upload.single('file'), function(req, res){
-  console.log('uploading file...')
-  console.log(req.body)
-  console.log(req.file)
-
   bagPath = __dirname + '/../' + req.file.path
-  mvPath = __dirname + '/../' + storageFolder + '/' + req.body.channel + '/' + req.body.checksum
+  mvPath = __dirname + '/../' + storageFolder + '/' + req.body.checksum
 
   // TODO: directory tree
   // TODO: check if dir exists
 
-  // TODO: fazer unpack para uma pasta específica para cada um
   extractionFolder = __dirname + '/../' + uploadFolder + '/' + req.file.filename
   bagit.unpack_bag(bagPath, extractionFolder, req.body.filename, mvPath)
-
-  // TODO: return result
+          .then(() => { console.log('im giving up on you'); res.sendStatus(200) })
+          .catch(err => { console.log(err); res.sendStatus(500) })
 })
 
-//app.get("/file/:filepath", (req,res)=>{
-//  res.sendFile("files/"+req.params.filepath)
-//})
+// TODO: fazer com POST?
+router.get("/file/:filepath", (req, res) => {
+  ogPath = __dirname + '/../' + storageFolder + '/' + req.params.filepath
 
-//app.post("/upload_files", upload.array("files"), uploadFiles);
-//function uploadFiles(req, res) {
-//    console.log(req.body);
-//    res.json({ message: "Successfully uploaded files" });
-//}
+  var archive = archiver('zip', {zlib: {level: 9}})
+  const promise = bagit.create_bag(archive, ogPath, req.params.filepath, __dirname + '/../bagit/bags/')
+  Promise.all([promise])
+    .then(([result]) => {
+      bagPath = __dirname + '/../bagit/bags/' + result + '.zip'
+      
+      if (fs.existsSync(bagPath)) {
+        res.writeHead(200, {
+          "Content-Type": "application/octet-stream",
+          "Content-Disposition": "attachment; filename=" + result + '.zip'
+        });
+        fs.createReadStream(bagPath, {encoding: 'binary'}).pipe(res);
+      }
+      else
+        res.sendStatus(500)
+    })
+    .catch(err => console.log(err))
+})
 
 module.exports = router;

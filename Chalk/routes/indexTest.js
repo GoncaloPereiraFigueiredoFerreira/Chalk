@@ -5,16 +5,18 @@ var axios = require("axios")
 
 var jwt = require("jsonwebtoken")
 var multer = require('multer')
-//var bagit = require('../../BagIt/bagit')
+var bagit = require('../bagit/bagit')
+var FormData = require('form-data');
 
 const uploadFolder = 'uploads'
-var upload = multer({dest: 'uploads'})
+var upload = multer({dest: uploadFolder})
 var archiver = require('archiver')
-var fs = require("fs")
-//var decompress = require('decompress')
+var fs = require("fs");
+const { channel } = require('diagnostics_channel');
 
 let auth_location = process.env.AUTH_SERVER
 let archive_location = process.env.ARCH_SERVER
+let storage_location = process.env.STORE_SERVER
 let public_key = ""
 
 
@@ -29,8 +31,6 @@ function verifyAuthentication(req,res,next){
     console.log(result)
     // req.username = result.username
 }
-
-
 
 router.get('/', function(req, res, next) {
     res.render('dashboard');
@@ -167,8 +167,81 @@ router.get("/channel/:id", (req,res)=>{
 
         res.render("channel_index",{"chn_info":chn_info,"chn_cont":chn_cont,"chn_ann":chn_ann})
     })
-
 })
+
+router.post("/uploadfile", upload.single('myFile'), function(req, res) {
+  // TODO: meter o channel correto com o routing
+  var canal = 'rpcw'
+
+  tags = []
+  i = 1
+  while(true){
+    var tag = 'tag' + i
+    if (tag in req.body){
+      tags.push(req.body[tag])
+    }
+    else
+      break
+    i += 1
+  }
+
+  var archive = archiver('zip', {zlib: {level: 9}})
+  const promise = bagit.create_bag(archive, __dirname + '/../' + req.file.path, req.body.filename, __dirname + '/../bagit/bags/')
+
+  Promise.all([promise])
+    .then(([checksum]) => {
+      // TODO: publisher
+      // TODO: then, catch do post
+      metadata = {
+        file_size: req.file.size,
+        publisher: 'a publisher',
+        file_name: req.body.filename,
+        file_type: req.file.mimetype,
+        location: canal + '/' + checksum,
+        checksum: checksum,
+        tags: tags
+      }
+      console.log(metadata)
+
+      file = fs.createReadStream(__dirname + '/../bagit/bags/' + checksum + '.zip')
+        //options: {
+        //  filename: metadata.location,
+        //  contentType: metadata.file_type
+        //
+      //}
+    
+      var form = new FormData()
+      form.append('file', file)
+      form.append('checksum', metadata.checksum)
+      form.append('filename', metadata.file_name)
+      form.append('channel', canal)
+    
+      axios.post(storage_location + '/uploadfile', form, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+      })
+      .then(response => {
+    
+      })
+      .catch(err => {
+    
+      })
+      res.redirect('/')
+    })
+    .catch(err => console.log(err))
+
+  /*
+  axios.post(archive_location + '/ingest/uploadfile', metadata)
+       .then(response => {
+
+       })
+       .catch(err => {
+
+       })
+  */
+
+});
 
 
 

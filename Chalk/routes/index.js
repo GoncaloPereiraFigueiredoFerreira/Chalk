@@ -3,8 +3,18 @@ const router = express.Router();
 const axios = require("axios")
 const jwt = require("jsonwebtoken")
 
+var FormData = require('form-data');
+var archiver = require('archiver')
+var bagit = require('../bagit/bagit')
+var multer = require('multer')
+const uploadFolder = 'uploads'
+const bagFolder = 'bagit/bags'
+var upload = multer({ dest: uploadFolder })
+var fs = require("fs");
+
 let auth_location = process.env.AUTH_SERVER
 let archive_location = process.env.ARCH_SERVER
+let storage_location = process.env.STORE_SERVER
 let public_key = ""
 let loggedIn = {}
 
@@ -18,8 +28,6 @@ function updatePublicKey(){
     }
     else{resolve()}
   })
-
-  
 }
 
 
@@ -47,7 +55,7 @@ function verifyAuthentication(req,res,next){
   }
 }
   
-router.get('/',verifyAuthentication,(req, res, next) =>{
+router.get('/', verifyAuthentication,(req, res, next) =>{
   let promises = []
   promises.push(axios.get(archive_location+"/acess/profile/subscriptions/"+req.user.username))
   promises.push(axios.get(archive_location+"/acess/posts/user/"+req.user.username))
@@ -274,5 +282,98 @@ router.get("/channel/:chID/unsubscribe",verifyAuthentication,(req,res,next)=>{
   }).then(()=>{res.redirect("back")})
   .catch((err)=>{})
 });
+
+
+router.get("/channel/:chID/addfile", verifyAuthentication, (req, res, next) => {
+  res.render("channel/upload_file", {
+      user: req.user,
+      channel: req.params.chID
+  })
+});
+
+router.post("/channel/:chID/addfile", verifyAuthentication, upload.single('myFile'), function(req, res) {
+  // TODO: meter o channel correto com o routing
+  tags = []
+  i = 1
+  while(true){
+    var tag = 'tag' + i
+    if (tag in req.body){
+      tags.push(req.body[tag])
+    }
+    else
+      break
+    i += 1
+  }
+
+  var archive = archiver('zip', {zlib: {level: 9}})
+  const promise1 = bagit.create_bag(archive, __dirname + '/../' + req.file.path, req.body.filename, __dirname + '/../bagit/bags/')
+
+  Promise.all([promise1])
+    .then(([checksum]) => {
+      // TODO: then, catch do post
+      metadata = {
+        file_size: req.file.size,
+        publisher: req.user.username,
+        file_name: req.body.filename,
+        file_type: req.file.mimetype,
+        location: checksum,
+        checksum: checksum,
+        tags: tags
+      }
+      console.log(metadata)
+
+      file = fs.createReadStream(__dirname + '/../bagit/bags/' + checksum + '.zip')
+    
+      var form = new FormData()
+      form.append('file', file)
+      form.append('checksum', metadata.checksum)
+      form.append('filename', metadata.file_name)
+    
+      axios.post(storage_location + '/uploadfile', form, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+      })
+        .then(response1 => {
+            axios.post(archive_location + '/ingest/uploadfile', {
+                'channel': req.params.chID,
+                'path': req.body.dir,
+                'file': metadata
+              }
+            )
+              .then(response2 => { res.redirect('/') })
+              .catch(err => { err => console.log(err) })
+         })
+        .catch(err => { })
+    })
+    .catch(err => console.log(err))
+    // TODO: do something com os erros
+});
+
+
+/// File Routing
+router.get("/file/:fileID", verifyAuthentication, (req, res, next) => {
+  axios.get(archive_location + '/acess/file/' + req.params.fileID)
+    .then((file) => {
+      metadata = file.data
+      axios.get(storage_location + '/file/' + metadata.location)
+        .then((result) => {
+          outputBag = __dirname + '/../' + bagFolder + '/' + metadata.checksum + '.zip'
+          fs.writeFile(outputBag, result.data, "binary", (err) => {
+            if (err) throw err;
+
+            extractionFolder = __dirname + '/../' + bagFolder + '/' + metadata.checksum
+            bagit.unpack_bag(outputBag, extractionFolder)
+              .then(() => {
+                file_to_send = extractionFolder + '/data/' + metadata.checksum
+                res.download(file_to_send, metadata.file_name)
+              })
+              .catch(err => console.log(err))
+          });
+        })
+        .catch((err) => { console.log(err) })
+    })
+    .catch((err) => { console.log(err) })
+}) 
 
 module.exports = router;

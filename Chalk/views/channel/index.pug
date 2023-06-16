@@ -50,7 +50,7 @@ block channel_cont
               ol.inline-flex.items-center.space-x-1(class='md:space-x-3' id="dirnav")
 
               if channel.publishers.includes(user.username)
-                a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/uploadfile' class='hover:underline dark:text-blue-500')
+                a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/' + channel._id + '/addfile' class='hover:underline dark:text-blue-500')
                   | Add File
 
           tbody
@@ -115,7 +115,9 @@ block channel_cont
         } 
         else if (file.type == "file"){
           let tr = $('<tr>').attr("class","flex cursor-pointer justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
-          let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row").text(i)
+          let href = $('<a>').attr("href", '/file/' + file.metadata._id).text(i)
+          let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row")
+          name.append(href)
           let format = $('<td>').attr("class","px-6 py-4").text(file.format)
           let tags = $('<td>').attr("class","px-6 py-4").text("TAGS")
           let fileSize = $('<td>').attr("class","px-6 py-4").text("FILE_SIZE")
