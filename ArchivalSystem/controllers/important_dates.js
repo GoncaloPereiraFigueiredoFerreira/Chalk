@@ -10,6 +10,12 @@ module.exports.createImportantDate = (date)=>{
     date:date.date
   })
 }
+
+module.exports.remImportantDate= (date)=>{
+    return Important_dates.deleteOne({_id:date})
+}
+
+
 module.exports.findByChannel=(chID)=>{
     return Important_dates.find({channel:chID})
 }

@@ -44,6 +44,7 @@ module.exports.mvFile = (channel,newpath,oldpath,file)=>{
 
 
 module.exports.createNewChannel = function createNewChannel(channel){
+  console.log(channel)
   return Channel.create({
       _id: new mongoose.Types.ObjectId(),
       name: channel.name,
@@ -53,6 +54,20 @@ module.exports.createNewChannel = function createNewChannel(channel){
       consumers:  [],
       contents:  [],
   })
+}
+
+module.exports.editChannel = (id,channel)=>{
+  return Channel.updateOne({_id:id},
+    {
+      name: channel.name, 
+      banner: channel.banner,
+      entry_code: channel.entry_code,
+    })
+}
+
+
+module.exports.deleteChannel = (channel)=>{
+    return Channel.deleteOne({_id:channel})
 }
 
 //TODO: treat error

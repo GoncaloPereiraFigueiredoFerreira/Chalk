@@ -15,6 +15,17 @@ module.exports.createNewAnn = (user, announcement) =>{
   })
 }
 
+module.exports.editAnn = (id,announcement) =>{
+  return Announcement.updateOne({_id:id},{
+      title: announcement.title,
+      content:announcement.content,
+  })
+}
+
+module.exports.remAnn = (announcement) =>{
+  return Announcement.deleteOne({_id:announcement})
+}
+
 module.exports.getAnnTitlesChannel = (channel)=>{
     return Announcement.find({"channel":channel},{_id:1,publisher:1,title:1,date:1})
   

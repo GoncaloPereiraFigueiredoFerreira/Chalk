@@ -2,27 +2,24 @@ extends base
  
 block page
     .block.w-full.border-gray-200.rounded-lg.shadow.bg-white(class="dark:bg-gray-800")
-      h1.p-4.text-xl(class="dark:text-white") Create a new Channel:
+      if !edit
+        h1.p-4.text-xl(class="dark:text-white") Create a new Channel:
+        
+      else 
+        h1.p-4.text-xl(class="dark:text-white") Update Channel:
+
       form.p-8(method="POST")
         .mb-6
           label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Name of the new Channel
-          input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(name="name" type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='' required=true)
-        //
-          .mb-6
-            label.mb-2.text-sm.font-medium.text-gray-900(for='guests' class='dark:text-white') Colaborators
-            .relative
-              input.block.w-full.text-sm.text-gray-900.bg-gray-50.rounded-lg.border.border-gray-300(type='text' name="publishers" class='p-2.5 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Add guest email' required='')
-              button.absolute.inline-flex.items-center.px-3.py-1.text-sm.font-medium.text-white.bg-blue-700.rounded-lg.right-2.bottom-2(type='button' class='hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800')
-                svg.w-4.h-4.mr-1(aria-hidden='true' fill='currentColor' viewbox='0 0 20 20' xmlns='http://www.w3.org/2000/svg')
-                  path(d='M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z')
-                | Add
+          input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(name="name" value=defaultV.name type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='' required=true)
+
         .mb-6
           label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Entry code (not required)
-          input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(type='text' name="entry_code" class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Password')
+          input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(type='text' name="entry_code" value=defaultV.entry_code  class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Password')
         
         .mb-6
           label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Banner 
-          input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(type='text' name="banner" class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Imagem Link')
+          input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(type='text' name="banner" value=defaultV.banner class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Imagem Link')
         
        
         .flex.items-start.mb-6
