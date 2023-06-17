@@ -5,10 +5,6 @@ block page
       h1.p-4.text-xl(class="dark:text-white") Upload file:
       form(method='POST' enctype="multipart/form-data" id='form').p-8
         
-        .mb-6 
-          label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Directory: 
-          input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(id="dir" name="dir" type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='' required=true)
-
         .mb-6
           label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') File name:
           input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(id="filename" name="filename" type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='' required=true)

@@ -11,21 +11,18 @@ const upload = multer({ dest: bagFolder });
 
 var router = express.Router();
 
-
 router.post("/uploadfile", upload.single('file'), function(req, res){
   bagPath = __dirname + '/../' + req.file.path
   mvPath = __dirname + '/../' + storageFolder + '/' + req.body.checksum
 
   // TODO: directory tree
   // TODO: check if dir exists
-
   extractionFolder = __dirname + '/../' + uploadFolder + '/' + req.file.filename
   bagit.unpack_bag(bagPath, extractionFolder, req.body.filename, mvPath)
-          .then(() => { console.log('im giving up on you'); res.sendStatus(200) })
+          .then(() => { res.sendStatus(200) })
           .catch(err => { console.log(err); res.sendStatus(500) })
 })
 
-// TODO: fazer com POST?
 router.get("/file/:filepath", (req, res) => {
   ogPath = __dirname + '/../' + storageFolder + '/' + req.params.filepath
 

@@ -4,6 +4,8 @@ extends base
 block channel_cont
   .grid.grid-cols-8.grid-rows-3.gap-4
     
+    input(type='hidden' id='channel_id' value=channel._id)
+
     // Announcement titles
     .col-span-8(class='md:col-span-3  md:row-start-1')
       .p-4.bg-white.border.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
@@ -49,9 +51,10 @@ block channel_cont
             // Table head with current and past folders
             nav.flex.items-center.justify-between.px-5.py-3.text-gray-800.bg-gray-50(class='dark:bg-gray-800 dark:border-gray-700')
               ol.inline-flex.items-center.space-x-1(class='md:space-x-3' id="dirnav")
-
               if channel.publishers.includes(user.username)
-                a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/' + channel._id + '/addfile' class='hover:underline dark:text-blue-500')
+                a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(id='add_dir' href='/channel/' + channel._id + '/adddir?dir=""' class='hover:underline dark:text-blue-500')
+                  | Add Directory
+                a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(id='add_file' href='/channel/' + channel._id + '/addfile?dir=""' class='hover:underline dark:text-blue-500')
                   | Add File
 
           tbody
@@ -113,13 +116,30 @@ block channel_cont
           else current = current[currP].files
       }
 
+      if ("" in current){
+        root = current[""]
+        for (let i in root.files){
+          let file = root.files[i]
+          let tr = $('<tr>').attr("class","flex cursor-pointer justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
+          let href = $('<a>').attr("href", '/file/' + file.metadata._id).text(i)
+          let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row")
+          name.append(href)
+          let format = $('<td>').attr("class","px-6 py-4").text(file.format)
+          let tags = $('<td>').attr("class","px-6 py-4").text("TAGS")
+          let fileSize = $('<td>').attr("class","px-6 py-4").text("FILE_SIZE")
+          tableRows.append(tr.append(name).append(tags).append(format).append(fileSize))
+        }
+      }
+
       for (let i in current){
         let file = current[i]
         if (file.type == "dir"){
-          let tag = $('<td>').attr("class", "flex items-center ml-64").append($("<div>").attr("class","border rounded-lg p-1").text("Directory"))
-          let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row").text(i)
-          let tr = $('<tr>').attr("data-directory",i).attr("class","cursor-pointer flex bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
-          tableRows.append(tr.append(name).append(tag))
+          if (i != ''){
+            let tag = $('<td>').attr("class", "flex items-center ml-64").append($("<div>").attr("class","border rounded-lg p-1").text("Directory"))
+            let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row").text(i)
+            let tr = $('<tr>').attr("data-directory",i).attr("class","cursor-pointer flex bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
+            tableRows.append(tr.append(name).append(tag))
+          }
         } 
         else if (file.type == "file"){
           let tr = $('<tr>').attr("class","flex cursor-pointer justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
@@ -138,6 +158,14 @@ block channel_cont
             $(this).on("click",function(){
               tableRows.empty();
               path.push(this.dataset.directory);
+
+              dir = ''
+              for (let i in path){
+                if (i != 0)
+                  dir = dir + '/' + path[i]
+              }
+              $('#add_dir').attr('href', '/channel/' + $("#channel_id").val() + '/adddir?dir=\"' + dir + '\"')
+              $('#add_file').attr('href', '/channel/' + $("#channel_id").val() + '/addfile?dir=\"' + dir + '\"')
               composeFolder()
             })
           }
@@ -155,7 +183,15 @@ block channel_cont
                       flag=true
                     counter--
                 }
+
+                dir = ''
+                for (let i in path){
+                  if (i != 0)
+                    dir = dir + '/' + path[i]
+                }
                 tableRows.empty();
+                $('#add_dir').attr('href', '/channel/' + $("#channel_id").val() + '/adddir?dir=\"' + dir + '\"')
+                $('#add_file').attr('href', '/channel/' + $("#channel_id").val() + '/addfile?dir=\"' + dir + '\"')
                 composeFolder()
               }
            )
