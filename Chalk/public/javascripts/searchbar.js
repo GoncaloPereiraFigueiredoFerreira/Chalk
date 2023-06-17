@@ -1,7 +1,7 @@
 function getChannels(value,channels){
   return new Promise((resolve,reject)=>{
       if (channels.length==0){
-            fetch("/search/"+value).then(result=>{
+            fetch("/searchbar/"+value).then(result=>{
               result.json().then(result=>{
               resolve(result) 
       })})}

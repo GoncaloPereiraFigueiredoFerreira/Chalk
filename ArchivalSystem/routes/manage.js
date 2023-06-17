@@ -34,18 +34,41 @@ router.delete("/channels",function(req,res,next){
 
 router.put("/channel/:chID",function(req,res,next){
   let channel = req.body;
-  let id = req.params.channel;
+  let id = req.params.chID;
   Channels.editChannel(id,channel).then((result)=>{
     res.status(200).jsonp(result).end()
   })
 })
 
 router.delete("/channel/:chID",function(req,res,next){
-  let channel = req.body;
-  let id = req.params.channel;
-  Channels.editChannel(id,channel).then((result)=>{
-    res.status(200).jsonp(result).end()
-  })
+  let id = req.params.chID;
+  let promises = []
+  promises.push(Channels.getChannelInfo(id))
+  promises.push(Announcements.getAnnTitlesChannel(id))
+  promises.push(Dates.findByChannel(id))
+  Promise.all(promises).then(results=>{
+      let morePromises=[]
+      console.log(results)
+      for (let ann of results[1]){
+        morePromises.push(Announcements.remAnn(ann._id))
+      }
+      for (let sub of results[0].consumers){
+        morePromises.push(Users.remSubscription(sub.username,results[0]._id))
+      }
+      for (let pub of results[0].publishers){
+        morePromises.push(Users.remPublisher(pub.username,results[0]._id))
+      }
+      for (let date of results[2]){
+        morePromises.push(Dates.remImportantDate(date._id))
+      }
+      
+
+      Promise.all(promises).then(results2=>{
+        Channels.deleteChannel(id).then((result)=>{
+          res.status(200).jsonp(result).end()
+        })
+      })
+    })
 })
 
 

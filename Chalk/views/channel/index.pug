@@ -57,7 +57,7 @@ block channel_cont
           tbody
     
     // Important Dates
-    .row-span-2.col-span-8(class='md:col-span-3  md:row-start-2')
+    .col-span-8(class='md:col-span-3  md:row-start-2')
       .w-full.p-4.bg-white.border.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
         .flex.items-center.justify-between.mb-4
           h5.text-xl.font-bold.leading-none.text-gray-900(class='dark:text-white') Important Dates
@@ -86,9 +86,6 @@ block channel_cont
 
                 p.mt-1.text-xs.text-gray-600.truncate(class="dark:text-white")
                     | #{date.description}
-                
-          
-
 
   script.
     var files = #{folders};

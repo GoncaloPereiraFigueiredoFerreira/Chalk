@@ -25,7 +25,12 @@ router.get("/publisher/:user", function (req,res){
 
 // Profile information
 router.get("/info/:user", function (req,res){
-  
+    User.getUserInfo(req.params.user).then(result=>{
+      res.status(200).jsonp(results).end()
+    }).catch((err)=>{
+      console.log(err)
+      res.status(200).end()
+  })
 })
 
 

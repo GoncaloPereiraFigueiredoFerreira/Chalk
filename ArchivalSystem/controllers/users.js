@@ -58,8 +58,17 @@ module.exports.addPublisher = (user,channelID)=>{
   return User.updateOne({"email":user},{$addToSet :{"publisher":channelID}})
 }
 
+module.exports.remPublisher = (user,channelID)=>{
+  return User.updateOne({"email":user},{$pull :{"publisher":channelID}})
+}
+
+module.exports.getUserInfo=(user)=>{
+  return User.findOne({"email":user},{name:1,email:1})
+}
+
 module.exports.createUser=(user)=>{
   return User.create({
+      name: user.name,
       email: user.email,
       subscribed:[],
       publisher:[]

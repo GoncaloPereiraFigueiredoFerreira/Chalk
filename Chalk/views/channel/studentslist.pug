@@ -1,0 +1,48 @@
+extends base
+
+block channel_cont
+      .relative
+        .bg-white.w-full.border-gray-200.shadow(class='dark:bg-gray-800 dark:border-gray-700')
+          .grid.grid-cols-6
+
+            .border-r.border-gray-300.col-span-4(class='lg:col-span-1 h-[32rem]')
+              .h-full.flex.flex-col
+                ul.mt-4.overflow-auto
+                  .justify-items-start
+                    li
+                      .p-5(class="  bg-white dark:bg-gray-800 dark:text-white")
+                        a(href="/channel/"+channel._id+"/settings") Edit Channel
+                    li
+                      .p-5(class="bg-blue-600 dark:bg-blue-800 dark:text-white")
+                        a(href="/channel/"+channel._id+"/students").text-white Student List
+                    li
+                      .p-5(class="bg-white dark:bg-gray-800 dark:text-white")
+                        a(href="/channel/"+channel._id+"/submissions") Submissions
+                
+                .mt-auto 
+                  ul
+                    li    
+                    .p-5(class="bg-white dark:bg-gray-800")
+                      a(href="/channel/"+channel._id+"/delete").text-red-600 Delete Channel
+              
+            .block.col-span-4(class='lg:col-span-5')
+              .p-5
+                h1.text-2xl.font-medium(class="dark:text-white") Student List
+                table.mt-4.border-colapse.w-full.table-fixed.border-spacing-10(class="hover:table-fixed dark:text-white")
+                  thead
+                    tr.border-b.bg-gray-400
+                      th.p-5.font-medium Name
+                      th.p-5.border-l.font-medium Email
+                  tbody
+                    each std in students
+                      tr.border-b(class="hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-500")
+                        td.p-3 #{std.name}
+                        td.p-3.border-l #[a.underline(href="mailto:#{std.email}") #{std.email}]
+                
+               
+              
+                 
+                    
+                  
+
+              

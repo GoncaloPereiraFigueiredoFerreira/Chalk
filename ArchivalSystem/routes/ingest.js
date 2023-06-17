@@ -20,6 +20,13 @@ router.post("/uploadfile", function(req,res){
           .catch((err) => {console.log(err); res.sendStatus(500)})
 })
 
+router.post("/submitfile", function(req,res){
+  // needs req.channel |   req.date  |    req.user   | req.submission
+  // 
+  //
+
+})
+
 router.post("/newdate",function(req,res){
   return Dates.createImportantDate(req.body.date).then(()=>{
     res.sendStatus(200)

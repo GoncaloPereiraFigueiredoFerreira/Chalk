@@ -11,7 +11,7 @@ block page
           a.inline-flex.text-white.bg-red-700.font-medium.rounded-lg.text-sm.px-5(href="/channel/"+channel._id+"/unsubscribe" type='button' class='hover:bg-red-800 focus:ring-4 focus:ring-red-300 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800') Unsubscribe
 
         else
-          a.ml-4.inline-flex(href="/settings")
+          a.ml-4.inline-flex(href="/channel/"+channel._id+"/settings")
             object.w-6(class="dark:invert" data ='/images/svgs/settings.svg' type="image/svg+xml" style="pointer-events: none")
 
   block channel_cont

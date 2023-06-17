@@ -1,0 +1,34 @@
+extends base
+    
+block page
+    
+    .grid.grid-cols-5.gap-3
+      .col-start-1.col-span-1
+        .bg-white.rounded-lg(class= 'dark:bg-gray-800 dark:border-gray-700')
+          .mt-4.ml-4
+            .pb-20.pt-8.pl-5
+              h1.text-2xl.font-medium(class='dark:text-white') Filtros:
+              form.ml-4.mt-5
+                .mb-3
+                  input(id="choice1" type="radio" name="filter" checked="" )
+                  label.ml-3(for="choice1" class='dark:text-white') Name
+                .mb-3
+                  input(id="choice2" type="radio" name="filter")
+                  label.ml-3(for="choice2" class='dark:text-white') Publisher
+                .mb-3
+                  input(id="choice3" type="radio" name="filter")
+                  label.ml-3(for="choice3" class='dark:text-white') Instituition
+
+
+      .col-start-2.col-span-4
+        .bg-white.rounded-lg(class= 'dark:bg-gray-800 dark:border-gray-700')
+          .mt-4.ml-4
+            ul.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
+              each ch in channels
+                li.p-20
+                  p.text-2xl(class='dark:text-white') #[a(href="/channel/"+ch._id) #{ch.name}]
+
+
+
+
+

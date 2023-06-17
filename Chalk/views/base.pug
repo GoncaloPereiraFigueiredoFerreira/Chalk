@@ -25,7 +25,7 @@ block body
                             span.ml-3 Dashboard
                         li
                           button.flex.items-center.w-full.p-2.text-gray-900.transition.duration-75.rounded-lg.group(type='button' class='hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700' data-collapse-toggle='dropdown-sub')
-                            svg(width='20px' height='20px' viewbox='0 0 20 20' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' fill='#000000')
+                            svg(class="dark:invert" width='20px' height='20px' viewbox='0 0 20 20' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' fill='#000000')
                               g#SVGRepo_bgCarrier(stroke-width='0')
                                 g#SVGRepo_tracerCarrier(stroke-linecap='round' stroke-linejoin='round')
                                   g#SVGRepo_iconCarrier
@@ -43,7 +43,7 @@ block body
                           ul#dropdown-sub.hidden.py-2.space-y-2
                         li
                           button.flex.items-center.w-full.p-2.text-gray-900.transition.duration-75.rounded-lg.group(type='button' class='hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700' aria-controls='dropdown-example' data-collapse-toggle='dropdown-pub')
-                            svg(width='20px' height='20px' viewbox='0 0 20.00 20.00' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' fill='#000000')
+                            svg(class="dark:invert" width='20px' height='20px' viewbox='0 0 20.00 20.00' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' fill='#000000')
                               g#SVGRepo_bgCarrier(stroke-width='0')
                                 g#SVGRepo_tracerCarrier(stroke-linecap='round' stroke-linejoin='round')
                                   g#SVGRepo_iconCarrier
@@ -84,13 +84,13 @@ block body
                         object.h-8(class="dark:invert" data='/images/chalk.svg' type='image/svg+xml')
                         span.ml-3.self-center.text-xl.font-pacifico.whitespace-nowrap(class='sm:text-2xl dark:text-white') #[a(href="/") Chalk]
                     
-                    form#searching
+                    form#searching(action="/search")
                       label.mb-2.text-sm.font-medium.text-gray-900.sr-only(for='default-search' class='dark:text-white') Search
                       .relative
                         .absolute.inset-y-0.left-0.flex.items-center.pl-3.pointer-events-none
                           svg.w-5.h-5.text-gray-500(aria-hidden='true' class='dark:text-gray-400' fill='none' stroke='currentColor' viewbox='0 0 24 24' xmlns='http://www.w3.org/2000/svg')
                             path(stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z')
-                        input#default-search.block.w-128.p-4.pl-10.text-sm.text-gray-900.border.border-gray-300.rounded-lg.bg-gray-50(type='search' class='focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder="Discover Channels...")
+                        input#default-search.block.w-128.p-4.pl-10.text-sm.text-gray-900.border.border-gray-300.rounded-lg.bg-gray-50(type='search' name="keywords" class='focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder="Discover Channels...")
                         button.text-white.absolute.bg-blue-700.font-medium.rounded-lg.text-sm.px-4.py-2(type='submit' class='right-2.5 bottom-2.5 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800') Search                   
                       
                       // Dropdown search

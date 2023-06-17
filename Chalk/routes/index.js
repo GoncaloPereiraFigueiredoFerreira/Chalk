@@ -71,7 +71,6 @@ router.get('/',verifyAuthentication,(req, res, next) =>{
   promises.push(axios.get(archive_location+"/acess/posts/user/"+req.user.username))
   promises.push(axios.get(archive_location+"/acess/dates/user/"+req.user.username))
   Promise.all(promises).then((results)=>{
-
     res.render('dashboard',{
             user:req.user,
             subchannels:results[0].data,
@@ -83,11 +82,18 @@ router.get('/',verifyAuthentication,(req, res, next) =>{
   
 });
 
-router.get("/search/:keywords",(req,res,next)=>{
-  axios.get(archive_location+"/acess/channel/search/"+req.params.keywords).then(results=>{
+router.get("/searchbar/:keywords",verifyAuthentication,(req,res,next)=>{
+  axios.get(archive_location+"/acess/channel/search?keywords="+req.params.keywords).then(results=>{
       res.status(200).jsonp(results.data).end()
   })
 });
+
+router.get("/search",verifyAuthentication,(req,res,next)=>{
+  axios.get(archive_location+"/acess/channel/search?keywords="+req.query.keywords).then(results=>{
+    res.render("channel_list",{user:req.user,channels:results.data})
+  })
+});
+
 
 /// Login and Register Pages
 
@@ -100,7 +106,6 @@ router.get("/register",(req,res,next)=>{
 });
 
 router.post("/login",(req,res,next)=>{
-  console.log(req.body)
   axios.post(auth_location+"/login",req.body).then(resp=>{
     console.log(resp.data)
     if (resp.data.success){
@@ -124,7 +129,7 @@ router.post("/register",(req,res,next)=>{
     if (resp.data.success){
       loggedIn[resp.data.token]=1
       res.cookie("token",resp.data.token)
-      axios.post(archive_location+"/ingest/newaccount",{"email":req.body.email}).then(()=>{
+      axios.post(archive_location+"/ingest/newaccount",{"email":req.body.email, "name":req.body.first_name +  " " + req.body.last_name}).then(()=>{
         res.redirect("/")
       }).catch(err=>console.log(err))
       
@@ -193,6 +198,41 @@ router.get("/channel/:chID",verifyAuthentication,(req, res, next)=>{
     })
   })
 });
+
+router.get("/channel/:chID/settings",verifyAuthentication,(req, res, next)=>{
+  let chn = req.params.chID
+  axios.get(archive_location+"/acess/channel/info/"+chn+"?user="+req.user.username).then((response)=>{
+      res.render("channel/editchannel",{user:req.user, channel:response.data})
+  })
+})
+
+router.post("/channel/:chID/settings",verifyAuthentication,(req, res, next)=>{
+  let chn = req.params.chID
+  console.log(req.body)
+  axios.put(archive_location+"/manage/channel/"+chn,req.body).then(()=>{
+    res.redirect("/channel/"+chn+"/settings")
+  })
+})
+
+
+router.get("/channel/:chID/students",verifyAuthentication,(req, res, next)=>{
+  let chn = req.params.chID
+  let promisses=[]
+  promisses.push(axios.get(archive_location+"/acess/channel/info/"+chn+"?user="+req.user.username))
+  promisses.push(axios.get(archive_location+"/acess/channel/studentlist/"+chn))
+  Promise.all(promisses).then(results=>{
+    console.log(results[1].data)
+    res.render("channel/studentslist",{user:req.user, channel:results[0].data,students:results[1].data})
+  })
+})
+
+router.get("/channel/:chID/submissions",verifyAuthentication,(req, res, next)=>{
+  let chn = req.params.chID
+  axios.get(archive_location+"/acess/channel/info/"+chn+"?user="+req.user.username).then((response)=>{
+      res.render("channel/submissions",{user:req.user, channel:response.data})
+  })
+})
+
 
 /// Forms
 router.get("/createChannel",verifyAuthentication,(req,res,next)=>{
@@ -297,9 +337,9 @@ router.post("/channel/:chID/adddate",verifyAuthentication,(req,res,next)=>{
         channel: req.params.chID,
         title: req.body.subject,
         description: req.body.description,
-        date: req.body.date
+        date: req.body.date,
+        delivery:req.body.deliver=="on"
       }
-    
     }).then(()=>{
         res.redirect("/channel/"+req.params.chID)
     }).catch((err)=>{

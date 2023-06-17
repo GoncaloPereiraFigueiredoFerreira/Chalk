@@ -1,0 +1,51 @@
+extends base
+
+block channel_cont
+      .relative
+        .bg-white.w-full.border-gray-200.shadow(class='dark:bg-gray-800 dark:border-gray-700')
+          .grid.grid-cols-6
+
+            .border-r.border-gray-300.col-span-4(class='lg:col-span-1 h-[32rem]')
+              .h-full.flex.flex-col
+                ul.mt-4.overflow-auto
+                  .justify-items-start
+                    li
+                      .p-5(class="bg-blue-600 dark:bg-blue-800 text-white")
+                        a(href="/channel/"+channel._id+"/settings").text-white Edit Channel
+                    li
+                      .p-5(class="bg-white dark:bg-gray-800 dark:text-white")
+                        a(href="/channel/"+channel._id+"/students") Student List
+                    li
+                      .p-5(class="bg-white dark:bg-gray-800 dark:text-white")
+                        a(href="/channel/"+channel._id+"/submissions") Submissions
+                
+                .mt-auto 
+                  ul
+                    li    
+                    .p-5(class="bg-white dark:bg-gray-800")
+                      a(href="/channel/"+channel._id+"/delete").text-red-600 Delete Channel
+                
+            .block.col-span-4(class='lg:col-span-5')
+              .p-5
+                h1.text-xl.font-medium(class="dark:text-white") Edit Channel 
+                
+                .mt-10 
+                  form(method="POST")
+                    .flex.items-center
+                      p.font-medium(class="dark:text-white") Change channel name:
+                      input.ml-4.rounded-lg(name="name" type="text" value=channel.name required="")
+                    
+                    .flex.items-center.mt-10 
+                      p.font-medium(class="dark:text-white") Change channel banner:
+                      input.ml-4.rounded-lg(name="banner" type="text" size=40 value=channel.banner required="")
+                    
+                    .absolute.bottom-5.right-8.items-center.flex
+                      button.font-medium.shadow.px-3.py-2.text-white.rounded-lg.bg-blue-600.ml-4(type="Submit" class="dark:text-white") Save Changes
+
+              
+              
+                 
+                    
+                  
+
+              
