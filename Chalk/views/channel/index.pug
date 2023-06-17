@@ -4,6 +4,8 @@ extends base
 block channel_cont
   .grid.grid-cols-8.grid-rows-3.gap-4
     
+    input(type='hidden' id='channel_id' value=channel._id)
+
     // Announcement titles
     .col-span-8(class='md:col-span-3  md:row-start-1')
       .p-4.bg-white.border.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
@@ -49,9 +51,10 @@ block channel_cont
             // Table head with current and past folders
             nav.flex.items-center.justify-between.px-5.py-3.text-gray-800.bg-gray-50(class='dark:bg-gray-800 dark:border-gray-700')
               ol.inline-flex.items-center.space-x-1(class='md:space-x-3' id="dirnav")
-
               if channel.publishers.includes(user.username)
-                a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/' + channel._id + '/addfile' class='hover:underline dark:text-blue-500')
+                a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(id='add_dir' href='/channel/' + channel._id + '/adddir?dir=""' class='hover:underline dark:text-blue-500')
+                  | Add Directory
+                a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(id='add_file' href='/channel/' + channel._id + '/addfile?dir=""' class='hover:underline dark:text-blue-500')
                   | Add File
 
           tbody
@@ -141,6 +144,16 @@ block channel_cont
             $(this).on("click",function(){
               tableRows.empty();
               path.push(this.dataset.directory);
+
+              dir = ''
+              for (let i in path){
+                if (i != 0)
+                  dir = dir + '/' + path[i]
+              }
+              console.log(dir)
+
+              $('#add_dir').attr('href', '/channel/' + $("#channel_id").val() + '/adddir?dir=\"' + dir + '\"')
+              $('#add_file').attr('href', '/channel/' + $("#channel_id").val() + '/addfile?dir=\"' + dir + '\"')
               composeFolder()
             })
           }
@@ -158,7 +171,15 @@ block channel_cont
                       flag=true
                     counter--
                 }
+
+                dir = ''
+                for (let i in path){
+                  if (i != 0)
+                    dir = dir + '/' + path[i]
+                }
                 tableRows.empty();
+                $('#add_dir').attr('href', '/channel/' + $("#channel_id").val() + '/adddir?dir=\"' + dir + '\"')
+                $('#add_file').attr('href', '/channel/' + $("#channel_id").val() + '/addfile?dir=\"' + dir + '\"')
                 composeFolder()
               }
            )
