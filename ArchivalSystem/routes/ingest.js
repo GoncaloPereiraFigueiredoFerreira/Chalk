@@ -8,8 +8,6 @@ var Dates = require("../controllers/important_dates")
 
 
 router.post("/uploadfile", function(req,res){
-  console.log(req.body)
-
   return Metadata.addFileMetadata(req.body.file)
           .then((res_file) => { 
             console.log(res_file)
@@ -78,17 +76,19 @@ router.post("/newdir",function(req,res){
 
 
 router.post("/newchannel",function(req,res){
-  return Channels.createNewChannel(req.body.channel).then((result)=>{
-    Users.addPublisher(req.body.channel.publishers[0],result._id).then(()=>{
-      res.status(200).jsonp(result).end()
-  })
-    
-}).catch((err)=>{
-  console.log(err)
-    //ver erro e responder em conformidade
-    res.sendStatus(500)
-})
-
+  return Channels.createNewChannel(req.body.channel)
+    .then((result) => {
+      Channels.createDir(result._id, '')
+        .then((result2) => {
+          Users.addPublisher(req.body.channel.publishers[0],result._id).
+            then(()=>{
+              res.status(200).jsonp(result).end()
+            })
+            .catch(err => { console.log(err); res.sendStatus(500) })
+        .catch((err) => { console.log(err); res.sendStatus(500) })
+        })
+    })
+    .catch((err)=> { console.log(err); res.sendStatus(500) })
 })
 
 router.post("/newaccount",function(req,res){

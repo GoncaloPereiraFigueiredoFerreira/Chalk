@@ -363,21 +363,17 @@ router.get("/channel/:chID/addfile", verifyAuthentication, (req, res, next) => {
 
 router.post("/channel/:chID/addfile", verifyAuthentication, upload.single('myFile'), function(req, res) {
   if ('dir' in req.query){
-    console.log('dir: ' + req.query['dir'])
-    dir = req.query['dir']
+    let dir = req.query['dir']
     if (dir === '""'){
       dir = ''
-      console.log('dir:' + dir)
     }
     else{
       dir = req.query['dir'].substring(2, req.query['dir'].length - 1)
     }
-    // TODO: check if dir is ""
-
-    tags = []
-    i = 1
+    let tags = []
+    let i = 1
     while(true){
-      var tag = 'tag' + i
+      let tag = 'tag' + i
       if (tag in req.body){
         tags.push(req.body[tag])
       }
@@ -445,7 +441,6 @@ router.get("/channel/:chID/adddir", verifyAuthentication, function(req, res) {
 })
 
 router.post("/channel/:chID/adddir", verifyAuthentication, function(req, res) {
-  console.log('whasup')
   if ('dir' in req.query){
     dir = req.query['dir']
     if (dir === '""'){

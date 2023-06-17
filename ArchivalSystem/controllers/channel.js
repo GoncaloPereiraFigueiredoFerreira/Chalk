@@ -44,7 +44,6 @@ module.exports.mvFile = (channel,newpath,oldpath,file)=>{
 
 
 module.exports.createNewChannel = function createNewChannel(channel){
-  console.log(channel)
   return Channel.create({
       _id: new mongoose.Types.ObjectId(),
       name: channel.name,
@@ -52,7 +51,7 @@ module.exports.createNewChannel = function createNewChannel(channel){
       entry_code: channel.entry_code,
       publishers: channel.publishers,
       consumers:  [],
-      contents:  [],
+      contents: [],
   })
 }
 
