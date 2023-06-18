@@ -71,6 +71,7 @@ router.get('/',verifyAuthentication,(req, res, next) =>{
   promises.push(axios.get(archive_location+"/acess/posts/user/"+req.user.username))
   promises.push(axios.get(archive_location+"/acess/dates/user/"+req.user.username))
   Promise.all(promises).then((results)=>{
+    console.log(results[3].data)
     res.render('dashboard',{
             user:req.user,
             subchannels:results[0].data,
@@ -286,7 +287,22 @@ router.get("/channel/:chID/delete",verifyAuthentication,(req,res,next)=>{
   })
 })
 
+router.get("/channel/:chID/submitForm/:submit",verifyAuthentication,(req,res,next)=>{
+  let chn = req.params.chID
+  axios.get(archive_location+"/acess/channel/info/"+chn+"?user="+req.user.username).then((resp)=>{
+    req.user.subscribed=resp.data.subscribed
+    res.render("channel/submit_work",{user:req.user,channel:resp.data,delivery:req.params.submit})
+  })
+});
 
+router.post("/channel/:chID/submitForm/:submit",verifyAuthentication,(req,res,next)=>{
+  let chn = req.params.chID
+  let subm = req.params.submit
+  //TODO: finish up
+  axios.post(archive_location+"/submitfile",{channel:chn,submission:subm}).then((resp)=>{
+    res.redirect("/")
+  })
+});
 
 router.get("/channel/:chID/addpost",verifyAuthentication,(req,res,next)=>{
   let chn = req.params.chID
@@ -357,7 +373,7 @@ router.post("/channel/:chID/adddate",verifyAuthentication,(req,res,next)=>{
         title: req.body.subject,
         description: req.body.description,
         date: req.body.date,
-        delivery:req.body.deliver=="on"
+        delivery:req.body.delivery=="on"
       }
     }).then(()=>{
         res.redirect("/channel/"+req.params.chID)

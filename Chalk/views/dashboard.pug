@@ -58,10 +58,14 @@ block page
               each date in dates
                   li.py-3(class='sm:py-4')
                     .flex.items-center.justify-between
-                      h3.mt-2.text-xl.font-medium(class='dark:text-white') #{date.channel}
+                      h3.mt-2.text-xl.font-medium(class='dark:text-white') #{date.channel.name}
                       .overflow-hidden.w-32
-                        p.font-medium.text-gray-900.truncate(class="dark:text-white")
-                          | #{date.date.title}
+                        if !date.date.delivery
+                          p.font-medium.text-gray-900.truncate(class="dark:text-white")
+                            | #{date.date.title}
+                        else
+                          a.underline.font-medium.text-gray-900.truncate(href="/channel/"+date.channel.id+"/submitForm/"+date.date._id class="dark:text-white")
+                            | #{date.date.title}
                         p.mt-2.text-xs.font-medium.text-gray-600.truncate(class="dark:text-white")
                           | #{date.date.description}
                       p.text-sm.font-medium.text-gray-900.truncate(class="dark:text-white")

@@ -40,7 +40,7 @@ router.get("/user/:user",(req,res)=>{
             for(let i in subs){
               for (let date of results[counter]){
                 let temp = {}
-                temp.channel= subs[i].name
+                temp.channel= {name:subs[i].name,id:subs[i]._id}
                 temp.date= date
                 dates.push(temp)
               }
@@ -49,7 +49,7 @@ router.get("/user/:user",(req,res)=>{
             for(let i in pubs){
               for (let date of results[counter]){
                 let temp = {}
-                temp.channel= pubs[i].name
+                temp.channel= {name:pubs[i].name,id:pubs[i]._id}
                 temp.date= date
                 dates.push(temp)
               }

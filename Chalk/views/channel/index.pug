@@ -77,8 +77,12 @@ block channel_cont
                   .flex.items-center.space-x-4
                     p.text-sm.font-medium.text-gray-900.truncate(class="dark:text-white")
                       | #{date.date}
-                    p.font-medium.text-gray-900.truncate(class="dark:text-white")
-                      | #[strong #{date.title}]
+                    if !date.delivery
+                      p.font-medium.text-gray-900.truncate(class="dark:text-white")
+                        | #[strong #{date.title}]
+                    else
+                      a.underline.font-medium.text-gray-900.truncate(href="/channel/"+channel._id+"/submitForm/"+date._id class="dark:text-white")
+                        | #[strong #{date.title}]
                   if channel.publishers.includes(user.username) 
                     a(href="/channel/"+channel._id+"/remdate?date="+date._id)   
                       svg(width='42px' height='42px' viewbox='-798.72 -798.72 2621.44 2621.44' xmlns='http://www.w3.org/2000/svg' fill='#000000' stroke='#000000')
