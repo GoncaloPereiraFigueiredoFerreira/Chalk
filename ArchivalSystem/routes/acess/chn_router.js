@@ -21,7 +21,13 @@ router.get("/info/:channel",function(req,res){
       Channel.getChannelInfo(req.params.channel).then((result)=>{
         if (result!=undefined){
         let msg={
-          _id:result._id,banner:result.banner,name:result.name,publishers:result.publishers,subscribed:result.consumers.includes(user)
+          _id:result._id,
+          banner:result.banner,
+          description:result.description,
+          name:result.name,
+          publishers:result.publishers,
+          subscribed:result.consumers.includes(user),
+          nsubs:result.consumers.length
         }
         res.status(200).jsonp(msg).end()}
         else{

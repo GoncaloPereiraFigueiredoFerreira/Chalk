@@ -27,6 +27,7 @@ block page
               each ch in channels
                 li.p-20
                   p.text-2xl(class='dark:text-white') #[a(href="/channel/"+ch._id) #{ch.name}]
+                  p.text-sm.text-gray-500 #{ch.description}
 
 
 

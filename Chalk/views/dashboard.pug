@@ -18,19 +18,19 @@ block page
             h2.text-3xl(class='dark:text-white') Channels
             .ml-4
             if subchannels.length !=0
-              h4(class='dark:text-white') Subscribed to:
-              ul.ml-4.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
+              h4.border-b(class='dark:text-white') Subscribed to:
+              ul.mb-10.ml-4.divide-y.divide-gray-200(role='list' class='dark:divide-gray-700')
                 each sub in subchannels
                   li.py-3(class='sm:py-4')
                     .flex.items-center.space-x-4
                       a.font-medium.text-gray-900.truncate(href="/channel/"+sub._id class='dark:text-white') #{sub.name}
             if pubchannels.length !=0  
-              h4(class='dark:text-white') Managed:
+              h4.ml-1.border-b(class='dark:text-white') Managed:
               ul.ml-4.divide-y.divide-gray-200(role='list' class='dark:divide-gray-400')
                 each sub in pubchannels
                   li.py-3(class='sm:py-4')
                     .flex.items-center.space-x-4
-                      a.text-sm.font-medium.text-gray-900.truncate(href="/channel/"+sub._id class='dark:text-white') #{sub.name}
+                      a.font-medium.text-gray-900.truncate(href="/channel/"+sub._id class='dark:text-white') #{sub.name}
 
         .col-start-2.shadow-md.col-span-3.bg-white.rounded-lg(class= 'dark:bg-gray-800 dark:border-gray-700')
           .m-4
@@ -65,7 +65,7 @@ block page
                             | #{date.date.title}
                         else
                           a.underline.font-medium.text-gray-900.truncate(href="/channel/"+date.channel.id+"/submitForm/"+date.date._id class="dark:text-white")
-                            | #{date.date.title}
+                            |  #[strong Entrega:  #{date.date.title}]
                         p.mt-2.text-xs.font-medium.text-gray-600.truncate(class="dark:text-white")
                           | #{date.date.description}
                       p.text-sm.font-medium.text-gray-900.truncate(class="dark:text-white")

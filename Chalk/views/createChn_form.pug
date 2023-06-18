@@ -10,17 +10,23 @@ block page
 
       form.p-8(method="POST")
         .mb-6
-          label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Name of the new Channel
-          input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(name="name" value=defaultV.name type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='' required=true)
+          label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Name of the new Channel:
+          input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(name="name" type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='' required=true)
+
 
         .mb-6
-          label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Entry code (not required)
-          input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(type='text' name="entry_code" value=defaultV.entry_code  class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Password')
+          label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Entry code (not required):
+          input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(type='text' name="entry_code" class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Password')
         
         .mb-6
-          label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Banner 
-          input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(type='text' name="banner" value=defaultV.banner class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Imagem Link')
+          label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Banner:
+          input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(type='text' name="banner" class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Imagem Link')
         
+        .mb-6
+          label.block.mb-2.text-sm.font-medium.text-gray-900(for='description' class='dark:text-white') Channel's description:
+            .border.border-gray-200.rounded-lg.bg-gray-50(class='w-3/5 dark:bg-gray-700 dark:border-gray-600')
+              textarea.w-full.text-gray-800.bg-white.border-0(name="description" rows='8' class=' dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400' placeholder='' required='' ) 
+
        
         .flex.items-start.mb-6
           button.text-white.bg-blue-700.font-medium.rounded-lg.text-sm.w-full.px-5.text-center(type='submit' class='hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 sm:w-auto py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800') Submit

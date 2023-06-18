@@ -13,8 +13,8 @@ module.exports.createImportantDate = (date)=>{
     })
 }
 
-module.exports.getSubmissions=(date)=>{
-    return Important_dates.find({channel:chID},  {submissions:1})
+module.exports.getSubmissions=(date,chID)=>{
+    return Important_dates.findOne({_id:date,channel:chID,delivery:true},{submissions:1})
 }
 
 module.exports.addSubmission = (date,submission)=>{

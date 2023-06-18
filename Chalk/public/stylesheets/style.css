@@ -1071,12 +1071,6 @@ input:checked + .toggle-bg{
 .col-start-5{
   grid-column-start: 5;
 }
-.col-start-6{
-  grid-column-start: 6;
-}
-.row-span-2{
-  grid-row: span 2 / span 2;
-}
 .-m-1{
   margin: -0.25rem;
 }
@@ -1190,6 +1184,15 @@ input:checked + .toggle-bg{
 .mt-auto{
   margin-top: auto;
 }
+.ml-1{
+  margin-left: 0.25rem;
+}
+.mb-10{
+  margin-bottom: 2.5rem;
+}
+.mb-8{
+  margin-bottom: 2rem;
+}
 .block{
   display: block;
 }
@@ -1247,6 +1250,9 @@ input:checked + .toggle-bg{
 .h-\[32rem\]{
   height: 32rem;
 }
+.h-\[calc\(100\%-1rem\)\]{
+  height: calc(100% - 1rem);
+}
 .h-full{
   height: 100%;
 }
@@ -1255,6 +1261,9 @@ input:checked + .toggle-bg{
 }
 .max-h-60{
   max-height: 15rem;
+}
+.max-h-full{
+  max-height: 100%;
 }
 .min-h-screen{
   min-height: 100vh;
@@ -1304,8 +1313,14 @@ input:checked + .toggle-bg{
 .w-screen{
   width: 100vw;
 }
+.w-3\/5{
+  width: 60%;
+}
 .max-w-2xl{
   max-width: 42rem;
+}
+.max-w-md{
+  max-width: 28rem;
 }
 .max-w-screen-xl{
   max-width: 1280px;
@@ -1495,6 +1510,9 @@ input:checked + .toggle-bg{
 .overflow-y-auto{
   overflow-y: auto;
 }
+.overflow-x-hidden{
+  overflow-x: hidden;
+}
 .truncate{
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1535,6 +1553,9 @@ input:checked + .toggle-bg{
 .border-2{
   border-width: 2px;
 }
+.border-4{
+  border-width: 4px;
+}
 .border-b{
   border-bottom-width: 1px;
 }
@@ -1546,6 +1567,9 @@ input:checked + .toggle-bg{
 }
 .border-t{
   border-top-width: 1px;
+}
+.border-r-4{
+  border-right-width: 4px;
 }
 .border-dashed{
   border-style: dashed;
@@ -1617,6 +1641,10 @@ input:checked + .toggle-bg{
   --tw-bg-opacity: 1;
   background-color: rgb(88 80 236 / var(--tw-bg-opacity));
 }
+.bg-red-600{
+  --tw-bg-opacity: 1;
+  background-color: rgb(224 36 36 / var(--tw-bg-opacity));
+}
 .bg-red-700{
   --tw-bg-opacity: 1;
   background-color: rgb(200 30 30 / var(--tw-bg-opacity));
@@ -1631,6 +1659,10 @@ input:checked + .toggle-bg{
 }
 .bg-white\/50{
   background-color: rgb(255 255 255 / 0.5);
+}
+.bg-blue-500{
+  --tw-bg-opacity: 1;
+  background-color: rgb(63 131 248 / var(--tw-bg-opacity));
 }
 .bg-opacity-50{
   --tw-bg-opacity: 0.5;
@@ -1862,13 +1894,17 @@ input:checked + .toggle-bg{
   --tw-text-opacity: 1;
   color: rgb(17 24 39 / var(--tw-text-opacity));
 }
-.text-red-600{
+.text-red-500{
   --tw-text-opacity: 1;
-  color: rgb(224 36 36 / var(--tw-text-opacity));
+  color: rgb(240 82 82 / var(--tw-text-opacity));
 }
 .text-white{
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+.text-red-700{
+  --tw-text-opacity: 1;
+  color: rgb(200 30 30 / var(--tw-text-opacity));
 }
 .underline{
   text-decoration-line: underline;
@@ -1903,6 +1939,10 @@ input:checked + .toggle-bg{
 }
 .blur{
   --tw-blur: blur(8px);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+.invert{
+  --tw-invert: invert(100%);
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 .filter{
@@ -1987,6 +2027,9 @@ input:checked + .toggle-bg{
 .hover\:underline:hover{
   text-decoration-line: underline;
 }
+.focus\:z-10:focus{
+  z-index: 10;
+}
 .focus\:border-blue-500:focus{
   --tw-border-opacity: 1;
   border-color: rgb(63 131 248 / var(--tw-border-opacity));
@@ -2057,6 +2100,10 @@ input:checked + .toggle-bg{
 :is(.dark .dark\:border-gray-400){
   --tw-border-opacity: 1;
   border-color: rgb(156 163 175 / var(--tw-border-opacity));
+}
+:is(.dark .dark\:border-gray-500){
+  --tw-border-opacity: 1;
+  border-color: rgb(107 114 128 / var(--tw-border-opacity));
 }
 :is(.dark .dark\:border-gray-600){
   --tw-border-opacity: 1;
@@ -2268,16 +2315,20 @@ input:checked + .toggle-bg{
 }
 @media (min-width: 768px){
 
-  .md\:col-span-3{
-    grid-column: span 3 / span 3;
+  .md\:inset-0{
+    inset: 0px;
   }
 
-  .md\:col-start-4{
-    grid-column-start: 4;
+  .md\:col-span-2{
+    grid-column: span 2 / span 2;
   }
 
-  .md\:col-start-1{
-    grid-column-start: 1;
+  .md\:col-span-6{
+    grid-column: span 6 / span 6;
+  }
+
+  .md\:col-start-3{
+    grid-column-start: 3;
   }
 
   .md\:col-end-9{
@@ -2290,18 +2341,6 @@ input:checked + .toggle-bg{
 
   .md\:row-start-2{
     grid-row-start: 2;
-  }
-
-  .md\:row-start-3{
-    grid-row-start: 3;
-  }
-
-  .md\:row-start-5{
-    grid-row-start: 5;
-  }
-
-  .md\:row-start-4{
-    grid-row-start: 4;
   }
 
   .md\:row-end-3{

@@ -45,13 +45,15 @@ function verifyAuthentication(req,res,next){
   if (req.cookies.token){
       updatePublicKey().then(()=>{
         let result = verifyToken(req.cookies.token)
-        req.user = {username:result.username,level:result.level,first_name:result.first_name,last_name:result.last_name}
-        next()  
+        if (result=={}) res.redirect("/login")
+        else{
+          req.user = {username:result.username,level:result.level,first_name:result.first_name,last_name:result.last_name}
+          next()  
+        }
       })
   }
   else{
-      req.user = {}
-      next() 
+      res.redirect("/login")
   }
 }
   
@@ -209,6 +211,7 @@ router.get("/channel/:chID",verifyAuthentication,(req, res, next)=>{
   Promise.all(promises).then(results=>{
     folders=JSON.stringify(results[1].data).replaceAll("\"","'")
     req.user.subscribed=results[0].data.subscribed
+    
     res.render("channel/index",{
       user:req.user,
       channel:results[0].data,
@@ -228,7 +231,6 @@ router.get("/channel/:chID/settings",verifyAuthentication,(req, res, next)=>{
 
 router.post("/channel/:chID/settings",verifyAuthentication,(req, res, next)=>{
   let chn = req.params.chID
-  console.log(req.body)
   axios.put(archive_location+"/manage/channel/"+chn,req.body).then(()=>{
     res.redirect("/channel/"+chn+"/settings")
   })
@@ -247,9 +249,25 @@ router.get("/channel/:chID/students",verifyAuthentication,(req, res, next)=>{
 })
 
 router.get("/channel/:chID/submissions",verifyAuthentication,(req, res, next)=>{
-  let chn = req.params.chID
-  axios.get(archive_location+"/acess/channel/info/"+chn+"?user="+req.user.username).then((response)=>{
-      res.render("channel/submissions",{user:req.user, channel:response.data})
+  let chnID = req.params.chID
+  let date = req.query.date 
+  let promises=[]
+  promises.push(axios.get(archive_location+"/acess/dates/channel/del/"+chnID))
+  promises.push(axios.get(archive_location+"/acess/channel/info/"+chnID+"?user="+req.user.username))
+
+  Promise.all(promises).then(responses=>{
+    let listDel = responses[0].data
+    let channel = responses[1].data
+    if (date==undefined && listDel.length>0) date = listDel[0]._id
+    if (listDel.length>0){
+        axios.get(archive_location+"/acess/dates/channel/"+chnID+"/submissions/"+date).then(response=>{
+          console.log(response.data)
+          res.render("channel/submissions",{user:req.user, deliveries:listDel,channel:channel,submissions:response.data})
+        })
+    }
+    else{
+      res.render("channel/submissions",{user:req.user, deliveries:listDel,channel:channel,submissions:[]})
+    }
   })
 })
 
@@ -267,18 +285,6 @@ router.post("/createChannel",verifyAuthentication,(req,res,next)=>{
   })
 })
 
-router.get("/channel/:chID/edit",verifyAuthentication,(req,res,next)=>{
-  axios.get(archive_location+"/acess/channel/info/"+chn).then((response)=>{
-    res.render("createChn_form",{user:req.user,defaultV:response.data,edit:true})
-  })
-})
-
-router.post("/channel/:chID/edit",verifyAuthentication,(req,res,next)=>{
-  let id = req.params.chID
-  axios.put(archive_location+"/manage/channel/"+id,{channel:req.body}).then((response)=>{
-    res.redirect("/channel/"+id)
-  })
-})
 
 router.get("/channel/:chID/delete",verifyAuthentication,(req,res,next)=>{
   let id = req.params.chID

@@ -9,9 +9,17 @@ function compareDates(a,b){
   else return 0
 }
 
+router.get("/channel/:chnID/submissions/:date",(req,res)=>{
+    Dates.getSubmissions(req.params.date,req.params.chnID).then(results=>{
+      res.status(200).jsonp(results).end()}).catch((err)=>{console.log(err);res.sendStatus(500)})             
+})
+
+
 
 router.get("/channel/:chnID",(req,res)=>{
+    var now = new Date().toISOString().substring(0,10).replace("-","/").replace("-","/")
     Dates.findByChannel(req.params.chnID).then(results=>{
+        results=results.filter((a)=> a.date >= now)
         results.sort((a,b)=>{
           if (a.date < b.date) return -1; 
           else if (a.date > b.date) return 1; 
@@ -25,6 +33,7 @@ router.get("/channel/:chnID",(req,res)=>{
 })
 
 router.get("/user/:user",(req,res)=>{
+    var now = new Date().toISOString().substring(0,10).replace("-","/").replace("-","/")
     User.getUserSubscriptions(req.params.user).then(subs=>{
         User.getUserPublisher(req.params.user).then(pubs=>{
           let promisses = []
@@ -32,7 +41,7 @@ router.get("/user/:user",(req,res)=>{
             promisses.push(Dates.findByChannel(sub._id))
           }
           for (let pub of pubs){
-            promisses.push(Dates.findByChannel(pub._id))
+            promisses.push(Dates.findDatesByChannel(pub._id))
           }
           Promise.all(promisses).then((results)=>{
             let dates = []
@@ -55,6 +64,7 @@ router.get("/user/:user",(req,res)=>{
               }
               counter++;
           }
+          dates=dates.filter((a)=> a.date.date >= now)
           dates.sort(compareDates)
           res.status(200).jsonp(dates).end()}).catch((err)=>{console.log(err);res.sendStatus(500)})         
         
@@ -64,7 +74,8 @@ router.get("/user/:user",(req,res)=>{
 
 
 router.get("/channel/del/:chID",(req,res)=>{
-  Dates.findDeliveriesByChannel(req.params.chnID).then(results=>{
+  Dates.findDeliveriesByChannel(req.params.chID).then(results=>{
+
     results.sort((a,b)=>{
       if (a.date < b.date) return -1; 
       else if (a.date > b.date) return 1; 
@@ -79,6 +90,7 @@ router.get("/channel/del/:chID",(req,res)=>{
 
 
 router.get("/user/del/:user",(req,res)=>{
+  var now = new Date().toISOString().substring(0,10).replace("-","/").replace("-","/")
   User.getUserSubscriptions(req.params.user).then(subs=>{
       let promisses = []
       for (let sub of subs){
@@ -105,6 +117,7 @@ router.get("/user/del/:user",(req,res)=>{
           }
           counter++;
       }
+      dates=dates.filter((a)=> a.date.date >= now)
       dates.sort(compareDates)
       res.status(200).jsonp(dates).end()}).catch((err)=>{console.log(err);res.sendStatus(500)})         
     })
@@ -113,7 +126,9 @@ router.get("/user/del/:user",(req,res)=>{
 
 
 router.get("/channel/date/:chID",(req,res)=>{
+  var now = new Date().toISOString().substring(0,10).replace("-","/").replace("-","/")
   Dates.findDatesByChannel(req.params.chnID).then(results=>{
+    results=results.filter((a)=> a.date >= now)
     results.sort((a,b)=>{
       if (a.date < b.date) return -1; 
       else if (a.date > b.date) return 1; 
@@ -158,6 +173,7 @@ router.get("/user/date/:user",(req,res)=>{
           }
           counter++;
       }
+      dates=dates.filter((a)=> a.date.date >= now)
       dates.sort(compareDates)
       res.status(200).jsonp(dates).end()}).catch((err)=>{console.log(err);res.sendStatus(500)})         
     

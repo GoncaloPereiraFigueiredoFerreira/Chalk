@@ -6,9 +6,21 @@ block channel_cont
     
     input(type='hidden' id='channel_id' value=channel._id)
 
+    .col-span-8(class='md:col-span-2  md:row-start-1')
+      .p-4.h-full.flex.flex-col.bg-white.border.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
+        .flex.items-center.justify-between.mb-4
+          h5.text-xl.font-bold.leading-none.text-gray-900(class='dark:text-white') About this channel:
+        p(class='dark:text-white') #{channel.description}
+        .mt-auto(class='dark:text-white')
+          p.font-bold Publishers:
+          ul
+            each pub in channel.publishers
+              li #{pub}
+      
+
     // Announcement titles
-    .col-span-8(class='md:col-span-3  md:row-start-1')
-      .p-4.bg-white.border.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
+    .col-span-8(class='md:col-span-6  md:row-start-1')
+      .p-4.h-full.bg-white.border.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
         .flex.items-center.justify-between.mb-4
           h5.text-xl.font-bold.leading-none.text-gray-900(class='dark:text-white') Announcements
           div
@@ -33,7 +45,7 @@ block channel_cont
                     | #{ann.date}
 
     // Content Tab
-    .col-span-8(class='md:col-start-4 md:col-end-9 md:row-start-1 md:row-end-3')
+    .col-span-8(class='md:col-start-3 md:col-end-9 md:row-start-2 md:row-end-3')
       .mb-5.flex.items-center.justify-between
         h5.text-2xl.font-bold.leading-none.text-gray-900(class='dark:text-white') Content
         label.sr-only(for='table-search') Search
@@ -60,7 +72,7 @@ block channel_cont
           tbody
     
     // Important Dates
-    .col-span-8(class='md:col-span-3  md:row-start-2')
+    .col-span-8(class='md:col-span-2  md:row-start-2')
       .w-full.p-4.bg-white.border.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
         .flex.items-center.justify-between.mb-4
           h5.text-xl.font-bold.leading-none.text-gray-900(class='dark:text-white') Important Dates
@@ -77,12 +89,12 @@ block channel_cont
                   .flex.items-center.space-x-4
                     p.text-sm.font-medium.text-gray-900.truncate(class="dark:text-white")
                       | #{date.date}
-                    if !date.delivery
+                    if !date.delivery || !user.subscribed || channel.publishers.includes(user.username) 
                       p.font-medium.text-gray-900.truncate(class="dark:text-white")
                         | #[strong #{date.title}]
                     else
-                      a.underline.font-medium.text-gray-900.truncate(href="/channel/"+channel._id+"/submitForm/"+date._id class="dark:text-white")
-                        | #[strong #{date.title}]
+                      a.underline.text-red-700.font-medium.text-gray-900.truncate(href="/channel/"+channel._id+"/submitForm/"+date._id class="dark:text-white")
+                        | #[strong Entrega:  #{date.title}]
                   if channel.publishers.includes(user.username) 
                     a(href="/channel/"+channel._id+"/remdate?date="+date._id)   
                       svg(width='42px' height='42px' viewbox='-798.72 -798.72 2621.44 2621.44' xmlns='http://www.w3.org/2000/svg' fill='#000000' stroke='#000000')
@@ -97,6 +109,7 @@ block channel_cont
   script.
     var files = #{folders};
     var current = files;
+
     var path = ["Home"]
     let tableRows = $('#folders').find('tbody')
 
