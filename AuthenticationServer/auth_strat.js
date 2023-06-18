@@ -3,8 +3,8 @@ require("dotenv").config();
 const crypto = require("crypto")
 // User model
 var User = require('./models/user');
-var Users = require("./controller/users")
- 
+
+
 // Strategies
 var JwtStrategy = require('passport-jwt').Strategy;
 var ExtractJwt = require('passport-jwt').ExtractJwt;
@@ -33,23 +33,33 @@ exports.getToken = function(user) {
 exports.googlePassport = passport.use(new GoogleStrategy({
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: "http://localhost:3000/auth/google/callback", //TODO: Change this
+      callbackURL: "http://localhost:7777/auth/google", 
       passReqToCallback : true
     },
     (request, accessToken, refreshToken, profile, done) => {
       try {
-          let existingUser = Users.findByEmail(profile.emails[0].value)
-          if (existingUser) {
-            return done(null, existingUser);
-          }
-          let newUser = Users.createAccount({
-            email: profile.emails[0].value,
-            level: "basic",
-            active: true,
-            date_created: "",
-            last_acess: ""
-          })
-          return done(null, newUser);
+          
+          User.findOne(({username: profile.emails[0].value})).then((existingUser)=>{
+            if (existingUser) {
+              return done(null, existingUser);
+            }
+            else{
+              var data = new Date().toISOString().substring(0,16)
+              User.register(new User({
+                username: profile.emails[0].value,
+                first_name: profile.name.givenName,
+                last_name:profile.name.familyName,
+                level:"user",
+                active:true,
+                date_created:data,
+                last_acess:data
+              }),accessToken).then(user=>{
+                return done(null, user);
+              })
+                       
+          }})
+
+         
       } catch (error) {
           return done(error, false)
       }

@@ -104,7 +104,6 @@ router.post("/newaccount",function(req,res){
 
   }).catch((err)=>{
       //ver erro e responder em conformidade
-      console.log(err)
       res.sendStatus(500)
   })
 })

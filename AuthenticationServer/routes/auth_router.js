@@ -95,33 +95,31 @@ router.post('/login', passport.authenticate('local',{ session: false }), (req, r
     else
       res.json({success: false, status: 'Deactivated Account'});
 });
- 
-router.get("/auth/google/callback",
-  passport.authenticate("google", { session: false }),
-  (req, res) => {
-    var token = authenticate.getToken({username: req.user.username, level: "basic"});
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'application/json');
-    res.json({success: true, token: token, status: 'You are successfully logged in!'});
 
+
+
+router.get("/auth/google",
+  passport.authenticate("google", { scope:
+    [ 'email', 'profile' ] }
+));
+
+
+router.get("/auth/google/callback",
+  passport.authenticate("google",{session:false}),
+  (req, res) => {
+      
+      console.log({username: req.user.username, level: "user", first_name:req.user.first_name, last_name:req.user.last_name})
+      var token = authenticate.getToken({username: req.user.username, level: "user", first_name:req.user.first_name, last_name:req.user.last_name});
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({success: true, token: token, status: 'register', email:req.user.username,first_name:req.user.first_name, last_name:req.user.last_name});
+
+
+      
+      
   }
 )
 
 
-
-// Logout // this wont be necessary
-router.get('/logout',authenticate.verifyUser,(req, res,next) => {
- if (req.session) {
-   req.session.destroy();
-   res.clearCookie('session-id');
-   res.json({success: true})
- }
- else {
-   var err = new Error('You are not logged in!');
-   err.status = 403;
-   next(err);
- }
-});
- 
 module.exports = router;
 

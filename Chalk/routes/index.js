@@ -97,6 +97,25 @@ router.get("/search",verifyAuthentication,(req,res,next)=>{
 
 /// Login and Register Pages
 
+router.get("/auth/google",(req,res,next)=>{
+    axios.get(auth_location+"/auth/google/callback"+req.url.replace("/auth/google","")).then(response=>{    
+    if (response.data.success){
+        axios.post(archive_location+"/ingest/newaccount",{"email":response.data.email, "name":response.data.first_name +  " " + response.data.last_name}).then(()=>{
+          loggedIn[response.data.token]=1
+          res.cookie("token",response.data.token)
+          res.redirect("/")
+      }).catch(err=>{
+          loggedIn[response.data.token]=1
+          res.cookie("token",response.data.token)
+          res.redirect("/")
+      })
+    }
+    else{
+      res.redirect("/login")
+    }
+  });
+})
+
 router.get("/login",(req,res,next)=>{
   res.render("login")
 });
