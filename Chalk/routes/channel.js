@@ -3,11 +3,13 @@ const router = express.Router();
 const axios = require("axios")
 const verifyAuthentication = require("./utils").verifyAuthentication
 let archive_location = process.env.ARCH_SERVER
+let storage_location = process.env.STORE_SERVER
 
 var FormData = require('form-data');
 var archiver = require('archiver')
 var bagit = require('../bagit/bagit')
 var multer = require('multer')
+const bagFolder = 'bagit/bags'
 const uploadFolder = 'uploads'
 var upload = multer({ dest: uploadFolder })
 var fs = require("fs");
@@ -389,6 +391,10 @@ router.get("/:chID/unsubscribe",verifyAuthentication,verifyChannelRole,(req,res,
 
 router.get("/:chID/addfile", verifyAuthentication,verifyChannelRole, (req, res, next) => {
   if (req.info.role == "pub"){
+    if (!fs.existsSync(uploadFolder)){
+      fs.mkdirSync(uploadFolder, { recursive: true });
+    }
+
     res.render("channel/upload_file", {
         user: req.user,
         channel: req.params.chID
@@ -422,11 +428,13 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
       }
 
       var archive = archiver('zip', {zlib: {level: 9}})
-      const promise1 = bagit.create_bag(archive, __dirname + '/../' + req.file.path, req.body.filename, __dirname + '/../bagit/bags/')
+      if (!fs.existsSync(__dirname + '/../' + bagFolder)){
+        fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
+      }
+      const promise1 = bagit.create_bag(archive, __dirname + '/../' + req.file.path, req.body.filename, __dirname + '/../' + bagFolder)
 
       Promise.all([promise1])
         .then(([checksum]) => {
-          // TODO: then, catch do post
           metadata = {
             file_size: req.file.size,
             publisher: req.user.username,
@@ -438,7 +446,7 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
           }
           console.log(metadata)
 
-          file = fs.createReadStream(__dirname + '/../bagit/bags/' + checksum + '.zip')
+          file = fs.createReadStream(__dirname + '/../' + bagFolder + '/' + checksum + '.zip')
         
           var form = new FormData()
           form.append('file', file)
@@ -451,6 +459,7 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
               }
           })
             .then(response1 => {
+                res.redirect('/channel/' + req.params.chID)
                 axios.post(archive_location + '/ingest/uploadfile', {
                     'channel': req.params.chID,
                     'path': dir,

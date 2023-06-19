@@ -63,7 +63,6 @@ module.exports.unpack_bag = (bagPath, extractionFolder, filename, mvPath) => {
                 fileOldPath = extractionFolder + '/data/' + filename
 
                 // get manifest encoding from bagit.txt
-                console.log(extractionFolder + '/bagit.txt')
                 fs.readFile(extractionFolder + '/bagit.txt', 'UTF-8', (err, bag) => {
                     if (err) {
                       console.error(err);
@@ -81,7 +80,10 @@ module.exports.unpack_bag = (bagPath, extractionFolder, filename, mvPath) => {
                         var hashNew = this.checksum_sha256(extractionFolder + '/data/' + manifest_filename)
 
                         if (hashNew === hashOG){
-                            fs.rename(fileOldPath, mvPath, () => { })
+                            if (!fs.existsSync(mvPath)) {
+                                console.log('file does not exist')
+                                fs.rename(fileOldPath, mvPath, () => { })
+                            }
 
                             // TODO: acabar unpacking (i.e. remover os ficheiros)
                             return
@@ -89,7 +91,7 @@ module.exports.unpack_bag = (bagPath, extractionFolder, filename, mvPath) => {
                         else {
                             // TODO: tratar do erro
                         }
-                    })  
+                    })
                 })
             })
             .catch((error) => {

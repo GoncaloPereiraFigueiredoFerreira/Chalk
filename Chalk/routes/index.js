@@ -152,6 +152,10 @@ router.get("/file/:fileID", verifyAuthentication, (req, res, next) => {
       axios.get(storage_location + '/file/' + metadata.location)
         .then((result) => {
           outputBag = __dirname + '/../' + bagFolder + '/' + metadata.checksum + '.zip'
+          if (!fs.existsSync(__dirname + '/../' + bagFolder)){
+            fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
+          }
+          
           fs.writeFile(outputBag, result.data, "binary", (err) => {
             if (err) throw err;
 

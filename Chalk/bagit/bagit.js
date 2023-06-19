@@ -40,6 +40,7 @@ module.exports.create_bag = (archive, original_path, new_name, output_dir) => {
     
         var output = fs.createWriteStream(output_dir + '/' + hash256 + '.zip')
         output.on('close', function () {
+            // TODO: maybe not unlink
             fs.unlink(original_path, (err) => { if (err) throw err });
             fs.unlink(output_dir + '/bagit.txt', (err) => { if (err) throw err });
             fs.unlink(output_dir + '/manifest-sha256.txt', (err) => { if (err) throw err });
