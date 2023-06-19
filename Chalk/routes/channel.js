@@ -74,6 +74,21 @@ router.get("/:chID/subscribe",verifyAuthentication,verifyChannelRole,(req,res,ne
 });
 
 
+router.post("/:chID/subscribewec",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
+  if (req.body.entrycode == req.info.entry_code){
+    axios.post(archive_location+"/ingest/addsubscription",
+    {
+      user: req.user.username,
+      channel:req.params.chID
+    }).then(()=>{res.redirect("back")})
+    .catch((err)=>{console.log(err)})
+
+  }
+  else{
+    res.redirect("/channel/"+req.params.chID)
+  }
+});
+
 
 /////////// Routes for Subs and Pubs ///////////////
 

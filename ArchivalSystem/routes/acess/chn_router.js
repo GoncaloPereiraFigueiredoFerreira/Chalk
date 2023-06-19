@@ -27,6 +27,7 @@ router.get("/info/:channel",function(req,res){
           name:result.name,
           publishers:result.publishers,
           subscribed:result.consumers.includes(user),
+          entry_code:result.entry_code,
           nsubs:result.consumers.length
         }
         res.status(200).jsonp(msg).end()}
