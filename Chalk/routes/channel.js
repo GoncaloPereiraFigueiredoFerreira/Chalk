@@ -20,7 +20,6 @@ function verifyChannelRole(req,res,next){
       else if (info.subscribed) info.role="sub"
       else info.role=""
       req.info = info
-      console.log(info)
       next()
 
     })
@@ -65,13 +64,22 @@ router.get("/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
 
 // Subscribe to a channel
 router.get("/:chID/subscribe",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
-  axios.post(archive_location+"/ingest/addsubscription",
-  {
-    user: req.user.username,
-    channel:req.params.chID
-  }).then(()=>{res.redirect("back")})
-  .catch((err)=>{console.log(err)})
+  if (req.info.entry_code==""){
+    axios.post(archive_location+"/ingest/addsubscription",
+    {
+      user: req.user.username,
+      channel:req.params.chID
+    }).then(()=>{res.redirect("back")})
+    .catch((err)=>{console.log(err)})
+  }
+  else {
+    res.sendStatus(403).end()
+  }  
+
 });
+  
+
+  
 
 
 router.post("/:chID/subscribewec",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
