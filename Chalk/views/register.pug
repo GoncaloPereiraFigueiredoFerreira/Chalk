@@ -37,8 +37,8 @@ block body
             path(fill-rule='evenodd' d='M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z' clip-rule='evenodd')
           input.pl-2.outline-none.border-none(size=40  type='password' name='password' placeholder='Password')
         button.block.w-full.bg-indigo-600.mt-4.py-2.rounded.text-white.font-semibold.mb-2(type='submit') Register
-        #g_id_onload(data-client_id='241746772293-kcndli7f2vb29nhg4508hv38hu7pktcq.apps.googleusercontent.com' data-context='register' data-ux_mode='popup' data-login_uri='http://localhost:7777/register' data-itp_support='true')
-        .g_id_signin(data-type='standard' data-shape='rectangular' data-theme='outline' data-text='signin_with' data-size='large' data-logo_alignment='left')
-        .mt-4.ml-2(class='hover:text-blue-500') #[a(href="/login") Já criou conta? ]
+    form.mt-4.ml-2(method="GET" action="http://localhost:7778/auth/google")
+      button(type="submit") Autenticar pela google
+    .mt-4.ml-2(class='hover:text-blue-500') #[a(href="/login") Já tem conta? ]
 
 

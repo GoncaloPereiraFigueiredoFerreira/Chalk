@@ -11,16 +11,16 @@ block channel_cont
                   .justify-items-start
                     li
                       .p-5(class="bg-blue-600 dark:bg-blue-800 text-white")
-                        a(href="/channel/"+channel._id+"/settings").text-white Edit Channel
+                        a(href="/channel/settings/"+channel._id).text-white Edit Channel
                     li
                       .p-5(class="bg-white dark:bg-gray-800 dark:text-white")
-                        a(href="/channel/"+channel._id+"/students") Student List
+                        a(href="/channel/students/"+channel._id) Student List
                     li
                       .p-5(class="bg-white dark:bg-gray-800 dark:text-white")
-                        a(href="/channel/"+channel._id+"/submissions") Submissions
+                        a(href="/channel/submissions/"+channel._id) Submissions
                 
                 .mt-auto 
-                  form(method="GET" action="/channel/"+channel._id+"/delete")
+                  form(method="GET" action="/channel/delete"+channel._id)
                     button.w-full.block.text-white.bg-red-700.font-medium.text-sm.px-5.text-center(data-modal-target='popup-modal' data-modal-toggle='popup-modal' class='hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800' type='button')
                       | Delete Channel
                     #popup-modal.fixed.top-0.left-0.right-0.z-50.hidden.p-4.overflow-x-hidden.overflow-y-auto.max-h-full(tabindex='-1' class='md:inset-0 h-[calc(100%-1rem)]')

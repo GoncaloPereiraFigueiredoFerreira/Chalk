@@ -26,8 +26,8 @@ block channel_cont
           div
             a.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/posts/'+channel._id class='hover:underline dark:text-blue-500')
               | View all
-            if channel.publishers.includes(user.username)
-              a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/'+channel._id+'/addpost' class='hover:underline dark:text-blue-500')
+            if channel.role=="pub"
+              a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/addpost/'+channel._id class='hover:underline dark:text-blue-500')
                 | Add Post
 
         .flow-root
@@ -63,7 +63,7 @@ block channel_cont
             // Table head with current and past folders
             nav.flex.items-center.justify-between.px-5.py-3.text-gray-800.bg-gray-50(class='dark:bg-gray-800 dark:border-gray-700')
               ol.inline-flex.items-center.space-x-1(class='md:space-x-3' id="dirnav")
-              if channel.publishers.includes(user.username)
+              if channel.role=="pub"
                 a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(id='add_dir' href='/channel/' + channel._id + '/adddir?dir=""' class='hover:underline dark:text-blue-500')
                   | Add Directory
                 a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(id='add_file' href='/channel/' + channel._id + '/addfile?dir=""' class='hover:underline dark:text-blue-500')
@@ -77,8 +77,8 @@ block channel_cont
         .flex.items-center.justify-between.mb-4
           h5.text-xl.font-bold.leading-none.text-gray-900(class='dark:text-white') Important Dates
 
-          if channel.publishers.includes(user.username)
-            a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/'+channel._id+'/adddate' class='hover:underline dark:text-blue-500')
+          if channel.role=="pub"
+            a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/adddate/'+channel._id class='hover:underline dark:text-blue-500')
               | Add date
 
         .flow-root
@@ -89,14 +89,14 @@ block channel_cont
                   .flex.items-center.space-x-4
                     p.text-sm.font-medium.text-gray-900.truncate(class="dark:text-white")
                       | #{date.date}
-                    if !date.delivery || !user.subscribed || channel.publishers.includes(user.username) 
+                    if !date.delivery || channel.role=="" || channel.role=="pub" 
                       p.font-medium.text-gray-900.truncate(class="dark:text-white")
                         | #[strong #{date.title}]
                     else
                       a.underline.text-red-700.font-medium.text-gray-900.truncate(href="/channel/"+channel._id+"/submitForm/"+date._id class="dark:text-white")
                         | #[strong Entrega:  #{date.title}]
-                  if channel.publishers.includes(user.username) 
-                    a(href="/channel/"+channel._id+"/remdate?date="+date._id)   
+                  if channel.role=="pub" 
+                    a(href="/channel/remdate"+channel._id+"?date="+date._id)   
                       svg(width='42px' height='42px' viewbox='-798.72 -798.72 2621.44 2621.44' xmlns='http://www.w3.org/2000/svg' fill='#000000' stroke='#000000')
                         g(stroke-width='0')
                           g(stroke-linecap='round' stroke-linejoin='round')

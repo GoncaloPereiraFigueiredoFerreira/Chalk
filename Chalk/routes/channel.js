@@ -4,21 +4,31 @@ const axios = require("axios")
 const verifyAuthentication = require("./utils").verifyAuthentication
 let archive_location = process.env.ARCH_SERVER
 
+var FormData = require('form-data');
+var archiver = require('archiver')
+var bagit = require('../bagit/bagit')
+var multer = require('multer')
+const uploadFolder = 'uploads'
+var upload = multer({ dest: uploadFolder })
+var fs = require("fs");
 
 function verifyChannelRole(req,res,next){
+    let chn = req.params.chID
     axios.get(archive_location+"/acess/channel/info/"+chn+"?user="+req.user.username).then(response=>{
-      let info = response[0].data
-      if (req.user.username in info.publishers) info.role="pub"
+      let info = response.data
+      if (info.publishers.includes(req.user.username)) info.role="pub"
       else if (info.subscribed) info.role="sub"
       else info.role=""
       req.info = info
+      console.log(info)
       next()
+
     })
 }
 
 /////////// Route acessed to all  ///////////
 
-router.get("/channel/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
+router.get("/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
     let dates=[]
     let ann_titles=[]
     let folders = {}
@@ -32,19 +42,29 @@ router.get("/channel/:chID",verifyAuthentication,verifyChannelRole,(req, res, ne
           folders=JSON.stringify(results[0].data).replaceAll("\"","'")
           ann_titles = results[1].data
           dates = results[2].data
+          res.render("channel/index",{
+            user:req.user,
+            channel:req.info,
+            folders:folders,
+            titles:ann_titles,
+            dates:dates
+          })
         })
     }
-    res.render("channel/index",{
-      user:req.user,
-      channel:req.info,
-      folders:folders,
-      titles:ann_titles,
-      dates:dates
-    })
+    else{
+      res.render("channel/index",{
+        user:req.user,
+        channel:req.info,
+        folders:folders,
+        titles:ann_titles,
+        dates:dates
+      })
+    }
+   
 });
 
 // Subscribe to a channel
-router.get("/channel/:chID/subscribe",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
+router.get("/:chID/subscribe",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   axios.post(archive_location+"/ingest/addsubscription",
   {
     user: req.user.username,
@@ -57,7 +77,7 @@ router.get("/channel/:chID/subscribe",verifyAuthentication,verifyChannelRole,(re
 
 /////////// Routes for Subs and Pubs ///////////////
 
-router.get("/channel/posts/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=> {
+router.get("/posts/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=> {
   let chn = req.params.chID
   let ann = req.query.post
   let ann_titles = []
@@ -70,13 +90,13 @@ router.get("/channel/posts/:chID",verifyAuthentication,verifyChannelRole,(req, r
           })
         } 
         else if (ann_titles.length != 0){
-          let id = titles[0]._id
+          let id = ann_titles[0]._id
           axios.get(archive_location+"/acess/posts/"+id).then((post)=>{
               res.render("channel/announcements",{user:req.user,channel:req.info,titles:ann_titles,announcement:post.data})
           })
         }
         else
-          res.render("channel/announcements",{user:req.user,channel:req.info,titles:titles,announcement:{}})
+          res.render("channel/announcements",{user:req.user,channel:req.info,titles:ann_titles,announcement:{}})
       })  
   }
   else{
@@ -85,17 +105,17 @@ router.get("/channel/posts/:chID",verifyAuthentication,verifyChannelRole,(req, r
 })
 
 // Add a comment to a post
-router.post("/channel/posts/addcomment",verifyAuthentication,(req,res,next)=>{
+router.post("/posts/:chID/addcomment",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   if (req.info.role!=""){
     axios.post(archive_location+"/ingest/newcomment",
     {
       user: req.user.first_name + " " + req.user.last_name,
       announcement: req.query.announcement,
-      channel:req.query.channel,
+      channel: req.params.chID,
       content:req.body.comment
     
     }).then(()=>{
-        res.redirect("/channel/posts/"+req.query.channel+"?post="+req.query.announcement)
+        res.redirect("/channel/posts/"+req.params.chID+"?post="+req.query.announcement)
     }).catch((err)=>{
     })
   }
@@ -107,7 +127,7 @@ router.post("/channel/posts/addcomment",verifyAuthentication,(req,res,next)=>{
 /////////// Routes for Pubs ///////////
 
 //Edit channel route
-router.get("/channel/settings/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
+router.get("/settings/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
   if (req.info.role=="pub")
     res.render("channel/editchannel",{user:req.user, channel:req.info})
   else{
@@ -116,11 +136,11 @@ router.get("/channel/settings/:chID",verifyAuthentication,verifyChannelRole,(req
 })
 
 //Post channel Edit
-router.post("/channel/settings/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
+router.post("/settings/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
   let chn = req.params.chID
   if (req.info.role=="pub"){
     axios.put(archive_location+"/manage/channel/"+chn,req.body).then(()=>{
-      res.redirect("/channel/"+chn+"/settings")
+      res.redirect("/channel/settings/"+chn)
     })
   }
   else{
@@ -129,11 +149,11 @@ router.post("/channel/settings/:chID",verifyAuthentication,verifyChannelRole,(re
 })
 
 // Get student list
-router.get("/channel/students/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
+router.get("/students/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
   let chn = req.params.chID
   if (req.info.role=="pub"){
     axios.get(archive_location+"/acess/channel/studentlist/"+chn).then(result=>{
-      res.render("channel/studentslist",{user:req.user, channel:req.info,students:results.data})
+      res.render("channel/studentslist",{user:req.user, channel:req.info,students:result.data})
     })
   }
   else{
@@ -142,7 +162,7 @@ router.get("/channel/students/:chID",verifyAuthentication,verifyChannelRole,(req
 })
 
 // Get student submissions
-router.get("/channel/submissions/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
+router.get("/submissions/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
   let chnID = req.params.chID
   let date = req.query.date 
   if (req.info.role=="pub"){
@@ -165,7 +185,7 @@ router.get("/channel/submissions/:chID",verifyAuthentication,verifyChannelRole,(
 })
 
 // Delete Channel
-router.get("/channel/delete/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
+router.get("/delete/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   let id = req.params.chID
   if (req.info.role=="pub"){
     axios.delete(archive_location+"/manage/channel/"+id).then((response)=>{
@@ -177,9 +197,8 @@ router.get("/channel/delete/:chID",verifyAuthentication,verifyChannelRole,(req,r
   }
 })
 
-
 // Form to submit post
-router.get("/channel/addpost/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
+router.get("/addpost/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   if (req.info.role=="pub"){
     res.render("channel/create_post",{user:req.user,channel:req.info,defaultV:{},edit:false})
   }
@@ -189,7 +208,7 @@ router.get("/channel/addpost/:chID",verifyAuthentication,verifyChannelRole,(req,
 });
 
 // Post form
-router.post("/channel/addpost/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
+router.post("/addpost/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   if (req.info.role=="pub"){
     axios.post(archive_location+"/ingest/newpost",
     {
@@ -213,7 +232,7 @@ router.post("/channel/addpost/:chID",verifyAuthentication,verifyChannelRole,(req
 
 
 // Edit Post
-router.get("/channel/posts/:chID/edit",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
+router.get("/posts/:chID/edit",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   let ann = req.query.post
   if (req.info.role=="pub"){
     axios.get(archive_location+"/acess/posts/"+ann).then((resp2)=>{
@@ -226,7 +245,7 @@ router.get("/channel/posts/:chID/edit",verifyAuthentication,verifyChannelRole,(r
 });
 
 // Post edit form
-router.post("/channel/posts/:chID/edit",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
+router.post("/posts/:chID/edit",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   let ann = req.query.post
   if (req.info.role=="pub"){
     axios.put(archive_location+"/manage/posts/"+ann,req.body).then(()=>{
@@ -239,7 +258,7 @@ router.post("/channel/posts/:chID/edit",verifyAuthentication,verifyChannelRole,(
 });
 
 // Delete Post
-router.get("/channel/posts/:chID/delete",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
+router.get("/posts/:chID/delete",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   let ann = req.query.post
   if (req.info.role=="pub"){
     axios.delete(archive_location+"/manage/posts/"+ann).then(()=>{
@@ -252,7 +271,7 @@ router.get("/channel/posts/:chID/delete",verifyAuthentication,verifyChannelRole,
 });
 
 // Add new Important Date
-router.get("/channel/adddate/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
+router.get("/adddate/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   let chn = req.params.chID
   if (req.info.role=="pub"){
       res.render("channel/create_date",{user:req.user,channel:req.info})
@@ -263,7 +282,7 @@ router.get("/channel/adddate/:chID",verifyAuthentication,verifyChannelRole,(req,
 });
 
 // Post important date form
-router.post("/channel/adddate/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
+router.post("/adddate/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   if (req.info.role=="pub"){
     axios.post(archive_location+"/ingest/newdate",
     {
@@ -286,7 +305,7 @@ router.post("/channel/adddate/:chID",verifyAuthentication,verifyChannelRole,(req
 });
 
 // Remove Date
-router.get("/channel/remdate/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
+router.get("/remdate/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   let date = req.query.date
   if (req.info.role=="pub"){
     axios.delete(archive_location+"/manage/dates/"+date).then(()=>{
@@ -300,7 +319,7 @@ router.get("/channel/remdate/:chID",verifyAuthentication,verifyChannelRole,(req,
 
 /////////// Routes for Subs //////////////
 
-router.get("/channel/:chID/submitForm/:submit",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
+router.get("/:chID/submitForm/:submit",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   if (req.info.role == "sub"){
     res.render("channel/submit_work",{user:req.user,channel:req.info,delivery:req.params.submit})
   }
@@ -311,7 +330,7 @@ router.get("/channel/:chID/submitForm/:submit",verifyAuthentication,verifyChanne
 });
 
 
-router.post("/channel/:chID/submitForm/:submit",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
+router.post("/:chID/submitForm/:submit",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   let chn = req.params.chID
   let subm = req.params.submit
   if (req.info.role == "sub"){
@@ -326,13 +345,13 @@ router.post("/channel/:chID/submitForm/:submit",verifyAuthentication,verifyChann
 });
 
 // Unsubscribe from channel
-router.get("/channel/:chID/unsubscribe",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
+router.get("/:chID/unsubscribe",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   if (req.info.role == "sub"){
     axios.post(archive_location+"/ingest/remsubscription",
     {
       user: req.user.username,
       channel:req.params.chID
-    }).then(()=>{res.redirect("back")})
+    }).then(()=>{res.redirect("/")})
     .catch((err)=>{})
   }
   else{
@@ -342,118 +361,137 @@ router.get("/channel/:chID/unsubscribe",verifyAuthentication,verifyChannelRole,(
 
 ///////////////////////////////////////////
 
+//// File Management
 
 
-
-
-router.get("/channel/:chID/addfile", verifyAuthentication, (req, res, next) => {
-  
-  res.render("channel/upload_file", {
-      user: req.user,
-      channel: req.params.chID
-  })
-});
-
-router.post("/channel/:chID/addfile", verifyAuthentication, upload.single('myFile'), function(req, res) {
-  if ('dir' in req.query){
-    let dir = req.query['dir']
-    if (dir === '""'){
-      dir = ''
-    }
-    else{
-      dir = req.query['dir'].substring(2, req.query['dir'].length - 1)
-    }
-    let tags = []
-    let i = 1
-    while(true){
-      let tag = 'tag' + i
-      if (tag in req.body){
-        tags.push(req.body[tag])
-      }
-      else
-        break
-      i += 1
-    }
-
-    var archive = archiver('zip', {zlib: {level: 9}})
-    const promise1 = bagit.create_bag(archive, __dirname + '/../' + req.file.path, req.body.filename, __dirname + '/../bagit/bags/')
-
-    Promise.all([promise1])
-      .then(([checksum]) => {
-        // TODO: then, catch do post
-        metadata = {
-          file_size: req.file.size,
-          publisher: req.user.username,
-          file_name: req.body.filename,
-          file_type: req.file.mimetype,
-          location: checksum,
-          checksum: checksum,
-          tags: tags
-        }
-        console.log(metadata)
-
-        file = fs.createReadStream(__dirname + '/../bagit/bags/' + checksum + '.zip')
-      
-        var form = new FormData()
-        form.append('file', file)
-        form.append('checksum', metadata.checksum)
-        form.append('filename', metadata.file_name)
-    
-        axios.post(storage_location + '/uploadfile', form, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-        })
-          .then(response1 => {
-              axios.post(archive_location + '/ingest/uploadfile', {
-                  'channel': req.params.chID,
-                  'path': dir,
-                  'file': metadata
-                }
-              )
-                .then(response2 => { res.redirect('/channel/' + req.params.chID) })
-                .catch(err => { err => console.log(err) })
-           })
-          .catch(err => { })
-      })
-      .catch(err => console.log(err))
-      // TODO: do something com os erros
+router.get("/:chID/addfile", verifyAuthentication,verifyChannelRole, (req, res, next) => {
+  if (req.info.role == "pub"){
+    res.render("channel/upload_file", {
+        user: req.user,
+        channel: req.params.chID
+    })
   }
   else{
-      // TODO: do something com os erros
+    res.sendStatus(401).end()
   }
 });
 
-router.get("/channel/:chID/adddir", verifyAuthentication, function(req, res) {
-  if ('dir' in req.query){
-    res.render("channel/create_dir", {
-      user: req.user,
-      channel: req.params.chID
-    })
-  }
-})
+router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.single('myFile'), function(req, res) {
+  if (req.info.role == "pub"){
+    if ('dir' in req.query){
+      let dir = req.query['dir']
+      if (dir === '""'){
+        dir = ''
+      }
+      else{
+        dir = req.query['dir'].substring(2, req.query['dir'].length - 1)
+      }
+      let tags = []
+      let i = 1
+      while(true){
+        let tag = 'tag' + i
+        if (tag in req.body){
+          tags.push(req.body[tag])
+        }
+        else
+          break
+        i += 1
+      }
 
-router.post("/channel/:chID/adddir", verifyAuthentication, function(req, res) {
-  if ('dir' in req.query){
-    dir = req.query['dir']
-    if (dir === '""'){
-      dir = '' + req.body.dir
+      var archive = archiver('zip', {zlib: {level: 9}})
+      const promise1 = bagit.create_bag(archive, __dirname + '/../' + req.file.path, req.body.filename, __dirname + '/../bagit/bags/')
+
+      Promise.all([promise1])
+        .then(([checksum]) => {
+          // TODO: then, catch do post
+          metadata = {
+            file_size: req.file.size,
+            publisher: req.user.username,
+            file_name: req.body.filename,
+            file_type: req.file.mimetype,
+            location: checksum,
+            checksum: checksum,
+            tags: tags
+          }
+          console.log(metadata)
+
+          file = fs.createReadStream(__dirname + '/../bagit/bags/' + checksum + '.zip')
+        
+          var form = new FormData()
+          form.append('file', file)
+          form.append('checksum', metadata.checksum)
+          form.append('filename', metadata.file_name)
+      
+          axios.post(storage_location + '/uploadfile', form, {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+          })
+            .then(response1 => {
+                axios.post(archive_location + '/ingest/uploadfile', {
+                    'channel': req.params.chID,
+                    'path': dir,
+                    'file': metadata
+                  }
+                )
+                  .then(response2 => { res.redirect('/channel/' + req.params.chID) })
+                  .catch(err => { err => console.log(err) })
+            })
+            .catch(err => { })
+        })
+        .catch(err => console.log(err))
+        // TODO: do something com os erros
     }
     else{
-      dir = req.query['dir'].substring(2, req.query['dir'].length - 1)
-      dir = dir + '/' + req.body.dir
+        // TODO: do something com os erros
     }
-
-    axios.post(archive_location + '/ingest/newdir', {
-      channel: req.params.chID,
-      path: dir
-    })
-      .then((result) => { res.redirect('/channel/' + req.params.chID) })
-      .catch(err => { 
-        //TODO: tratar do erro 
-      })
+  }  
+  else{
+    res.sendStatus(401).end()
   }
-})
+});
+
+router.get("/:chID/adddir", verifyAuthentication, verifyChannelRole,function(req, res) {
+  if (req.info.role == "pub"){
+    if ('dir' in req.query){
+      res.render("channel/create_dir", {
+        user: req.user,
+        channel: req.params.chID
+      })
+    }
+  }
+  else{
+    res.sendStatus(401).end()
+  }
+});
+
+
+router.post("/:chID/adddir", verifyAuthentication,verifyChannelRole, function(req, res) {
+  if (req.info.role == "pub"){
+    if ('dir' in req.query){
+      dir = req.query['dir']
+      if (dir === '""'){
+        dir = '' + req.body.dir
+      }
+      else{
+        dir = req.query['dir'].substring(2, req.query['dir'].length - 1)
+        dir = dir + '/' + req.body.dir
+      }
+
+      axios.post(archive_location + '/ingest/newdir', {
+        channel: req.params.chID,
+        path: dir
+      })
+        .then((result) => { res.redirect('/channel/' + req.params.chID) })
+        .catch(err => { 
+          //TODO: tratar do erro 
+        })
+    }
+  }
+  else{
+    res.sendStatus(401).end()
+  }
+});
 
 
 module.exports = router

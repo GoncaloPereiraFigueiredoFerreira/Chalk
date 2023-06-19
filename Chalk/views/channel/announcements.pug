@@ -11,8 +11,8 @@ block channel_cont
               ul.overflow-auto(class='h-[32rem]')
                 .flex.justify-between.items-center.pb-6.border-b.border-gray-300
                   h2.text-3xl.text-gray-600(class='dark:text-white') Announcements
-                  if channel.publishers.includes(user.username)
-                    a.mt-2.mr-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/'+channel._id+'/addpost' class='hover:underline dark:text-blue-500')
+                  if channel.role=="pub"
+                    a.mt-2.mr-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/addpost/'+channel._id class='hover:underline dark:text-blue-500')
                       | Add Post
                 each ann in titles
                   li.flex.justify-between.overflow-hidden.transition.duration-150.ease-in-out.border-b.border-gray-300(class='hover:bg-gray-100 focus:outline-none dark:hover:bg-gray-700')
@@ -23,7 +23,7 @@ block channel_cont
                             span.block.ml-2.text-sm #{ann.date}
                           .flex.justify-between
                             span.block.ml-2.text-sm #{ann.publisher} 
-                      if channel.publishers.includes(user.username)            
+                      if channel.role=="pub"            
                         .flex.justify-end.mr-4
                           a(href="/channel/posts/"+channel._id+"/edit?post="+ann._id).w-12     
                             svg(style="pointer-events: all;" fill='#000000' height='64px' width='64px' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewbox='-348.88 -348.88 1046.64 1046.64' xml:space='preserve')
@@ -74,7 +74,7 @@ block channel_cont
                                 | #{comment.comment}
                   
                 .flex.items-center.justify-between.w-full.p-3.border-gray-300
-                    form(id="commentForm" method="POST" action="/channel/posts/addcomment?announcement="+announcement._id+"&channel="+channel._id)
+                    form(id="commentForm" method="POST" action="/channel/posts/"+channel._id+"/addcomment?announcement="+announcement._id)
                     button
                       svg.w-6.h-6.text-gray-500(xmlns='http://www.w3.org/2000/svg' fill='none' viewbox='0 0 24 24' stroke='currentColor')
                         path(stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z')
