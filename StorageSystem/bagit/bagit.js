@@ -81,7 +81,6 @@ module.exports.unpack_bag = (bagPath, extractionFolder, filename, mvPath) => {
 
                         if (hashNew === hashOG){
                             if (!fs.existsSync(mvPath)) {
-                                console.log('file does not exist')
                                 fs.rename(fileOldPath, mvPath, () => { })
                             }
 
