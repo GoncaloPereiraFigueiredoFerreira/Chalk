@@ -113,12 +113,33 @@ block channel_cont
     var path = ["Home"]
     let tableRows = $('#folders').find('tbody')
 
+    function formatFilesize(filesize){
+      if (filesize < 1000){
+        return filesize + " B"
+      }
+      else if (filesize < 1000000){
+        filesize = filesize / 1000
+        filesize = filesize.toFixed(1)
+        return filesize + " KB"
+      }
+      else if (filesize < 1000000000){
+        filesize = filesize / 1000000
+        filesize = filesize.toFixed(1)
+        return filesize + " MB"
+      }
+      else{
+        filesize = filesize / 1000000000
+        filesize = filesize.toFixed(1)
+        return filesize + " GB"
+      }
+    }
+
     function composeFolder(){
       $("#dirnav").empty()
       for(let i in path){
           currP = path[i]
           let li = $('<li>').attr("class","inline-flex items-center text-gray-400")
-          let a = $('<a>').attr("data-nav",currP).attr("href","#").attr("class","inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white")
+          let a = $('<a>').attr("data-nav",currP).attr("href","#/").attr("class","inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white")
           if (currP =="Home"){
               let home= $("<object>").attr("class","w-4 h-4 mr-2 dark:invert").attr("data",'/images/svgs/home.svg').attr("type",'image/svg+xml')
               $("ol").append(li.append(a.append(home).append($("<span>").text(currP))))
@@ -133,41 +154,49 @@ block channel_cont
           else current = current[currP].files
       }
 
+      dirs = []
+      fils = []
+
       if ("" in current){
         root = current[""]
         for (let i in root.files){
-          let file = root.files[i]
-          let tr = $('<tr>').attr("class","flex cursor-pointer justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
-          let href = $('<a>').attr("href", '/file/' + file.metadata._id).text(i)
-          let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row")
-          name.append(href)
-          let format = $('<td>').attr("class","px-6 py-4").text(file.format)
-          let tags = $('<td>').attr("class","px-6 py-4").text("TAGS")
-          let fileSize = $('<td>').attr("class","px-6 py-4").text("FILE_SIZE")
-          tableRows.append(tr.append(name).append(tags).append(format).append(fileSize))
+          fils.push({name: i, file: root.files[i]})
         }
       }
 
       for (let i in current){
         let file = current[i]
         if (file.type == "dir"){
-          if (i != ''){
-            let tag = $('<td>').attr("class", "flex items-center ml-64").append($("<div>").attr("class","border rounded-lg p-1").text("Directory"))
-            let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row").text(i)
-            let tr = $('<tr>').attr("data-directory",i).attr("class","cursor-pointer flex bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
-            tableRows.append(tr.append(name).append(tag))
-          }
+          dirs.push({name: i, dir: file})
         } 
         else if (file.type == "file"){
-          let tr = $('<tr>').attr("class","flex cursor-pointer justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
-          let href = $('<a>').attr("href", '/file/' + file.metadata._id).text(i)
-          let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row")
-          name.append(href)
-          let format = $('<td>').attr("class","px-6 py-4").text(file.format)
-          let tags = $('<td>').attr("class","px-6 py-4").text("TAGS")
-          let fileSize = $('<td>').attr("class","px-6 py-4").text("FILE_SIZE")
-          tableRows.append(tr.append(name).append(tags).append(format).append(fileSize))
+          fils.push({name: i, file: file})
         } 
+      }
+
+      dirs.sort(function(a, b){ return a.name.localeCompare(b.name) })
+      fils.sort(function(a, b){ return a.name.localeCompare(b.name) })
+      
+      for (let i in dirs){
+        dir = dirs[i]
+        if (dir.name != ''){
+            let tag = $('<td>').attr("class", "flex items-center ml-64").append($("<div>").attr("class","border rounded-lg p-1").text("Directory"))
+            let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row").text(dir.name)
+            let tr = $('<tr>').attr("data-directory",dir.name).attr("class","cursor-pointer flex bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
+            tableRows.append(tr.append(name).append(tag))
+        }
+      }
+
+      for (let i in fils){
+        f = fils[i]
+        let tr = $('<tr>').attr("class","flex cursor-pointer justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
+        let href = $('<a>').attr("href", '/file/' + f.file.metadata._id).text(f.name)
+        let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row")
+        name.append(href)
+        let format = $('<td>').attr("class","px-6 py-4").text(f.file.format)
+        let tags = $('<td>').attr("class","px-6 py-4").text("TAGS")
+        let fileSize = $('<td>').attr("class","px-6 py-4").text(formatFilesize(f.file.metadata.file_size))
+        tableRows.append(tr.append(name).append(tags).append(format).append(fileSize))
       }
 
        $("tr").each(function(index, value) {
@@ -175,7 +204,6 @@ block channel_cont
             $(this).on("click",function(){
               tableRows.empty();
               path.push(this.dataset.directory);
-
               dir = ''
               for (let i in path){
                 if (i != 0)
