@@ -2,7 +2,6 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
-var router = require("./routes/auth_router")
 require("dotenv").config();
 
 var passport = require('passport');
@@ -24,33 +23,27 @@ db.on("open", ()=>{
 
 
 // Generate Public and Private Keys
-const { generateKeyPair } = require('crypto');
+const { generateKeyPairSync } = require('crypto');
 const fs = require("fs")
 
-generateKeyPair('rsa', {
-    modulusLength: 4096,
-    publicKeyEncoding: {
-      type: 'pkcs1',
-      format: 'pem'
-    },
-    privateKeyEncoding: {
-      type: 'pkcs1',
-      format: 'pem',
-    }
-  }, (err, publicKey, privateKey) => { 
-       if(!err)
-       {/***  suspended functionality
-          fs.writeFile('keys/public.pem',publicKey,err=>{
-            if (err){
-              console.error(err)
-            }})
-          fs.writeFile('keys/private.pem',privateKey,err=>{
-              if (err){
-                console.error(err)
-            }})*/
-          } 
-       else console.log("Errr is: ", err);    
-});
+let files  =fs.readdirSync("./keys")
+
+if (files.length == 0){
+    let keys =generateKeyPairSync('rsa', {
+        modulusLength: 4096,
+        publicKeyEncoding: {
+          type: 'spki',
+          format: 'pem'
+        },
+        privateKeyEncoding: {
+          type: 'pkcs8',
+          format: 'pem'
+        }})
+        fs.writeFileSync("./keys/private.pem",keys.privateKey)
+        fs.writeFileSync("./keys/public.pem",keys.publicKey)
+}
+
+var router = require("./routes/auth_router")
 
 
 var app = express();
