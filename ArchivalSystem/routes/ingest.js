@@ -70,14 +70,29 @@ router.post("/addFile",function(req,res){
 
 
 router.post("/newdir",function(req,res){
-  return Channels.createDir(req.body.channel,req.body.path).then(()=>{
-    res.sendStatus(200)
+  return Channels.getChannelContents(req.body.channel)
+    .then((channel) => {
+      let alreadyExists = false
 
-}).catch((err)=>{
-    //ver erro e responder em conformidade
-    console.log(err)
-    res.sendStatus(500)
-})
+      for(let i in channel.contents){
+        dir = channel.contents[i]
+        if (dir.path === req.body.path){
+          alreadyExists = true
+          break
+        }
+      }
+      
+      if (alreadyExists){
+        // TODO: mandar erro concreto?
+        res.sendStatus(500)
+      }
+      else{
+        return Channels.createDir(req.body.channel, req.body.path)
+          .then(() => { res.sendStatus(200) })
+          .catch((err) => { console.log(err); res.sendStatus(500) })
+      }
+    })
+    .catch((err) => { console.log(err); res.sendStatus(500) })
 })
 
 
