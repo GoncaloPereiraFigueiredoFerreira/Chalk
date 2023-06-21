@@ -96,7 +96,7 @@ block channel_cont
                       a.underline.text-red-700.font-medium.text-gray-900.truncate(href="/channel/"+channel._id+"/submitForm/"+date._id class="dark:text-white")
                         | #[strong Entrega:  #{date.title}]
                   if channel.role=="pub" 
-                    a(href="/channel/remdate"+channel._id+"?date="+date._id)   
+                    a(href="/channel/remdate/"+channel._id+"?date="+date._id)   
                       svg(width='42px' height='42px' viewbox='-798.72 -798.72 2621.44 2621.44' xmlns='http://www.w3.org/2000/svg' fill='#000000' stroke='#000000')
                         g(stroke-width='0')
                           g(stroke-linecap='round' stroke-linejoin='round')

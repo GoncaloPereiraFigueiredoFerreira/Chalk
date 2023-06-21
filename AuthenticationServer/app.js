@@ -10,8 +10,7 @@ var passport = require('passport');
 // MongoDB User Credential Server
 
 var mongoose = require("mongoose")
-var connectString = "mongodb://127.0.0.1/ChalkAuth"
-
+var connectString = process.env.MONGODB
 mongoose.connect(connectString,{useNewUrlParser:true, useUnifiedTopology:true})
 var db = mongoose.connection
 

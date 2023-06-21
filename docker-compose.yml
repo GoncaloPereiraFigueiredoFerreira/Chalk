@@ -1,0 +1,67 @@
+version: '3.8'
+services:
+  chalk:
+    build: ./Chalk
+    ports:
+      - 7777:7777
+    depends_on:
+      - storage
+      - archival
+      - auth
+    environment:
+      - AUTH_SERVER=http://auth:7778
+      - ARCH_SERVER=http://archival:4000
+      - STORE_SERVER=http://storage:15015
+      - PORT=7777
+    networks:
+      - chalknetwork
+
+  storage:
+    build: ./StorageSystem
+    networks:
+      - chalknetwork
+    environment:
+      - PORT=15015
+
+  archival:
+    build: ./ArchivalSystem
+    depends_on:
+      - chalk-db
+    networks:
+      - chalknetwork
+    environment:
+      - PORT=4000
+      - MONGODB=mongodb://chalk-db/Chalk
+
+  auth:
+    build: ./AuthenticationServer
+    depends_on:
+      - chalkAuth-db
+    networks:
+      - chalknetwork
+    environment:
+      - PORT=7778
+      - MONGODB=mongodb://chalkAuth-db/ChalkAuth
+    env_file:
+      - .env
+
+  chalk-db:
+    image: mongo
+    volumes:
+      - backend_db_data:/data/db
+    networks:
+      - chalknetwork
+
+  chalkAuth-db:
+    image: mongo
+    volumes:
+      - auth_db_data:/data/db
+    networks:
+      - chalknetwork
+
+volumes:
+  backend_db_data:
+  auth_db_data:
+
+networks:
+  chalknetwork:
