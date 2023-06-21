@@ -22,7 +22,7 @@ function verifyToken(token){
   }
   catch(err){
     console.log(err.message)
-    return {}
+    return null
   }
 }
 
@@ -30,7 +30,7 @@ module.exports.verifyAuthentication =function verifyAuthentication(req,res,next)
   if (req.cookies.token){
       updatePublicKey().then(()=>{
         let result = verifyToken(req.cookies.token)
-        if (result=={} || result==undefined) res.redirect("/login")
+        if (result==null || result==undefined) res.redirect("/login")
         else{
           req.user = {username:result.username,level:result.level,first_name:result.first_name,last_name:result.last_name}
           next()  
