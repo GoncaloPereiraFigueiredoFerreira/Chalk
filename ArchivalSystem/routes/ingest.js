@@ -18,6 +18,20 @@ router.post("/uploadfile", function(req,res){
           .catch((err) => {console.log(err); res.sendStatus(500)})
 })
 
+// remove file
+router.delete("/rmfile/:fileID", function(req, res){
+  Metadata.deleteFileByID(req.params.fileID)
+    .then((result) => { res.status(200).jsonp(result).end() })
+    .catch((err) => { res.status(500).jsonp(err).end() })
+})
+
+// remove file from channel
+router.put("/rmfile/:fileID", function(req, res){
+  Channels.rmFile(req.body.channel, req.body.path, req.params.fileID)
+    .then((result) => { res.status(200).jsonp(result).end() })
+    .catch((err)=>{ console.log(err); res.sendStatus(500) })
+})
+
 router.post("/submitfile", function(req,res){
   // needs req.channel |   req.date  |    req.user   | req.submission
   // 
@@ -166,7 +180,6 @@ router.post("/remsubscription",function(req,res){
     }
   })
 })
-
 
 
 module.exports = router;

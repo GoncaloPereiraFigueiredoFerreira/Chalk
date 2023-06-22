@@ -38,6 +38,14 @@ module.exports.getFileMetadataByID = function getFileMetadataByID(ID){
     return Metadata.findById(ID)
 }
 
+module.exports.getFilesByLocation = function getFilesByLocation(location){
+    return Metadata.find({location: location})
+}
+
+module.exports.deleteFileByID = function deleteFileByID(ID){
+    return Metadata.deleteOne({_id: ID})
+}
+
 
 // Please be very carefull about the execution of this method
 module.exports.destroyMetadata = function destroyMetadata(){

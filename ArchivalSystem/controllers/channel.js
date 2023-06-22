@@ -34,6 +34,10 @@ module.exports.addFile = (channel,path,file)=>{
   return Channel.updateOne({_id:channel,"contents.path":path},{$addToSet:{"contents.$.files":file}})
 }
 
+module.exports.rmFile = (channel,path,file)=>{
+  return Channel.updateOne({_id:channel,"contents.path":path},{$pull:{"contents.$.files":file}})
+}
+
 //No clue if this works
 module.exports.mvFile = (channel,newpath,oldpath,file)=>{
   return Promises.all([

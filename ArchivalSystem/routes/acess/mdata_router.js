@@ -8,4 +8,10 @@ router.get("/:id", function(req, res){
         .catch((err) => { res.status(500).jsonp(err).end() })
 })
 
+router.get("/location/:location", function(req, res){
+    Metadata.getFilesByLocation(req.params.location)
+        .then((result) => { res.status(200).jsonp(result).end() })
+        .catch((err) => { res.status(500).jsonp(err).end() })
+})
+
 module.exports = router;

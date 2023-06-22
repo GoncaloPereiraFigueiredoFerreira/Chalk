@@ -29,6 +29,13 @@ router.post("/uploadfile", upload.single('file'), function(req, res){
   // TODO: remove this
 })
 
+router.delete("/:location", function(req, res){
+  fs.unlink(__dirname + '/../' + storageFolder + '/' + req.params.location, (err) => { 
+    if (err){ console.log(err); res.sendStatus(500) }
+    res.sendStatus(200)
+  });
+})
+
 router.get("/file/:filepath", (req, res) => {
   if (!fs.existsSync(__dirname + '/../' + bagFolder)){
     fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
