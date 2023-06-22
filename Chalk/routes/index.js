@@ -11,8 +11,6 @@ let auth_location = process.env.AUTH_SERVER
 let archive_location = process.env.ARCH_SERVER
 let storage_location = process.env.STORE_SERVER
 
-
-
   
 router.get("/sidebar",verifyAuthentication,(req, res, next) =>{
   let promises = []
@@ -30,7 +28,6 @@ router.get('/',verifyAuthentication,(req, res, next) =>{
   promises.push(axios.get(archive_location+"/acess/posts/user/"+req.user.username))
   promises.push(axios.get(archive_location+"/acess/dates/user/"+req.user.username))
   Promise.all(promises).then((results)=>{
-    console.log(results[3].data)
     res.render('dashboard',{
             user:req.user,
             subchannels:results[0].data,
@@ -39,7 +36,6 @@ router.get('/',verifyAuthentication,(req, res, next) =>{
             dates:results[3].data         
           });
   })
-  
 });
 
 router.get("/searchbar/:keywords",verifyAuthentication,(req,res,next)=>{
@@ -56,7 +52,6 @@ router.get("/search",verifyAuthentication,(req,res,next)=>{
 
 
 /// Login and Register Pages
-
 router.get("/auth/google",(req,res,next)=>{
     axios.get(auth_location+"/auth/google/callback"+req.url.replace("/auth/google","")).then(response=>{    
     if (response.data.success){
@@ -86,7 +81,6 @@ router.get("/register",(req,res,next)=>{
 
 router.post("/login",(req,res,next)=>{
   axios.post(auth_location+"/login",req.body).then(resp=>{
-    console.log(resp.data)
     if (resp.data.success){
       loggedIn[resp.data.token]=1
       res.cookie("token",resp.data.token)
@@ -143,7 +137,6 @@ router.post("/createChannel",verifyAuthentication,(req,res,next)=>{
 })
 
 
-
 /// File Routing
 router.get("/file/:fileID", verifyAuthentication, (req, res, next) => {
   axios.get(archive_location + '/acess/file/' + req.params.fileID)
@@ -162,7 +155,7 @@ router.get("/file/:fileID", verifyAuthentication, (req, res, next) => {
             extractionFolder = __dirname + '/../' + bagFolder + '/' + metadata.checksum
             bagit.unpack_bag(outputBag, extractionFolder)
               .then(() => {
-                file_to_send = extractionFolder + '/data/' + metadata.checksum
+                file_to_send = extractionFolder + '/data/' + metadata.checksum   
                 res.download(file_to_send, metadata.file_name)
               })
               .catch(err => console.log(err))

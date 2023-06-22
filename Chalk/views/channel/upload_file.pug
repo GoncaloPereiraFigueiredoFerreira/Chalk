@@ -1,6 +1,6 @@
 extends base
  
-block page
+block channel_cont
     .block.w-full.border-gray-200.rounded-lg.shadow.bg-white(class="dark:bg-gray-800")
       h1.p-4.text-xl(class="dark:text-white") Upload file:
       form(method='POST' enctype="multipart/form-data" id='form').p-8
@@ -26,7 +26,7 @@ block page
         #ann_title.mb-6.hidden
           .flex.flex-col
             label.block.mb-2.text-sm.font-medium.text-gray-900(for='title' class='dark:text-white') Automatic Announcement:
-            input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(name="title" value='['+channel_name+'] New file!' type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500')
+            input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(name="title" value='['+channel.name+'] New file!' type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500')
           .flex.flex-col
 
         #ann_content.mb-6.hidden

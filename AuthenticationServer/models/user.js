@@ -4,7 +4,7 @@ const mongoose = require("mongoose"),
 
 // Would like to guarantee the email to be unique https://www.makeuseof.com/nodejs-google-authentication/
 var User = new Schema({
-      username: String,
+      username: {type:String,unique:true},
       level: String,
       first_name:String,
       last_name:String,
