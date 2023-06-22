@@ -6,14 +6,15 @@ module.exports.addFileMetadata = function addFileMetadata(file_metadata){
     var data = new Date().toISOString().substring(0,16)
     return Metadata.create({
         _id: new mongoose.Types.ObjectId(),
-        file_size: file_metadata.file_size,
-        publisher: file_metadata.publisher,
-        file_name: file_metadata.file_name,
-        file_type: file_metadata.file_type,
-        location:  file_metadata.location,
-        checksum:  file_metadata.checksum,
-        tags:      file_metadata.tags,
-        publish_date: data
+        file_size:      file_metadata.file_size,
+        publisher:      file_metadata.publisher,
+        file_name:      file_metadata.file_name,
+        file_extension: file_metadata.file_extension,
+        file_type:      file_metadata.file_type,
+        location:       file_metadata.location,
+        checksum:       file_metadata.checksum,
+        tags:           file_metadata.tags,
+        publish_date:   data
     })
 }
 

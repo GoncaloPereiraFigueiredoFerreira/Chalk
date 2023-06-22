@@ -443,14 +443,16 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
       Promise.all([promise1, promise2])
         .then(([checksum, channel_contents]) => {
           if (!fileExistsInDir(channel_contents.data[dir], req.body.filename)){
+            extension = getExtension(req.file.originalname, req.body.filename)
             metadata = {
-              file_size: req.file.size,
-              publisher: req.user.username,
-              file_name: req.body.filename,
-              file_type: req.file.mimetype,
-              location: checksum,
-              checksum: checksum,
-              tags: tags
+              file_size:      req.file.size,
+              publisher:      req.user.username,
+              file_name:      req.body.filename,
+              file_extension: extension,
+              file_type:      req.file.mimetype,
+              location:       checksum,
+              checksum:       checksum,
+              tags:           tags
             }
             console.log(metadata)
 
@@ -498,6 +500,21 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
     res.sendStatus(401).end()
   }
 });
+
+getExtension = (original_name, new_name) => {
+  let res = '';
+  
+  OGext = original_name.split('.').pop()
+  if (OGext === original_name){
+    NEWext = new_name.split('.').pop()
+    if (NEWext !== new_name)
+      res = NEWext
+  }
+  else
+    res = OGext
+
+  return res
+}
 
 fileExistsInDir = (dir_contents, filename) => {
   if (filename in dir_contents.files)

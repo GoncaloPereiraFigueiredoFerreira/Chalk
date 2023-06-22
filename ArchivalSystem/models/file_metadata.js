@@ -18,6 +18,10 @@ let file_metadataSchema = new mongoose.Schema({
         required: true,
     },
 
+    file_extension:{
+        type:String,
+    },
+
     file_type:{
         type:String,
         required: true,
