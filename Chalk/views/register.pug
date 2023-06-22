@@ -37,8 +37,7 @@ block body
             path(fill-rule='evenodd' d='M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z' clip-rule='evenodd')
           input.pl-2.outline-none.border-none(size=40  type='password' name='password' placeholder='Password')
         button.block.w-full.bg-indigo-600.mt-4.py-2.rounded.text-white.font-semibold.mb-2(type='submit') Register
-    form.mt-4.ml-2(method="GET" action="http://localhost:7778/auth/google")
-      button(type="submit") Autenticar pela google
+    .mt-4.ml-2(class='hover:text-blue-500') #[a(href="http://localhost:7778/auth/google") Autenticar pela google]
     .mt-4.ml-2(class='hover:text-blue-500') #[a(href="/login") Já tem conta? ]
 
 

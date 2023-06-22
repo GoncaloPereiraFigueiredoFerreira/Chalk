@@ -11,7 +11,7 @@ block channel_cont
               ul.overflow-auto(class='h-[32rem]')
                 .flex.justify-between.items-center.pb-6.border-b.border-gray-300
                   h2.text-3xl.text-gray-600(class='dark:text-white') Announcements
-                  if channel.role=="pub"
+                  if channel.role=="pub" || user.role=="admin"
                     a.mt-2.mr-4.text-sm.inline-flex.font-medium.text-blue-600(href='/channel/addpost/'+channel._id class='hover:underline dark:text-blue-500')
                       | Add Post
                 each ann in titles
@@ -23,7 +23,7 @@ block channel_cont
                             span.block.ml-2.text-sm #{ann.date}
                           .flex.justify-between
                             span.block.ml-2.text-sm #{ann.publisher} 
-                      if channel.role=="pub"            
+                      if channel.role=="pub" || user.role=="admin"        
                         .flex.justify-end.mr-4
                           a(href="/channel/posts/"+channel._id+"/edit?post="+ann._id).w-12     
                             svg(style="pointer-events: all;" fill='#000000' height='64px' width='64px' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewbox='-348.88 -348.88 1046.64 1046.64' xml:space='preserve')

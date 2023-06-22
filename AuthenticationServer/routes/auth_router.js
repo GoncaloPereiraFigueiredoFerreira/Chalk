@@ -20,10 +20,12 @@ router.get("/public.pem",(req,res,next)=>{
 
 
 router.post("/deactivate",authenticate.verifyUser,(req, res, next) =>{
-    User.updateOne({username:req.user.username},{$set:{active:false}}).then(()=>{
-         // Add username and role to req
-        res.status(200).jsonp({"message":"Account deactivated"})
-    })
+    if (req.user.level=="admin"){
+      User.updateOne({username:req.user.username},{$set:{active:false}}).then(()=>{
+        // Add username and role to req
+       res.status(200).jsonp({"message":"Account deactivated"})
+      })
+    }
 });
 
 
@@ -82,7 +84,6 @@ router.post('/register', (req, res, next) => {
   });
 });
  
-// Login TODO: Atualizar last acessed
 router.post('/login', passport.authenticate('local',{ session: false }), (req, res) => {
     if (req.user.active){
       // Create a token
@@ -90,7 +91,11 @@ router.post('/login', passport.authenticate('local',{ session: false }), (req, r
       // Response
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
-      res.json({success: true, token: token, status: 'You are successfully logged in!'});
+      var date = Date().toISOString().substring(0,16)
+      User.updateOne({username: req.user.username},{last_acess:date}).then(()=>{
+        res.json({success: true, token: token, status: 'You are successfully logged in!'});
+      })
+      
     }
     else
       res.json({success: false, status: 'Deactivated Account'});

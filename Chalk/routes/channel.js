@@ -23,7 +23,6 @@ function verifyChannelRole(req,res,next){
       else info.role=""
       req.info = info
       next()
-
     })
 }
 
@@ -153,7 +152,7 @@ router.post("/posts/:chID/addcomment",verifyAuthentication,verifyChannelRole,(re
 
 //Edit channel route
 router.get("/settings/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
-  if (req.info.role=="pub")
+  if (req.info.role=="pub" || req.user.level == "admin")
     res.render("channel/editchannel",{user:req.user, channel:req.info})
   else{
     res.sendStatus(401).end()
@@ -163,7 +162,7 @@ router.get("/settings/:chID",verifyAuthentication,verifyChannelRole,(req, res, n
 //Post channel Edit
 router.post("/settings/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
   let chn = req.params.chID
-  if (req.info.role=="pub"){
+  if (req.info.role=="pub" || req.user.level == "admin"){
     axios.put(archive_location+"/manage/channel/"+chn,req.body).then(()=>{
       res.redirect("/channel/settings/"+chn)
     })
@@ -176,7 +175,7 @@ router.post("/settings/:chID",verifyAuthentication,verifyChannelRole,(req, res, 
 // Get student list
 router.get("/students/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
   let chn = req.params.chID
-  if (req.info.role=="pub"){
+  if (req.info.role=="pub" || req.user.level == "admin"){
     axios.get(archive_location+"/acess/channel/studentlist/"+chn).then(result=>{
       res.render("channel/studentslist",{user:req.user, channel:req.info,students:result.data})
     })
@@ -190,7 +189,7 @@ router.get("/students/:chID",verifyAuthentication,verifyChannelRole,(req, res, n
 router.get("/submissions/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
   let chnID = req.params.chID
   let date = req.query.date 
-  if (req.info.role=="pub"){
+  if (req.info.role=="pub" || req.user.level == "admin"){
     axios.get(archive_location+"/acess/dates/channel/del/"+chnID).then(result=>{
       let listDel = result.data
       if (date==undefined && listDel.length>0) date = listDel[0]._id
@@ -212,7 +211,7 @@ router.get("/submissions/:chID",verifyAuthentication,verifyChannelRole,(req, res
 // Delete Channel
 router.get("/delete/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   let id = req.params.chID
-  if (req.info.role=="pub"){
+  if (req.info.role=="pub" || req.user.level == "admin"){
     axios.delete(archive_location+"/manage/channel/"+id).then((response)=>{
       res.redirect("/")
     })
@@ -224,7 +223,7 @@ router.get("/delete/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)
 
 // Form to submit post
 router.get("/addpost/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
-  if (req.info.role=="pub"){
+  if (req.info.role=="pub" || req.user.level == "admin"){
     res.render("channel/create_post",{user:req.user,channel:req.info,defaultV:{},edit:false})
   }
   else{
@@ -234,7 +233,7 @@ router.get("/addpost/:chID",verifyAuthentication,verifyChannelRole,(req,res,next
 
 // Post form
 router.post("/addpost/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
-  if (req.info.role=="pub"){
+  if (req.info.role=="pub" || req.user.level == "admin"){
     axios.post(archive_location+"/ingest/newpost",
     {
       user:req.user.first_name + " " + req.user.last_name,
@@ -259,7 +258,7 @@ router.post("/addpost/:chID",verifyAuthentication,verifyChannelRole,(req,res,nex
 // Edit Post
 router.get("/posts/:chID/edit",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   let ann = req.query.post
-  if (req.info.role=="pub"){
+  if (req.info.role=="pub" || req.user.level == "admin"){
     axios.get(archive_location+"/acess/posts/"+ann).then((resp2)=>{
       res.render("channel/create_post",{user:req.user,channel:req.info,defaultV:resp2.data,edit:true})
     })  
@@ -272,7 +271,7 @@ router.get("/posts/:chID/edit",verifyAuthentication,verifyChannelRole,(req,res,n
 // Post edit form
 router.post("/posts/:chID/edit",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   let ann = req.query.post
-  if (req.info.role=="pub"){
+  if (req.info.role=="pub" || req.user.level == "admin"){
     axios.put(archive_location+"/manage/posts/"+ann,req.body).then(()=>{
       res.redirect("/channel/"+req.params.chID)
     })
@@ -285,7 +284,7 @@ router.post("/posts/:chID/edit",verifyAuthentication,verifyChannelRole,(req,res,
 // Delete Post
 router.get("/posts/:chID/delete",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   let ann = req.query.post
-  if (req.info.role=="pub"){
+  if (req.info.role=="pub" || req.user.level == "admin"){
     axios.delete(archive_location+"/manage/posts/"+ann).then(()=>{
       res.redirect("/channel/"+req.params.chID)
     })
@@ -298,7 +297,7 @@ router.get("/posts/:chID/delete",verifyAuthentication,verifyChannelRole,(req,res
 // Add new Important Date
 router.get("/adddate/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   let chn = req.params.chID
-  if (req.info.role=="pub"){
+  if (req.info.role=="pub" || req.user.level == "admin"){
       res.render("channel/create_date",{user:req.user,channel:req.info})
   }
   else{
@@ -308,7 +307,7 @@ router.get("/adddate/:chID",verifyAuthentication,verifyChannelRole,(req,res,next
 
 // Post important date form
 router.post("/adddate/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
-  if (req.info.role=="pub"){
+  if (req.info.role=="pub" || req.user.level == "admin"){
     axios.post(archive_location+"/ingest/newdate",
     {
       date:{
@@ -332,7 +331,7 @@ router.post("/adddate/:chID",verifyAuthentication,verifyChannelRole,(req,res,nex
 // Remove Date
 router.get("/remdate/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   let date = req.query.date
-  if (req.info.role=="pub"){
+  if (req.info.role=="pub" || req.user.level == "admin"){
     axios.delete(archive_location+"/manage/dates/"+date).then(()=>{
       res.redirect("/channel/"+req.params.chID)
     })
@@ -401,8 +400,7 @@ router.get("/:chID/addfile", verifyAuthentication,verifyChannelRole, (req, res, 
       .then((channel) => {
         res.render("channel/upload_file", {
           user: req.user,
-          channel: req.params.chID,
-          channel_name: channel.data.name
+          channel: channel.data,
         })
       })
       // TODO: tratar erro
