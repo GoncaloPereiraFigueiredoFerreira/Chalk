@@ -396,7 +396,6 @@ router.get("/:chID/addfile", verifyAuthentication,verifyChannelRole, (req, res, 
     }
     axios.get(archive_location+"/acess/channel/info/" + req.params.chID)
       .then((channel) => {
-        console.log(channel)
         res.render("channel/upload_file", {
           user: req.user,
           channel: req.params.chID,
@@ -437,48 +436,56 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
       if (!fs.existsSync(__dirname + '/../' + bagFolder)){
         fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
       }
-      const promise1 = bagit.create_bag(archive, __dirname + '/../' + req.file.path, req.body.filename, __dirname + '/../' + bagFolder)
-      
-      Promise.all([promise1])
-        .then(([checksum]) => {
-          metadata = {
-            file_size: req.file.size,
-            publisher: req.user.username,
-            file_name: req.body.filename,
-            file_type: req.file.mimetype,
-            location: checksum,
-            checksum: checksum,
-            tags: tags
-          }
-          console.log(metadata)
 
-          file = fs.createReadStream(__dirname + '/../' + bagFolder + '/' + checksum + '.zip')
-        
-          var form = new FormData()
-          form.append('file', file)
-          form.append('checksum', metadata.checksum)
-          form.append('filename', metadata.file_name)
+      const promise1 = bagit.create_bag(archive, __dirname + '/../' + req.file.path, req.body.filename, __dirname + '/../' + bagFolder)
+      const promise2 = axios.get(archive_location + '/acess/channel/contentTree/' + req.params.chID)
       
-          axios.post(storage_location + '/uploadfile', form, {
-              headers: {
-                'Content-Type': 'multipart/form-data'
-              }
-          })
-          .then(response1 => {
-              res.redirect('/channel/' + req.params.chID)
-              axios.post(archive_location + '/ingest/uploadfile', {
-                  'channel': req.params.chID,
-                  'path': dir,
-                  'file': metadata
+      Promise.all([promise1, promise2])
+        .then(([checksum, channel_contents]) => {
+          if (!fileExistsInDir(channel_contents.data[dir], req.body.filename)){
+            metadata = {
+              file_size: req.file.size,
+              publisher: req.user.username,
+              file_name: req.body.filename,
+              file_type: req.file.mimetype,
+              location: checksum,
+              checksum: checksum,
+              tags: tags
+            }
+            console.log(metadata)
+
+            file = fs.createReadStream(__dirname + '/../' + bagFolder + '/' + checksum + '.zip')
+          
+            var form = new FormData()
+            form.append('file', file)
+            form.append('checksum', metadata.checksum)
+            form.append('filename', metadata.file_name)
+          
+            axios.post(storage_location + '/uploadfile', form, {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
                 }
-              )
-              .then(response2 => {
-                automaticPost(req.params.chID, req.body, req.user)
-                res.redirect('/channel/' + req.params.chID) 
-              })
-              .catch(err => { err => console.log(err) })
-          })
-          .catch(err => { })
+            })
+            .then(response1 => {
+                res.redirect('/channel/' + req.params.chID)
+                axios.post(archive_location + '/ingest/uploadfile', {
+                    'channel': req.params.chID,
+                    'path': dir,
+                    'file': metadata
+                  }
+                )
+                .then(response2 => {
+                  automaticPost(req.params.chID, req.body, req.user)
+                  res.redirect('/channel/' + req.params.chID) 
+                })
+                .catch(err => { err => console.log(err) })
+            })
+            .catch(err => { })
+          }
+          else{
+            // TODO: dar erro concreto
+            res.sendStatus(404)
+          }
         })
         .catch(err => console.log(err))
         // TODO: do something com os erros
@@ -492,6 +499,12 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
   }
 });
 
+fileExistsInDir = (dir_contents, filename) => {
+  if (filename in dir_contents.files)
+    return true
+  else
+    return false
+}
 
 automaticPost = (chID, body, user) => {
   if ('automatic' in body){
