@@ -18,6 +18,24 @@ block page
               script(src="/javascripts/uploadFileForm.js")
           .my-3.flex.flex-wrap.-m-1(id='tags')
             .relative(id='tags_div')
+          
+        .mb-6
+          .flex.flex-col
+            label.block.mb-2.text-sm.font-medium.text-gray-900(for='title' class='dark:text-white') Automatic Announcement:
+            input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(name="title" value='['+channel_name+'] New file!' type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500')
+          .flex.flex-col
+
+        .mb-6  
+          label.block.mb-2.text-sm.font-medium.text-gray-900(for='editor' class='dark:text-white') Post:
+          .w-full.border.border-gray-200.rounded-lg.bg-gray-50(class='dark:bg-gray-700 dark:border-gray-600')
+            .flex.items-center.justify-between.px-3.py-2.border-b(class='dark:border-gray-600')
+              .flex.flex-wrap.items-center.divide-gray-200(class='sm:divide-x dark:divide-gray-600')
+                .flex.items-center.space-x-1(class='sm:pr-4')          
+            textarea.block.w-full.text-sm.text-gray-800.bg-white.border-0(name="content" value='' rows='8' class='dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400' placeholder='A new file has been added to the channel '+channel_name+'.')
+          
+        .flex.items-center.mb-4
+          input(id="checkbox" type="checkbox" name='automatic' value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600")
+          label(for="checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300") Make automatic announcement
 
         .mb-6
           label.block.mb-2.text-sm.font-medium.text-gray-900(for='dropzone-file' class='dark:text-white') Choose file:
@@ -29,7 +47,7 @@ block page
                 p.mb-2.text-sm.text-gray-500(class='dark:text-gray-400')
                   span.font-semibold Click to upload
                   |  or drag and drop
-              input#dropzone-file.hidden(type='file' name="myFile")
+              input#dropzone-file.hidden(type='file' name="myFile" required)
   
        
 

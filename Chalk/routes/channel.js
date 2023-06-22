@@ -394,11 +394,17 @@ router.get("/:chID/addfile", verifyAuthentication,verifyChannelRole, (req, res, 
     if (!fs.existsSync(uploadFolder)){
       fs.mkdirSync(uploadFolder, { recursive: true });
     }
-
-    res.render("channel/upload_file", {
-        user: req.user,
-        channel: req.params.chID
-    })
+    axios.get(archive_location+"/acess/channel/info/" + req.params.chID)
+      .then((channel) => {
+        console.log(channel)
+        res.render("channel/upload_file", {
+          user: req.user,
+          channel: req.params.chID,
+          channel_name: channel.data.name
+        })
+      })
+      // TODO: tratar erro
+      .catch(err => { console.log(err); res.sendStatus(401).end() })
   }
   else{
     res.sendStatus(401).end()
@@ -432,7 +438,7 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
         fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
       }
       const promise1 = bagit.create_bag(archive, __dirname + '/../' + req.file.path, req.body.filename, __dirname + '/../' + bagFolder)
-
+      
       Promise.all([promise1])
         .then(([checksum]) => {
           metadata = {
@@ -458,18 +464,21 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
                 'Content-Type': 'multipart/form-data'
               }
           })
-            .then(response1 => {
-                res.redirect('/channel/' + req.params.chID)
-                axios.post(archive_location + '/ingest/uploadfile', {
-                    'channel': req.params.chID,
-                    'path': dir,
-                    'file': metadata
-                  }
-                )
-                  .then(response2 => { res.redirect('/channel/' + req.params.chID) })
-                  .catch(err => { err => console.log(err) })
-            })
-            .catch(err => { })
+          .then(response1 => {
+              res.redirect('/channel/' + req.params.chID)
+              axios.post(archive_location + '/ingest/uploadfile', {
+                  'channel': req.params.chID,
+                  'path': dir,
+                  'file': metadata
+                }
+              )
+              .then(response2 => {
+                automaticPost(req.params.chID, req.body, req.user)
+                res.redirect('/channel/' + req.params.chID) 
+              })
+              .catch(err => { err => console.log(err) })
+          })
+          .catch(err => { })
         })
         .catch(err => console.log(err))
         // TODO: do something com os erros
@@ -482,6 +491,29 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
     res.sendStatus(401).end()
   }
 });
+
+
+automaticPost = (chID, body, user) => {
+  if ('automatic' in body){
+    let content = body.content
+    if (content === ''){ content = 'New file has been added to this channel!' }
+
+    let title = body.title
+    if (title === ''){ title = 'New file!' }
+
+    let username = user.first_name + ' ' + user.last_name
+
+    axios.post(archive_location + '/ingest/newpost', {
+      user: username,
+      announcement: {
+        title: title,
+        content: content,
+        channel: chID
+      }
+    })
+    .catch(err => { console.log(err) })
+  }
+}
 
 router.get("/:chID/adddir", verifyAuthentication, verifyChannelRole,function(req, res) {
   if (req.info.role == "pub"){
