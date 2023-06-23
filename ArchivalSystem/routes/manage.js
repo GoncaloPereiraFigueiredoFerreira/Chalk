@@ -48,22 +48,23 @@ router.delete("/channel/:chID",function(req,res,next){
   promises.push(Dates.findByChannel(id))
   Promise.all(promises).then(results=>{
       let morePromises=[]
-      console.log(results)
+      console.log(results[1])
       for (let ann of results[1]){
         morePromises.push(Announcements.remAnn(ann._id))
       }
       for (let sub of results[0].consumers){
-        morePromises.push(Users.remSubscription(sub.username,results[0]._id))
+        morePromises.push(Users.remSubscription(sub,id))
       }
+
       for (let pub of results[0].publishers){
-        morePromises.push(Users.remPublisher(pub.username,results[0]._id))
+        morePromises.push(Users.remPublisher(pub,id))
       }
       for (let date of results[2]){
         morePromises.push(Dates.remImportantDate(date._id))
       }
       
 
-      Promise.all(promises).then(results2=>{
+      Promise.all(morePromises).then(results2=>{
         Channels.deleteChannel(id).then((result)=>{
           res.status(200).jsonp(result).end()
         })

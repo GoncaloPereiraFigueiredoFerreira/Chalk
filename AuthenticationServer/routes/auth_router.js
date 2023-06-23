@@ -91,7 +91,7 @@ router.post('/login', passport.authenticate('local',{ session: false }), (req, r
       // Response
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
-      var date = Date().toISOString().substring(0,16)
+      var date = new Date().toISOString().substring(0,16)
       User.updateOne({username: req.user.username},{last_acess:date}).then(()=>{
         res.json({success: true, token: token, status: 'You are successfully logged in!'});
       })
@@ -118,9 +118,6 @@ router.get("/auth/google/callback",
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
       res.json({success: true, token: token, status: 'register', email:req.user.username,first_name:req.user.first_name, last_name:req.user.last_name});
-
-
-      
       
   }
 )
