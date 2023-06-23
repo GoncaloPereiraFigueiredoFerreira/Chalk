@@ -54,12 +54,11 @@ block channel_cont
             svg.w-5.h-5.text-gray-500(class='dark:text-gray-400' aria-hidden='true' fill='currentColor' viewbox='0 0 20 20' xmlns='http://www.w3.org/2000/svg')
               path(fill-rule='evenodd' d='M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z' clip-rule='evenodd')
           input#table-search.block.p-2.pl-10.text-sm.text-gray-900.border.border-gray-300.rounded-lg.w-80.bg-gray-50(type='text' class='focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Search for files') 
-      
+
       // Table of contents
       .relative.bg-white.h-80.overflow-x-auto.shadow-md(class='sm:rounded-lg dark:bg-gray-800')
         table.w-full.text-sm.text-left.text-gray-500.overflow-x-auto(id="folders" class='dark:text-gray-400')
           thead.text-xs.text-gray-700(class='dark:bg-gray-700 dark:text-gray-400')
-            
             // Table head with current and past folders
             nav.flex.items-center.justify-between.px-5.py-3.text-gray-800.bg-gray-50(class='dark:bg-gray-800 dark:border-gray-700')
               ol.inline-flex.items-center.space-x-1(class='md:space-x-3' id="dirnav")
@@ -68,7 +67,6 @@ block channel_cont
                   | Add Directory
                 a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(id='add_file' href='/channel/' + channel._id + '/addfile?dir=""' class='hover:underline dark:text-blue-500')
                   | Add File
-
           tbody
     
     // Important Dates
@@ -169,6 +167,12 @@ block channel_cont
           else current = current[currP].files
       }
 
+      let dir = ''
+      for (let i in path){
+        if (i != 0)
+          dir = dir + '/' + path[i]
+      }
+
       dirs = []
       fils = []
 
@@ -193,25 +197,35 @@ block channel_cont
       fils.sort(function(a, b){ return a.name.localeCompare(b.name) })
       
       for (let i in dirs){
-        dir = dirs[i]
-        if (dir.name != ''){
+        let directory = dirs[i]
+        if (directory.name != ''){
             let tag = $('<td>').attr("class", "flex items-center ml-64").append($("<div>").attr("class","border rounded-lg p-1").text("Directory"))
-            let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row").text(dir.name)
-            let tr = $('<tr>').attr("data-directory",dir.name).attr("class","cursor-pointer flex bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
+            let name = $('<td>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").text(directory.name)
+            let tr = $('<tr>').attr("data-directory",directory.name).attr("class","cursor-pointer flex bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
             tableRows.append(tr.append(name).append(tag))
         }
       }
 
       for (let i in fils){
         f = fils[i]
-        let tr = $('<tr>').attr("class","flex cursor-pointer justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
+        let tr = $('<tr>').attr('id', f.name).attr("class","flex cursor-pointer justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
         let href = $('<a>').attr("href", '/file/' + f.file.metadata._id).text(f.name)
-        let name = $('<th>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").attr("scope","row")
+        let name = $('<td>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white")
         name.append(href)
         let format = $('<td>').attr("class","px-6 py-4").text(f.file.format)
         let tags = $('<td>').attr("class","px-6 py-4").text("TAGS")
         let fileSize = $('<td>').attr("class","px-6 py-4").text(formatFilesize(f.file.metadata.file_size))
-        tableRows.append(tr.append(name).append(tags).append(format).append(fileSize))
+
+        let tr_a = $('<td>').attr('id', '_'+f.name).attr("class","px-6 py-4")
+        let a
+        console.log(dir)
+        if (dir !== '')
+          a = $('<a>').attr('href', '/channel/' + $("#channel_id").val() + '/rmfile/' + f.file.metadata._id + '?dir=\"' + dir + '\"').text('X')
+        else 
+          a = $('<a>').attr('href', '/channel/' + $("#channel_id").val() + '/rmfile/' + f.file.metadata._id).text('X')
+        tr_a.append(a)
+
+        tableRows.append(tr.append(name).append(tags).append(format).append(fileSize).append(tr_a))
       }
 
        $("tr").each(function(index, value) {
@@ -219,13 +233,13 @@ block channel_cont
             $(this).on("click",function(){
               tableRows.empty();
               path.push(this.dataset.directory);
-              dir = ''
+              let dir_ = ''
               for (let i in path){
                 if (i != 0)
-                  dir = dir + '/' + path[i]
+                  dir_ = dir_ + '/' + path[i]
               }
-              $('#add_dir').attr('href', '/channel/' + $("#channel_id").val() + '/adddir?dir=\"' + dir + '\"')
-              $('#add_file').attr('href', '/channel/' + $("#channel_id").val() + '/addfile?dir=\"' + dir + '\"')
+              $('#add_dir').attr('href', '/channel/' + $("#channel_id").val() + '/adddir?dir=\"' + dir_ + '\"')
+              $('#add_file').attr('href', '/channel/' + $("#channel_id").val() + '/addfile?dir=\"' + dir_ + '\"')
               composeFolder()
             })
           }
@@ -244,14 +258,14 @@ block channel_cont
                     counter--
                 }
 
-                dir = ''
+                let dir_ = ''
                 for (let i in path){
                   if (i != 0)
-                    dir = dir + '/' + path[i]
+                    dir_ = dir_ + '/' + path[i]
                 }
                 tableRows.empty();
-                $('#add_dir').attr('href', '/channel/' + $("#channel_id").val() + '/adddir?dir=\"' + dir + '\"')
-                $('#add_file').attr('href', '/channel/' + $("#channel_id").val() + '/addfile?dir=\"' + dir + '\"')
+                $('#add_dir').attr('href', '/channel/' + $("#channel_id").val() + '/adddir?dir=\"' + dir_ + '\"')
+                $('#add_file').attr('href', '/channel/' + $("#channel_id").val() + '/addfile?dir=\"' + dir_ + '\"')
                 composeFolder()
               }
            )

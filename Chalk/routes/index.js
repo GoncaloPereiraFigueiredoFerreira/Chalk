@@ -17,7 +17,7 @@ router.get("/sidebar",verifyAuthentication,(req, res, next) =>{
   promises.push(axios.get(archive_location+"/acess/profile/subscriptions/"+req.user.username))
   promises.push(axios.get(archive_location+"/acess/profile/publisher/"+req.user.username))
   Promise.all(promises).then((results)=>{
-      res.status(200).jsonp({subchannels:results[0].data,pubchannels:results[1].data}).end()
+    res.status(200).jsonp({subchannels:results[0].data,pubchannels:results[1].data}).end()
   })
 })
 

@@ -359,9 +359,12 @@ router.post("/:chID/submitForm/:submit",verifyAuthentication,verifyChannelRole,(
   let subm = req.params.submit
   if (req.info.role == "sub"){
     //TODO: finish up
-    axios.post(archive_location+"/submitfile",{channel:chn,submission:subm}).then((resp)=>{
-      res.redirect("/")
-    })
+    axios.post(archive_location+"/submitfile",{channel:chn,submission:subm})
+      .then((resp)=>{
+        console.log(resp)
+        res.redirect("back")
+      })
+      .catch(err => { res.sendStatus(400).end() })
   }
   else{
     res.sendStatus(401).end()
@@ -542,6 +545,52 @@ automaticPost = (chID, body, user) => {
     .catch(err => { console.log(err) })
   }
 }
+
+router.get("/:chID/rmfile/:fileID", verifyAuthentication, (req, res, next) => {
+  axios.get(archive_location + '/acess/file/' + req.params.fileID)
+    .then((res1) => {
+      metadata = res1.data
+
+      let dir = ''
+      if ('dir' in req.query){
+        dir = req.query['dir']
+        if (dir === '""'){ dir = '' }
+        else{ dir = req.query['dir'].substring(2, req.query['dir'].length - 1) }
+      }
+
+      axios.delete(archive_location + '/ingest/rmfile/'+req.params.fileID)
+        .then((res2) => {
+
+          axios.put(archive_location + '/ingest/rmfile/'+req.params.fileID, {
+              'channel': req.params.chID,
+              'path': dir,
+            }
+          )
+            .then((res3) => {
+              console.log('here1')
+
+              axios.get(archive_location + '/acess/file/location/' + metadata.location)
+                .then((res4) => { 
+
+                  files = res4.data
+                  console.log('here2')
+                  if (files.length == 0){
+                    axios.delete(storage_location + '/' + metadata.location)
+                      .then((res5) => {
+                        res.redirect('back')
+                      })
+                      .catch(err => { console.log(err); })
+                  }
+                  else
+                    res.redirect('back')
+                })
+                .catch(err => { console.log(err); })
+            })
+        })
+        .catch(err => { console.log(err) })
+    })
+    .catch(err => { console.log(err); })
+})
 
 router.get("/:chID/adddir", verifyAuthentication, verifyChannelRole,function(req, res) {
   if (req.info.role == "pub"){
