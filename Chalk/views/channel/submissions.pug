@@ -55,10 +55,10 @@ block channel_cont
                       tbody
                         each sub in submissions.submissions
                           tr.border-b(class="hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-500")
-                            td.p-3 goncaloff13@gmail.com
-                            td.p-3.border-l Atrasei me um bocadinho
-                            td.p-3.border-l 2018-03-01T13h40
-                            td.p-3.border-l #[a(href="#") link]
+                            td.p-3 #{sub.student}
+                            td.p-3.border-l #{sub.description}
+                            td.p-3.border-l #{sub.deliver_date}
+                            td.p-3.border-l #[a(href='/file/' + sub.file) Download]
                 
                  
                     

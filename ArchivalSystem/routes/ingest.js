@@ -33,10 +33,21 @@ router.put("/rmfile/:fileID", function(req, res){
 })
 
 router.post("/submitfile", function(req,res){
-  // needs req.channel |   req.date  |    req.user   | req.submission
-  // 
-  //
+  return Metadata.addFileMetadata(req.body.file)
+          .then((res_file) => {
+            let idate = req.body.submission
+            let file_submitted = {
+              description: req.body.description,
+              file: res_file._id,
+              deliver_date: new Date().toISOString().substring(0,16),
+              student: req.body.user
+            }
 
+            Dates.addSubmission(idate, file_submitted)
+              .then((result) => { res.status(200).jsonp(result).end() })
+              .catch((err)=>{ console.log(err); res.sendStatus(500) })
+          })
+          .catch((err) => {console.log(err); res.sendStatus(500)})
 })
 
 router.post("/newdate",function(req,res){
@@ -108,7 +119,6 @@ router.post("/newdir",function(req,res){
     })
     .catch((err) => { console.log(err); res.sendStatus(500) })
 })
-
 
 
 router.post("/newchannel",function(req,res){

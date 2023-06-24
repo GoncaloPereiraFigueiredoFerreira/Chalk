@@ -195,6 +195,7 @@ router.get("/submissions/:chID",verifyAuthentication,verifyChannelRole,(req, res
       if (date==undefined && listDel.length>0) date = listDel[0]._id
       if (listDel.length>0){
         axios.get(archive_location+"/acess/dates/channel/"+chnID+"/submissions/"+date).then(response=>{
+          console.log(response.data)
           res.render("channel/submissions",{user:req.user, deliveries:listDel, channel:req.info,submissions:response.data})
         })
       }
@@ -354,17 +355,58 @@ router.get("/:chID/submitForm/:submit",verifyAuthentication,verifyChannelRole,(r
 });
 
 
-router.post("/:chID/submitForm/:submit",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
-  let chn = req.params.chID
-  let subm = req.params.submit
+router.post("/:chID/submitForm/:submit",verifyAuthentication,verifyChannelRole,upload.single('myFile'),(req,res,next)=>{
   if (req.info.role == "sub"){
-    //TODO: finish up
-    axios.post(archive_location+"/submitfile",{channel:chn,submission:subm})
-      .then((resp)=>{
-        console.log(resp)
-        res.redirect("back")
-      })
-      .catch(err => { res.sendStatus(400).end() })
+    let chn = req.params.chID
+    let subm = req.params.submit
+  
+    var archive = archiver('zip', {zlib: {level: 9}})
+    if (!fs.existsSync(__dirname + '/../' + bagFolder)){
+      fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
+    }
+    const promise1 = bagit.create_bag(archive, __dirname + '/../' + req.file.path, req.body.filename, __dirname + '/../' + bagFolder)
+
+    Promise.all([promise1])
+      .then(([checksum]) => {
+        let extension = getExtension(req.file.originalname, req.body.filename)
+        metadata = {
+          file_size:      req.file.size,
+          publisher:      req.user.username,
+          file_name:      req.body.filename,
+          file_extension: extension,
+          file_type:      req.file.mimetype,
+          location:       checksum,
+          checksum:       checksum,
+          tags:           []
+        }
+
+        let file = fs.createReadStream(__dirname + '/../' + bagFolder + '/' + checksum + '.zip')
+        var form = new FormData()
+        form.append('file', file)
+        form.append('checksum', metadata.checksum)
+        form.append('filename', metadata.file_name)
+      
+        axios.post(storage_location + '/uploadfile', form, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then(response1 => {
+          axios.post(archive_location+"/ingest/submitfile", {
+            channel: chn,
+            submission:subm,
+            user: req.user.username,
+            description: req.body.description,
+            file: metadata
+          })
+            .then((resp)=>{
+              res.redirect("back")
+            })
+            .catch(err => { res.sendStatus(400).end() })
+        })
+        .catch(err => { })
+    })
+    .catch(err => { res.sendStatus(400).end() })
   }
   else{
     res.sendStatus(401).end()
@@ -444,8 +486,8 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
       Promise.all([promise1, promise2])
         .then(([checksum, channel_contents]) => {
           if (!fileExistsInDir(channel_contents.data[dir], req.body.filename)){
-            extension = getExtension(req.file.originalname, req.body.filename)
-            metadata = {
+            let extension = getExtension(req.file.originalname, req.body.filename)
+            let metadata = {
               file_size:      req.file.size,
               publisher:      req.user.username,
               file_name:      req.body.filename,
@@ -457,8 +499,7 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
             }
             console.log(metadata)
 
-            file = fs.createReadStream(__dirname + '/../' + bagFolder + '/' + checksum + '.zip')
-          
+            let file = fs.createReadStream(__dirname + '/../' + bagFolder + '/' + checksum + '.zip')
             var form = new FormData()
             form.append('file', file)
             form.append('checksum', metadata.checksum)
@@ -470,7 +511,6 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
                 }
             })
             .then(response1 => {
-                res.redirect('/channel/' + req.params.chID)
                 axios.post(archive_location + '/ingest/uploadfile', {
                     'channel': req.params.chID,
                     'path': dir,

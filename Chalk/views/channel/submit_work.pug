@@ -11,7 +11,7 @@ block channel_cont
 
         .mb-6
             label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Description:
-            input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(id="description" name="description" type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='' required=true)
+            input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(id="description" name="description" type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='')
 
         .mb-6
           label.block.mb-2.text-sm.font-medium.text-gray-900(for='dropzone-file' class='dark:text-white') Choose file:
@@ -25,7 +25,22 @@ block channel_cont
                   |  or drag and drop
               input#dropzone-file.hidden(type='file' name="myFile")
     
-        
-
         .flex.items-start.mb-6
           button.text-white.bg-blue-700.font-medium.rounded-lg.text-sm.w-full.px-5.text-center(type='submit' class='hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 sm:w-auto py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800') Submit
+
+
+
+    script. 
+
+        // Get file input element
+        let checkbox =  $('#checkbox')
+        let fileInput = document.getElementById('dropzone-file');
+        let input = document.getElementById('filename');
+        // Fires on file upload
+        fileInput.addEventListener('change', function(event){
+            // Get file name
+            let fileName = fileInput.files[0].name;
+            
+            // Update file name in span
+            input.value = fileName;
+        });
