@@ -4,7 +4,7 @@ const axios = require("axios")
 const verifyAuthentication = require("./utils").verifyAuthentication
 let archive_location = process.env.ARCH_SERVER
 let storage_location = process.env.STORE_SERVER
-
+const createHttpError = require('http-errors');
 var FormData = require('form-data');
 var archiver = require('archiver')
 var bagit = require('../bagit/bagit')
@@ -74,7 +74,7 @@ router.get("/:chID/subscribe",verifyAuthentication,verifyChannelRole,(req,res,ne
     .catch((err)=>{console.log(err)})
   }
   else {
-    res.sendStatus(403).end()
+    next(createHttpError(403))
   }  
 
 });
@@ -124,7 +124,7 @@ router.get("/posts/:chID",verifyAuthentication,verifyChannelRole,(req, res, next
       })  
   }
   else{
-      res.sendStatus(401).end()
+    next(createHttpError(401))
   }
 })
 
@@ -144,7 +144,7 @@ router.post("/posts/:chID/addcomment",verifyAuthentication,verifyChannelRole,(re
     })
   }
   else{
-    res.sendStatus(401).end()
+    next(createHttpError(401))
   }
 });
 
@@ -155,7 +155,7 @@ router.get("/settings/:chID",verifyAuthentication,verifyChannelRole,(req, res, n
   if (req.info.role=="pub" || req.user.level == "admin")
     res.render("channel/editchannel",{user:req.user, channel:req.info})
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 })
 
@@ -168,7 +168,7 @@ router.post("/settings/:chID",verifyAuthentication,verifyChannelRole,(req, res, 
     })
   }
   else{
-      res.sendStatus(401).end()
+    next(createHttpError(401))
     }
 })
 
@@ -181,7 +181,7 @@ router.get("/students/:chID",verifyAuthentication,verifyChannelRole,(req, res, n
     })
   }
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 })
 
@@ -204,7 +204,7 @@ router.get("/submissions/:chID",verifyAuthentication,verifyChannelRole,(req, res
     })
   }
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 })
 
@@ -217,7 +217,7 @@ router.get("/delete/:chID",verifyAuthentication,verifyChannelRole,(req,res,next)
     })
   }
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 })
 
@@ -227,7 +227,7 @@ router.get("/addpost/:chID",verifyAuthentication,verifyChannelRole,(req,res,next
     res.render("channel/create_post",{user:req.user,channel:req.info,defaultV:{},edit:false})
   }
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 });
 
@@ -250,7 +250,7 @@ router.post("/addpost/:chID",verifyAuthentication,verifyChannelRole,(req,res,nex
     })
   }
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 });
 
@@ -264,7 +264,7 @@ router.get("/posts/:chID/edit",verifyAuthentication,verifyChannelRole,(req,res,n
     })  
   }
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 });
 
@@ -277,7 +277,7 @@ router.post("/posts/:chID/edit",verifyAuthentication,verifyChannelRole,(req,res,
     })
   }
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 });
 
@@ -290,7 +290,7 @@ router.get("/posts/:chID/delete",verifyAuthentication,verifyChannelRole,(req,res
     })
   }
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 });
 
@@ -301,7 +301,7 @@ router.get("/adddate/:chID",verifyAuthentication,verifyChannelRole,(req,res,next
       res.render("channel/create_date",{user:req.user,channel:req.info})
   }
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 });
 
@@ -324,7 +324,7 @@ router.post("/adddate/:chID",verifyAuthentication,verifyChannelRole,(req,res,nex
     })
   }
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 });
 
@@ -337,7 +337,7 @@ router.get("/remdate/:chID",verifyAuthentication,verifyChannelRole,(req,res,next
     })
   }
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 });
 
@@ -348,7 +348,7 @@ router.get("/:chID/submitForm/:submit",verifyAuthentication,verifyChannelRole,(r
     res.render("channel/submit_work",{user:req.user,channel:req.info,delivery:req.params.submit})
   }
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 
 });
@@ -367,7 +367,7 @@ router.post("/:chID/submitForm/:submit",verifyAuthentication,verifyChannelRole,(
       .catch(err => { res.sendStatus(400).end() })
   }
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 });
 
@@ -382,7 +382,7 @@ router.get("/:chID/unsubscribe",verifyAuthentication,verifyChannelRole,(req,res,
     .catch((err)=>{})
   }
   else{
-      res.sendStatus(401).end()
+    next(createHttpError(401))
     }
 });
 
@@ -404,10 +404,10 @@ router.get("/:chID/addfile", verifyAuthentication,verifyChannelRole, (req, res, 
         })
       })
       // TODO: tratar erro
-      .catch(err => { console.log(err); res.sendStatus(401).end() })
+      .catch(err => { console.log(err);     next(createHttpError(401)) })
   }
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 });
 
@@ -498,7 +498,7 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
     }
   }  
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 });
 
@@ -602,7 +602,7 @@ router.get("/:chID/adddir", verifyAuthentication, verifyChannelRole,function(req
     }
   }
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 });
 
@@ -630,7 +630,7 @@ router.post("/:chID/adddir", verifyAuthentication,verifyChannelRole, function(re
     }
   }
   else{
-    res.sendStatus(401).end()
+        next(createHttpError(401))
   }
 });
 

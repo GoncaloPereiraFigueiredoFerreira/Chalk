@@ -71,8 +71,12 @@ router.get("/auth/google",(req,res,next)=>{
   });
 })
 
+router.get("/forgotPass",(req,res,next)=>{
+  res.render("recoverPassword")
+});
+
 router.get("/login",(req,res,next)=>{
-  res.render("login")
+  res.render("login",{failed:false})
 });
 
 router.get("/register",(req,res,next)=>{
@@ -88,11 +92,11 @@ router.post("/login",(req,res,next)=>{
     }
     else{
       // should have some kind of warning that login failled for some reason
-      res.redirect("/login")
+      res.render("login",{failed:true})
     }
   }).catch((err)=>{
 
-    res.redirect("/login")
+    res.render("login",{failed:true})
   })
 });
 

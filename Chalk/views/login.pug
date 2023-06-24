@@ -8,21 +8,33 @@ block body
     .relative.overflow-hidden.bg-gray-800.i.justify-around.items-center.hidden(class='md:flex w-2/3')
       h1.text-9xl.text-white.font-pacifico Chalk
           img(src='/images/chalk.svg')
+          p.text-xl.mt-4.justify-center.text-white Educational Resource Sharing Platform
     
     .flex.justify-center.py-10.items-center.bg-white(class='md:w-2/3')
       form.bg-white(method="POST")
-        h1.text-gray-800.text-5xl.font-bold.text-2xl.mb-1 Bem vindo!
-        p.text-sm.font-normal.text-gray-600.mb-7 Inicia a tua sessão no formulário:
+        h1.text-gray-800.text-5xl.font-bold.text-2xl.mb-1 Welcome Back!
+        p.text-sm.font-normal.text-gray-600.mb-7 Insert your login credentials:
         .flex.items-center.border-2.py-2.px-3.rounded-2xl.mb-4
           svg.h-5.w-5.text-gray-400(xmlns='http://www.w3.org/2000/svg' viewbox='0 0 20 20' fill='currentColor')
             path(fill-rule='evenodd' d='M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z' clip-rule='evenodd')
           input.pl-2.outline-none.border-none(size=40 type='text' name='username' placeholder='Email')
-        .flex.items-center.border-2.py-2.px-3.rounded-2xl
+        .flex.items-center.border-2.py-2.px-3.rounded-2xl.mb-4
           svg.h-5.w-5.text-gray-400(xmlns='http://www.w3.org/2000/svg' viewbox='0 0 20 20' fill='currentColor')
             path(fill-rule='evenodd' d='M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z' clip-rule='evenodd')
-          input.pl-2.outline-none.border-none(type='password' name='password' placeholder='Password')
+          input.pl-2.outline-none.border-none(size=40 type='password' name='password' placeholder='Password')
+        
+        if failed
+          #toast-danger.flex.items-center.w-full.p-4.mb-4.text-gray-500.bg-white.rounded-lg.shadow(class='dark:text-gray-400 dark:bg-gray-800' role='alert')
+            .inline-flex.items-center.justify-center.flex-shrink-0.w-8.h-8.text-red-500.bg-red-100.rounded-lg(class='dark:bg-red-800 dark:text-red-200')
+              svg.w-5.h-5(aria-hidden='true' fill='currentColor' viewbox='0 0 20 20' xmlns='http://www.w3.org/2000/svg')
+                path(fill-rule='evenodd' d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z' clip-rule='evenodd')
+            .ml-3.text-sm.font-normal Login Failed.
+            .ml-auto.flex.bg-white.text-gray-400(class='hover:text-gray-900 focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700' data-dismiss-target='#toast-danger')
+            | #[a(href="/login") X]
+        
         button.block.w-full.bg-indigo-600.mt-4.py-2.rounded.text-white.font-semibold.mb-2(type='submit') Login
-    .mt-4.ml-2(class='hover:text-blue-500') #[a(href="http://localhost:7778/auth/google") Autenticar pela google]
-    .mt-4.ml-2(class='hover:text-blue-500') #[a(href="#") Esqueceu-se da Password? ]
-    .mt-4.ml-2(class='hover:text-blue-500') #[a(href="/register") Ainda não tem conta? ]
+      
+    .mt-4.ml-2(class='hover:text-blue-500') #[a(href="http://localhost:7778/auth/google") Google Auth]
+    .mt-4.ml-2(class='hover:text-blue-500') #[a(href="/forgotPass") Forgot your password?]
+    .mt-4.ml-2(class='hover:text-blue-500') #[a(href="/register") Still no account? ]
 
