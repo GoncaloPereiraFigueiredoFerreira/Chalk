@@ -19,6 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'bagit/bags')));
 
 app.use('/', indexRouter);
 app.use("/channel",channelRouter);
@@ -36,7 +37,10 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  if (err.status==404)
+    res.render('errors/notFound');
+  else if (err.status==401)
+    res.render('errors/unauthorized')
 });
 
 module.exports = app;

@@ -27,7 +27,7 @@ module.exports.remAnn = (announcement) =>{
 }
 
 module.exports.getAnnTitlesChannel = (channel)=>{
-    return Announcement.find({"channel":channel},{_id:1,publisher:1,title:1,date:1})
+    return Announcement.find({"channel":channel},{_id:1,publisher:1,title:1,date:1}).sort({date:-1})
   
 }
 
