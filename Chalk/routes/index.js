@@ -155,6 +155,36 @@ router.get("/file/:fileID", verifyAuthentication, (req, res, next) => {
           
           fs.writeFile(outputBag, result.data, "binary", (err) => {
             if (err) throw err;
+            extractionFolder = bagFolder + '/' + metadata.checksum
+            bagit.unpack_bag(outputBag, extractionFolder)
+              .then(() => {
+                //copia do ficheiro para o verdadeiro nome dele
+                fs.copyFileSync(extractionFolder + '/data/' + metadata.checksum,extractionFolder + '/data/' + metadata.file_name)
+                res.redirect("/"+metadata.checksum + '/data/' + metadata.file_name)
+              })
+              .catch(err => console.log(err))
+          });
+        })
+        .catch((err) => { console.log(err) })
+    })
+    .catch((err) => { console.log(err) })
+}) 
+
+
+/// File Routing
+router.get("/file/download/:fileID", verifyAuthentication, (req, res, next) => {
+  axios.get(archive_location + '/acess/file/' + req.params.fileID)
+    .then((file) => {
+      metadata = file.data
+      axios.get(storage_location + '/file/' + metadata.location)
+        .then((result) => {
+          outputBag = __dirname + '/../' + bagFolder + '/' + metadata.checksum + '.zip'
+          if (!fs.existsSync(__dirname + '/../' + bagFolder)){
+            fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
+          }
+          
+          fs.writeFile(outputBag, result.data, "binary", (err) => {
+            if (err) throw err;
 
             extractionFolder = __dirname + '/../' + bagFolder + '/' + metadata.checksum
             bagit.unpack_bag(outputBag, extractionFolder)
@@ -169,5 +199,7 @@ router.get("/file/:fileID", verifyAuthentication, (req, res, next) => {
     })
     .catch((err) => { console.log(err) })
 }) 
+
+
 
 module.exports = router;

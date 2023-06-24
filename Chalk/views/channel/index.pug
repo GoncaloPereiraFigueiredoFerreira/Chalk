@@ -57,7 +57,7 @@ block channel_cont
 
       // Table of contents
       .relative.bg-white.h-80.overflow-x-auto.shadow-md(class='sm:rounded-lg dark:bg-gray-800')
-        table.w-full.text-sm.text-left.text-gray-500.overflow-x-auto(id="folders" class='dark:text-gray-400')
+        table.table-fixed.w-full.text-sm.text-left.text-gray-500.overflow-x-auto(id="folders" class='dark:text-gray-400')
           thead.text-xs.text-gray-700(class='dark:bg-gray-700 dark:text-gray-400')
             // Table head with current and past folders
             nav.flex.items-center.justify-between.px-5.py-3.text-gray-800.bg-gray-50(class='dark:bg-gray-800 dark:border-gray-700')
@@ -67,6 +67,14 @@ block channel_cont
                   | Add Directory
                 a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(id='add_file' href='/channel/' + channel._id + '/addfile?dir=""' class='hover:underline dark:text-blue-500')
                   | Add File
+            tr.hidden
+              th Filename
+              th Filetype
+              th Tags
+              th FileSize
+              if channel.role=="pub"
+                th remove
+
           tbody
     
     // Important Dates
@@ -212,7 +220,7 @@ block channel_cont
         let href = $('<a>').attr("href", '/file/' + f.file.metadata._id).text(f.name)
         let name = $('<td>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white")
         name.append(href)
-        let format = $('<td>').attr("class","px-6 py-4").text(f.file.format)
+        let format = $('<td>').attr("class","px-6 py-4").text(f.file.metadata.file_type)
         let tags = $('<td>').attr("class","px-6 py-4").text("TAGS")
         let fileSize = $('<td>').attr("class","px-6 py-4").text(formatFilesize(f.file.metadata.file_size))
 

@@ -199,7 +199,7 @@ router.get("/submissions/:chID",verifyAuthentication,verifyChannelRole,(req, res
         })
       }
       else{
-        res.render("channel/submissions",{user:req.user, deliveries:listDel,channel:req.info,submissions:[]})
+        res.render("channel/submissions",{user:req.user, deliveries:listDel,channel:req.info,submissions:{}})
       }
     })
   }
@@ -396,15 +396,12 @@ router.get("/:chID/addfile", verifyAuthentication,verifyChannelRole, (req, res, 
     if (!fs.existsSync(uploadFolder)){
       fs.mkdirSync(uploadFolder, { recursive: true });
     }
-    axios.get(archive_location+"/acess/channel/info/" + req.params.chID)
-      .then((channel) => {
-        res.render("channel/upload_file", {
-          user: req.user,
-          channel: channel.data,
-        })
-      })
-      // TODO: tratar erro
-      .catch(err => { console.log(err);     next(createHttpError(401)) })
+   
+    res.render("channel/upload_file", {
+      user: req.user,
+      channel: req.info,
+    })
+    
   }
   else{
         next(createHttpError(401))

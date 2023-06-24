@@ -25,6 +25,12 @@ db.on("open", ()=>{
 // Generate Public and Private Keys
 const { generateKeyPairSync } = require('crypto');
 const fs = require("fs")
+var dir = './keys';
+
+
+if (!fs.existsSync(dir)){
+    fs.mkdirSync(dir);
+}
 
 let files  =fs.readdirSync("./keys")
 

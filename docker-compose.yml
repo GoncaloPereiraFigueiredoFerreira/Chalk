@@ -20,6 +20,8 @@ services:
     build: ./StorageSystem
     networks:
       - chalknetwork
+    volumes:
+      - storage_data:/data/files
     environment:
       - PORT=15015
 
@@ -62,6 +64,7 @@ services:
 volumes:
   backend_db_data:
   auth_db_data:
+  storage_data:
 
 networks:
   chalknetwork:
