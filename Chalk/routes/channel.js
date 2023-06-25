@@ -482,7 +482,7 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
       
       Promise.all([promise1, promise2])
         .then(([checksum, channel_contents]) => {
-          if (!fileExistsInDir(channel_contents.data[dir], req.body.filename)){
+          if (!fileExistsInDir(channel_contents.data, dir, req.body.filename)){
             let extension = getExtension(req.file.originalname, req.body.filename)
             let metadata = {
               file_size:      req.file.size,
@@ -518,9 +518,14 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
                   automaticPost(req.params.chID, req.body, req.user)
                   res.redirect('/channel/' + req.params.chID) 
                 })
-                .catch(err => { err => console.log(err) })
+                .catch(err => { err => 
+                  // TODO: dar erro concreto
+                  console.log(err) 
+                })
             })
-            .catch(err => { })
+            .catch(err => {
+              // TODO: dar erro concreto
+            })
           }
           else{
             // TODO: dar erro concreto
@@ -539,6 +544,20 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
   }
 });
 
+fileExistsInDir = (contentTree, dir, filename) => {
+  const path = dir.split("/")
+
+  let tmpTree = contentTree[path[0]]
+  for (let i=1; i < path.length; i++){
+    tmpTree = tmpTree.files[path[i]]
+  }
+
+  if (filename in tmpTree.files)
+    return true
+  else
+    return false
+}
+
 getExtension = (original_name, new_name) => {
   let res = '';
   
@@ -552,13 +571,6 @@ getExtension = (original_name, new_name) => {
     res = OGext
 
   return res
-}
-
-fileExistsInDir = (dir_contents, filename) => {
-  if (filename in dir_contents.files)
-    return true
-  else
-    return false
 }
 
 automaticPost = (chID, body, user) => {
@@ -604,13 +616,9 @@ router.get("/:chID/rmfile/:fileID", verifyAuthentication, (req, res, next) => {
             }
           )
             .then((res3) => {
-              console.log('here1')
-
               axios.get(archive_location + '/acess/file/location/' + metadata.location)
                 .then((res4) => { 
-
                   files = res4.data
-                  console.log('here2')
                   if (files.length == 0){
                     axios.delete(storage_location + '/' + metadata.location)
                       .then((res5) => {
@@ -647,7 +655,7 @@ router.get("/:chID/adddir", verifyAuthentication, verifyChannelRole,function(req
 router.post("/:chID/adddir", verifyAuthentication,verifyChannelRole, function(req, res) {
   if (req.info.role == "pub"){
     if ('dir' in req.query){
-      dir = req.query['dir']
+      let dir = req.query['dir']
       if (dir === '""'){
         dir = '' + req.body.dir
       }
@@ -671,5 +679,99 @@ router.post("/:chID/adddir", verifyAuthentication,verifyChannelRole, function(re
   }
 });
 
+router.get("/:chID/rmdir", verifyAuthentication,verifyChannelRole, function(req, res) {
+  if (req.info.role == "pub"){
+    if ('context' in req.query && 'dir' in req.query){
+      let context = req.query['context']
+      let dir = req.query['dir'].substring(1, req.query['dir'].length - 1)
+
+      if (context === '""'){
+        context = '' + dir
+      }
+      else{
+        context = req.query['context'].substring(2, req.query['context'].length - 1)
+        context = context + '/' + dir
+      }
+
+      axios.get(archive_location + '/acess/channel/contentTree/' + req.params.chID)
+        .then((res1) => {
+          let dirContents = getDirContents(res1.data, context)
+
+          // TODO: eliminar ficheiros do storage
+          // TODO: fazer recursivamente
+          // TODO: separar isto numa outra função
+          for (let key in dirContents){
+            let elem = dirContents[key]
+            if (elem.type === 'dir'){
+
+              // TODO: remover ficheiros + recursivamente
+              let insideContext = context + '/' + key
+              axios.delete(archive_location + '/ingest/rmdir/' + req.params.chID + '?dir=\"' + insideContext + '\"')
+                .catch(err => { 
+                  //TODO: tratar do erro 
+                  console.log(err)
+                  //next(createHttpError(401))
+                })
+            }
+            else if (elem.type === 'file'){
+              axios.delete(archive_location + '/ingest/rmfile/' + elem.metadata._id)
+                .catch(err => { 
+                  //TODO: tratar do erro 
+                  console.log(err)
+                  //next(createHttpError(401))
+                })
+
+              axios.get(archive_location + '/acess/file/location/' + elem.metadata.location)
+                .then((res3) => { 
+                  files = res3.data
+                  if (files.length == 0){
+                    axios.delete(storage_location + '/' + elem.metadata.location)
+                      .catch(err => { console.log(err); })
+                  }
+                })
+                .catch(err => { console.log(err); })
+            }
+          }
+
+          /*
+          axios.delete(archive_location + '/ingest/rmdir/' + req.params.chID + '?dir=\"' + context + '\"')
+            .then((res2) => {
+              res.redirect('back')
+            })
+            .catch(err => { 
+              //TODO: tratar do erro 
+              console.log(err)
+              next(createHttpError(401))
+            })
+            */
+          res.redirect('back')
+        })
+        .catch(err => { 
+          //TODO: tratar do erro 
+          console.log(err)
+          next(createHttpError(401))
+        })
+      /*
+      
+        */
+    }
+    else
+      next(createHttpError(401))
+    }
+  else{
+    next(createHttpError(401))
+  }
+});
+
+getDirContents = (contentTree, dir) => {
+  const path = dir.split("/")
+
+  let tmpTree = contentTree[path[0]]
+  for (let i=1; i < path.length; i++){
+    tmpTree = tmpTree.files[path[i]]
+  }
+
+  return tmpTree.files
+}
 
 module.exports = router

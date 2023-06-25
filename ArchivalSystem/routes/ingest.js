@@ -32,6 +32,18 @@ router.put("/rmfile/:fileID", function(req, res){
     .catch((err)=>{ console.log(err); res.sendStatus(500) })
 })
 
+router.delete("/rmdir/:chID", function(req, res){
+  if ('dir' in req.query){
+    let dir = req.query['dir'].substring(1, req.query['dir'].length - 1)
+    Channels.removeDir(req.params.chID, dir)
+      .then((result) => { res.status(200).jsonp(result).end() })
+      .catch((err)=>{ console.log(err); res.sendStatus(500) })
+  }
+  else{
+    res.sendStatus(404)
+  }
+})
+
 router.post("/submitfile", function(req,res){
   return Metadata.addFileMetadata(req.body.file)
           .then((res_file) => {
@@ -92,6 +104,8 @@ router.post("/addFile",function(req,res){
       res.sendStatus(500)
   })
 })
+
+
 
 
 router.post("/newdir",function(req,res){

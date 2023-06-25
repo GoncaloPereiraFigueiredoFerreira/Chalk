@@ -30,6 +30,10 @@ module.exports.createDir = (channel,path)=>{
   })
 }
 
+module.exports.removeDir = (channel,path)=>{
+  return Channel.updateOne({_id:channel},{ $pull: {"contents": {"path":path}}})
+}
+
 module.exports.addFile = (channel,path,file)=>{
   return Channel.updateOne({_id:channel,"contents.path":path},{$addToSet:{"contents.$.files":file}})
 }
