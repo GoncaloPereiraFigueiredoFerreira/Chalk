@@ -195,12 +195,11 @@ router.get("/submissions/:chID",verifyAuthentication,verifyChannelRole,(req, res
       if (date==undefined && listDel.length>0) date = listDel[0]._id
       if (listDel.length>0){
         axios.get(archive_location+"/acess/dates/channel/"+chnID+"/submissions/"+date).then(response=>{
-          console.log(response.data)
           res.render("channel/submissions",{user:req.user, deliveries:listDel, channel:req.info,submissions:response.data})
         })
       }
       else{
-        res.render("channel/submissions",{user:req.user, deliveries:listDel,channel:req.info,submissions:{}})
+        res.render("channel/submissions",{user:req.user,channel:req.info})
       }
     })
   }
