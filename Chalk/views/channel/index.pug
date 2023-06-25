@@ -5,7 +5,7 @@ block channel_cont
   .grid.grid-cols-8.grid-rows-3.gap-4
     
     input(type='hidden' id='channel_id' value=channel._id)
-
+    //About section
     .col-span-8(class='md:col-span-2  md:row-start-1')
       .p-4.h-full.flex.flex-col.bg-white.border.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
         .flex.items-center.justify-between.mb-4
@@ -17,7 +17,6 @@ block channel_cont
             each pub in channel.publishers
               li #{pub}
       
-
     // Announcement titles
     .col-span-8(class='md:col-span-6  md:row-start-1')
       .p-4.h-full.bg-white.border.border-gray-200.rounded-lg.shadow(class='sm:p-8 dark:bg-gray-800 dark:border-gray-700')
@@ -208,32 +207,42 @@ block channel_cont
         let directory = dirs[i]
         if (directory.name != ''){
             let tag = $('<td>').attr("class", "flex items-center ml-64").append($("<div>").attr("class","border rounded-lg p-1").text("Directory"))
-            let name = $('<td>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").text(directory.name)
+            let folder= $("<object>").attr("class","w-4 h-4 mr-2 dark:invert").attr("data",'/images/svgs/folder.svg').attr("type",'image/svg+xml')
+            let td = $('<td>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").append(folder)
+            let name  = $('<span>').text(directory.name)
             let tr = $('<tr>').attr("data-directory",directory.name).attr("class","cursor-pointer flex bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
-            tableRows.append(tr.append(name).append(tag))
+            tableRows.append(tr.append(td.append(name)).append(tag))
         }
       }
 
       for (let i in fils){
         f = fils[i]
         let tr = $('<tr>').attr('id', f.name).attr("class","flex cursor-pointer justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
-        let href = $('<a>').attr("href", '/file/' + f.file.metadata._id).text(f.name)
+        let href = $('<a>').attr("class","w-56 overflow-hidden truncate").attr("href", '/file/' + f.file.metadata._id).text(f.name)
+        let file= $("<object>").attr("class","w-4 h-4 mr-2 dark:invert").attr("data",'/images/svgs/file.svg').attr("type",'image/svg+xml')
         let name = $('<td>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white")
-        name.append(href)
+        name.append(file).append(href)
         let format = $('<td>').attr("class","px-6 py-4").text(f.file.metadata.file_type)
         let tags = $('<td>').attr("class","px-6 py-4").text("TAGS")
         let fileSize = $('<td>').attr("class","px-6 py-4").text(formatFilesize(f.file.metadata.file_size))
-
+        let dwnld= $("<img>").attr("class","z-0 w-4 h-4 dark:invert").attr("src",'/images/svgs/download.svg')
+        let dwnl_a = $('<a>').attr("class","z-10").attr("href", '/file/download/' + f.file.metadata._id)
+        let tr_dwnl = $('<td>').attr("class","px-6 py-4").append(dwnl_a.append(dwnld))
         let tr_a = $('<td>').attr('id', '_'+f.name).attr("class","px-6 py-4")
         let a
-        console.log(dir)
-        if (dir !== '')
-          a = $('<a>').attr('href', '/channel/' + $("#channel_id").val() + '/rmfile/' + f.file.metadata._id + '?dir=\"' + dir + '\"').text('X')
-        else 
-          a = $('<a>').attr('href', '/channel/' + $("#channel_id").val() + '/rmfile/' + f.file.metadata._id).text('X')
-        tr_a.append(a)
+        if (#{channel.role =="pub"}){            
+            if (dir !== '')
+              a = $('<a>').attr('href', '/channel/' + $("#channel_id").val() + '/rmfile/' + f.file.metadata._id + '?dir=\"' + dir + '\"').text('X')
+            else 
+              a = $('<a>').attr('href', '/channel/' + $("#channel_id").val() + '/rmfile/' + f.file.metadata._id).text('X')
+            tr_a.append(a)
+            tableRows.append(tr.append(name).append(tags).append(format).append(fileSize).append(tr_dwnl).append(tr_a))
+        }
+        else{
+            tableRows.append(tr.append(name).append(tags).append(format).append(fileSize).append(tr_dwnl))
+        }
 
-        tableRows.append(tr.append(name).append(tags).append(format).append(fileSize).append(tr_a))
+       
       }
 
        $("tr").each(function(index, value) {
