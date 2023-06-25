@@ -210,7 +210,7 @@ block channel_cont
             let folder= $("<object>").attr("class","w-4 h-4 mr-2 dark:invert").attr("data",'/images/svgs/folder.svg').attr("type",'image/svg+xml')
             let td = $('<td>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").append(folder)
             let name  = $('<span>').text(directory.name)
-            let tr = $('<tr>').attr("data-directory",directory.name).attr("class","cursor-pointer flex bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
+            let tr = $('<tr>').attr("data-directory",directory.name).attr("class","flex cursor-pointer justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
             
             let tr_a = $('<td>').attr("class","px-6 py-4")
             let a = $('<a>').attr('href', '/channel/' + $("#channel_id").val() + '/rmdir/?context=\"' + dir + '\"' + '&dir=\"' + directory.name + '\"').text('X')

@@ -694,43 +694,7 @@ router.get("/:chID/rmdir", verifyAuthentication,verifyChannelRole, function(req,
 
       axios.get(archive_location + '/acess/channel/contentTree/' + req.params.chID)
         .then((res1) => {
-          let dirContents = getDirContents(res1.data, context)
-
-          // TODO: eliminar ficheiros do storage
-          // TODO: fazer recursivamente
-          // TODO: separar isto numa outra função
-          for (let key in dirContents){
-            let elem = dirContents[key]
-            if (elem.type === 'dir'){
-
-              // TODO: remover ficheiros + recursivamente
-              let insideContext = context + '/' + key
-              axios.delete(archive_location + '/ingest/rmdir/' + req.params.chID + '?dir=\"' + insideContext + '\"')
-                .catch(err => { 
-                  //TODO: tratar do erro 
-                  console.log(err)
-                  //next(createHttpError(401))
-                })
-            }
-            else if (elem.type === 'file'){
-              axios.delete(archive_location + '/ingest/rmfile/' + elem.metadata._id)
-                .catch(err => { 
-                  //TODO: tratar do erro 
-                  console.log(err)
-                  //next(createHttpError(401))
-                })
-
-              axios.get(archive_location + '/acess/file/location/' + elem.metadata.location)
-                .then((res3) => { 
-                  files = res3.data
-                  if (files.length == 0){
-                    axios.delete(storage_location + '/' + elem.metadata.location)
-                      .catch(err => { console.log(err); })
-                  }
-                })
-                .catch(err => { console.log(err); })
-            }
-          }
+          removeContents(res1.data, req.params.chID, context)
 
           axios.delete(archive_location + '/ingest/rmdir/' + req.params.chID + '?dir=\"' + context + '\"')
             .then((res2) => {
@@ -739,30 +703,70 @@ router.get("/:chID/rmdir", verifyAuthentication,verifyChannelRole, function(req,
             .catch(err => { 
               //TODO: tratar do erro 
               console.log(err)
-              next(createHttpError(401))
             })
         })
         .catch(err => { 
           //TODO: tratar do erro 
           console.log(err)
-          next(createHttpError(401))
         })
-      /*
-      
-        */
     }
-    else
-      next(createHttpError(401))
-    }
+  }
   else{
     next(createHttpError(401))
   }
 });
 
+removeContents = (contentTree, chID, context) => {
+  let dirContents = ''
+  dirContents = getDirContents(contentTree, context)
+
+  for (let key in dirContents){
+    let elem = dirContents[key]
+    if (elem.type === 'dir'){
+      removeDir(contentTree, chID, context, key)
+    }
+    else if (elem.type === 'file'){
+      removeFile(elem)
+    }
+  }
+}
+
+removeDir = (contentTree, chID, context, dir) => {
+  let insideContext = context + '/' + dir
+  let dirContents = getDirContents(contentTree, insideContext)
+  removeContents(contentTree, chID, insideContext)
+
+  axios.delete(archive_location + '/ingest/rmdir/' + chID + '?dir=\"' + insideContext + '\"')
+    .catch(err => { 
+      //TODO: tratar do erro 
+      console.log(err)
+    })
+}
+
+removeFile = (elem) => {
+  axios.delete(archive_location + '/ingest/rmfile/' + elem.metadata._id)
+    .catch(err => { 
+      //TODO: tratar do erro 
+      console.log(err)
+      //next(createHttpError(401))
+    })
+
+  axios.get(archive_location + '/acess/file/location/' + elem.metadata.location)
+    .then((res3) => { 
+      files = res3.data
+      if (files.length == 0){
+        axios.delete(storage_location + '/' + elem.metadata.location)
+          .catch(err => { console.log(err); })
+      }
+    })
+    .catch(err => { console.log(err); })
+}
+
 getDirContents = (contentTree, dir) => {
   const path = dir.split("/")
 
-  let tmpTree = contentTree[path[0]]
+  let tmpTree = ''
+  tmpTree = contentTree[path[0]]
   for (let i=1; i < path.length; i++){
     tmpTree = tmpTree.files[path[i]]
   }
