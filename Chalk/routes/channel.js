@@ -732,7 +732,6 @@ router.get("/:chID/rmdir", verifyAuthentication,verifyChannelRole, function(req,
             }
           }
 
-          /*
           axios.delete(archive_location + '/ingest/rmdir/' + req.params.chID + '?dir=\"' + context + '\"')
             .then((res2) => {
               res.redirect('back')
@@ -742,8 +741,6 @@ router.get("/:chID/rmdir", verifyAuthentication,verifyChannelRole, function(req,
               console.log(err)
               next(createHttpError(401))
             })
-            */
-          res.redirect('back')
         })
         .catch(err => { 
           //TODO: tratar do erro 

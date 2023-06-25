@@ -206,19 +206,24 @@ block channel_cont
       for (let i in dirs){
         let directory = dirs[i]
         if (directory.name != ''){
-            let tag = $('<td>').attr("class", "flex items-center ml-64").append($("<div>").attr("class","border rounded-lg p-1").text("Directory"))
+            let tag = $('<td>').attr('id', 'click_dir').attr("data-directory",directory.name).attr("class", "flex items-center ml-64").append($("<div>").attr("class","border rounded-lg p-1").text("Directory"))
             let folder= $("<object>").attr("class","w-4 h-4 mr-2 dark:invert").attr("data",'/images/svgs/folder.svg').attr("type",'image/svg+xml')
             let td = $('<td>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").append(folder)
             let name  = $('<span>').text(directory.name)
             let tr = $('<tr>').attr("data-directory",directory.name).attr("class","cursor-pointer flex bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
-            tableRows.append(tr.append(td.append(name)).append(tag))
+            
+            let tr_a = $('<td>').attr("class","px-6 py-4")
+            let a = $('<a>').attr('href', '/channel/' + $("#channel_id").val() + '/rmdir/?context=\"' + dir + '\"' + '&dir=\"' + directory.name + '\"').text('X')
+            tr_a.append(a)
+            
+            tableRows.append(tr.append(td.append(name)).append(tag).append(tr_a))
         }
       }
 
       for (let i in fils){
         f = fils[i]
         let tr = $('<tr>').attr('id', f.name).attr("class","flex cursor-pointer justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
-        let href = $('<a>').attr("class","w-56 overflow-hidden truncate").attr("href", '/file/' + f.file.metadata._id).text(f.name)
+        let href = $('<a>').attr("class","w-56 overflow-hidden truncate").attr("href", '/file/' + f.file.metadata._id).attr('target', '_blank').text(f.name)
         let file= $("<object>").attr("class","w-4 h-4 mr-2 dark:invert").attr("data",'/images/svgs/file.svg').attr("type",'image/svg+xml')
         let name = $('<td>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white")
         name.append(file).append(href)
@@ -241,15 +246,10 @@ block channel_cont
         else{
             tableRows.append(tr.append(name).append(tags).append(format).append(fileSize).append(tr_dwnl))
         }
-
-       
       }
 
        $("tr").each(function(index, value) {
           if (this.dataset.directory){
-            $(this).on("click",function(){
-              tableRows.empty();
-              path.push(this.dataset.directory);
               let dir_ = ''
               for (let i in path){
                 if (i != 0)
@@ -257,36 +257,50 @@ block channel_cont
               }
               $('#add_dir').attr('href', '/channel/' + $("#channel_id").val() + '/adddir?dir=\"' + dir_ + '\"')
               $('#add_file').attr('href', '/channel/' + $("#channel_id").val() + '/addfile?dir=\"' + dir_ + '\"')
-              composeFolder()
-            })
           }
         });
 
-        $("#dirnav > li > a").each(function(index, value) {
-           $(this).on("click",function(){
-                let flag = false 
-                let counter = path.length -1
-                while (!flag){
-                    if (this.text != path[counter]){
-                      path.splice(counter, 1); 
-                    }
-                    else
-                      flag=true
-                    counter--
-                }
-
-                let dir_ = ''
-                for (let i in path){
-                  if (i != 0)
-                    dir_ = dir_ + '/' + path[i]
-                }
-                tableRows.empty();
-                $('#add_dir').attr('href', '/channel/' + $("#channel_id").val() + '/adddir?dir=\"' + dir_ + '\"')
-                $('#add_file').attr('href', '/channel/' + $("#channel_id").val() + '/addfile?dir=\"' + dir_ + '\"')
-                composeFolder()
-              }
-           )
+      $("#click_dir").each(function(index, value) {
+        $(this).on("click",function(){
+          tableRows.empty();
+          let dir_ = ''
+          path.push(this.dataset.directory);
+          for (let i in path){
+            if (i != 0)
+              dir_ = dir_ + '/' + path[i]
+          }
+          $('#add_dir').attr('href', '/channel/' + $("#channel_id").val() + '/adddir?dir=\"' + dir_ + '\"')
+          $('#add_file').attr('href', '/channel/' + $("#channel_id").val() + '/addfile?dir=\"' + dir_ + '\"')
+          composeFolder()
         })
+      })
+
+
+      $("#dirnav > li > a").each(function(index, value) {
+         $(this).on("click",function(){
+            let flag = false 
+            let counter = path.length -1
+            while (!flag){
+                if (this.text != path[counter]){
+                  path.splice(counter, 1); 
+                }
+                else
+                  flag=true
+                counter--
+            }
+            
+            let dir_ = ''
+            for (let i in path){
+              if (i != 0)
+                dir_ = dir_ + '/' + path[i]
+            }
+            tableRows.empty();
+            $('#add_dir').attr('href', '/channel/' + $("#channel_id").val() + '/adddir?dir=\"' + dir_ + '\"')
+            $('#add_file').attr('href', '/channel/' + $("#channel_id").val() + '/addfile?dir=\"' + dir_ + '\"')
+            composeFolder()
+          }
+         )
+      })
     }
     $(window).on('load', function() {
         composeFolder();
