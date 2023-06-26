@@ -278,7 +278,6 @@ block channel_cont
             window.location.href = '/file/' + this.dataset.file;
         })})
 
-
       $('input').each(function(index, value){
         if ($(this).attr('type') === 'checkbox'){
           let id = $(this).attr('id')
@@ -303,7 +302,7 @@ block channel_cont
         }
       })
 
-      $("#click_dir").each(function(index, value) {
+      $(".click_dir").each(function(index, value) {
         $(this).on("click",function(){
           downloaded = []
           tableRows.empty();
