@@ -221,17 +221,21 @@ block channel_cont
       for (let i in dirs){
         let directory = dirs[i]
         if (directory.name != ''){
-            let tag = $('<td>').attr('id', 'click_dir').attr("data-directory",directory.name).attr("class", "flex items-center ml-64").append($("<div>").attr("class","border rounded-lg p-1").text("Directory"))
+            let tag = $('<td>').attr("data-directory",directory.name).attr("class", "click_dir w-full flex items-center").append($("<div>").attr("class","border rounded-lg p-1").text("Directory"))
             let folder= $("<object>").attr("class","w-4 h-4 mr-2 dark:invert").attr("data",'/images/svgs/folder.svg').attr("type",'image/svg+xml')
-            let td = $('<td>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").append(folder)
+            let td = $('<td>').attr("data-directory",directory.name).attr("class","click_dir w-full flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white").append(folder)
             let name  = $('<span>').text(directory.name)
-            let tr = $('<tr>').attr("data-directory",directory.name).attr("class","flex cursor-pointer justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
-            
-            let tr_a = $('<td>').attr("class","px-6 py-4")
-            let a = $('<a>').attr('href', '/channel/' + $("#channel_id").val() + '/rmdir/?context=\"' + dir + '\"' + '&dir=\"' + directory.name + '\"').text('X')
-            tr_a.append(a)
-            
-            tableRows.append(tr.append(td.append(name)).append(tag).append(tr_a))
+            let tr = $('<tr>').attr("class","flex cursor-pointer justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
+
+            if (#{channel.role =="pub"}){            
+              let tr_a = $('<td>').attr("class","px-6 py-4")
+              let a = $('<a>').attr('href', '/channel/' + $("#channel_id").val() + '/rmdir/?context=\"' + dir + '\"' + '&dir=\"' + directory.name + '\"').text('X')
+              tr_a.append(a)
+              tableRows.append(tr.append(td.append(name)).append(tag).append(tr_a))
+            }
+            else{
+                tableRows.append(tr.append(td.append(name)).append(tag))
+            }
         }
       }
 
@@ -243,19 +247,20 @@ block channel_cont
         checkbox.append(checkbox_input)
 
         let tr = $('<tr>').attr('id', f.name).attr("class","flex cursor-pointer justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
-        let href = $('<a>').attr("class","w-56 overflow-hidden truncate").attr("href", '/file/' + f.file.metadata._id).attr('target', '_blank').text(f.name)
         let file= $("<object>").attr("class","w-4 h-4 mr-2 dark:invert").attr("data",'/images/svgs/file.svg').attr("type",'image/svg+xml')
-        let name = $('<td>').attr("class","flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white")
-        name.append(file).append(href)
-        let format = $('<td>').attr("class","px-6 py-4").text(f.file.metadata.file_type)
-        let tags = $('<td>').attr("class","px-6 py-4").text("TAGS")
-        let fileSize = $('<td>').attr("class","px-6 py-4").text(formatFilesize(f.file.metadata.file_size))
-        let dwnld= $("<img>").attr("class","z-0 w-4 h-4 dark:invert").attr("src",'/images/svgs/download.svg')
-        let dwnl_a = $('<a>').attr("class","z-10").attr("href", '/file/download/' + f.file.metadata._id)
-        let tr_dwnl = $('<td>').attr("class","px-6 py-4").append(dwnl_a.append(dwnld))
-        let tr_a = $('<td>').attr('id', '_'+f.name).attr("class","px-6 py-4")
-        let a
-        if (#{channel.role =="pub"}){            
+        let name = $('<td>').attr("data-file",  f.file.metadata._id).attr("class","click_file w-full flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white")
+        let textspan = $('<span>').attr("class","w-56 truncate overflow-hidden").text(f.name)
+        name.append(file).append(textspan)
+        let format = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full  px-6 py-4").text(f.file.metadata.file_type)
+        let tags = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full  px-6 py-4").text("TAGS")
+        let fileSize = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full  px-6 py-4").text(formatFilesize(f.file.metadata.file_size))
+        let dwnld= $("<img>").attr("class","dark:invert").attr("src",'/images/svgs/download.svg')
+        let dwnl_a = $('<a>').attr("href", '/file/download/' + f.file.metadata._id)
+        let tr_dwnl = $('<td>').attr("class","w-32 px-6 py-4").append(dwnl_a.append(dwnld))
+
+        if (#{channel.role =="pub"}){       
+            let tr_a = $('<td>').attr('id', '_'+f.name).attr("class","px-6 py-4")
+            let a
             if (dir !== '')
               a = $('<a>').attr('href', '/channel/' + $("#channel_id").val() + '/rmfile/' + f.file.metadata._id + '?dir=\"' + dir + '\"').text('X')
             else 
@@ -268,17 +273,11 @@ block channel_cont
         }
       }
 
-       $("tr").each(function(index, value) {
-          if (this.dataset.directory){
-              let dir_ = ''
-              for (let i in path){
-                if (i != 0)
-                  dir_ = dir_ + '/' + path[i]
-              }
-              $('#add_dir').attr('href', '/channel/' + $("#channel_id").val() + '/adddir?dir=\"' + dir_ + '\"')
-              $('#add_file').attr('href', '/channel/' + $("#channel_id").val() + '/addfile?dir=\"' + dir_ + '\"')
-          }
-        });
+      $(".click_file").each(function(index, value) {
+        $(this).on("click",function(){
+            window.location.href = '/file/' + this.dataset.file;
+        })})
+
 
       $('input').each(function(index, value){
         if ($(this).attr('type') === 'checkbox'){
@@ -303,9 +302,6 @@ block channel_cont
           })
         }
       })
-      /*
-      
-      */
 
       $("#click_dir").each(function(index, value) {
         $(this).on("click",function(){
