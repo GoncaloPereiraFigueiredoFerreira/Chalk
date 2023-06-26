@@ -46,7 +46,6 @@ router.get('/files', (req, res) => {
       ogPaths.push(__dirname + '/../' + storageFolder + '/' + locations[i])
     }
 
-    console.log(ogPaths)
     var archive = archiver('zip', {zlib: {level: 9}})
     const promise = bagit.create_bag_files(archive, ogPaths, locations, __dirname + '/../bagit/bags')
     Promise.all([promise])

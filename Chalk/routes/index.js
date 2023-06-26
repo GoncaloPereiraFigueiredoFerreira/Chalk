@@ -178,7 +178,7 @@ router.get("/file/download/:fileID", verifyAuthentication, (req, res, next) => {
       metadata = file.data
       axios.get(storage_location + '/file/' + metadata.location)
         .then((result) => {
-          outputBag = __dirname + '/../' + bagFolder + '/' + metadata.checksum + '.zip'
+          let outputBag = __dirname + '/../' + bagFolder + '/' + metadata.checksum + '.zip'
           if (!fs.existsSync(__dirname + '/../' + bagFolder)){
             fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
           }

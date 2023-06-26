@@ -787,46 +787,55 @@ router.get('/:chID/files', verifyAuthentication, verifyChannelRole, function(req
           files = files.data
 
           let locations = ""
+          let new_names = {}
           for (let i in files){
-            if (i != 0)
+            if (i != 0){
               locations += ';' + files[i].location
-            else
+            }
+            else{
               locations = files[i].location
+            }
+            new_names[files[i].location] = files[i].file_name
           }
 
           axios.get(storage_location + '/files?locations=\"' + locations + "\"")
-            .then((result) => { console.log(result) })
-            .catch((err) => { console.log(err) })
-
-          /*
-          axios.get(storage_location + '/files?locations=\"' + locations + "\"")
             .then((result) => {
-              /*
-              outputBag = __dirname + '/../' + bagFolder + '/' + metadata.checksum + '.zip'
+              let file_name = result.headers['content-disposition']
+              let zip_name = file_name.substring(21, file_name.length)
+              file_name = file_name.substring(21, file_name.length - 4)
+              
               if (!fs.existsSync(__dirname + '/../' + bagFolder)){
                 fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
               }
+              let outputBag = __dirname + '/../' + bagFolder + '/' + zip_name
 
               fs.writeFile(outputBag, result.data, "binary", (err) => {
                 if (err) throw err;
               
-                extractionFolder = __dirname + '/../' + bagFolder + '/' + metadata.checksum
+                let extractionFolder = __dirname + '/../' + bagFolder + '/' + file_name
                 bagit.unpack_bag(outputBag, extractionFolder)
                   .then(() => {
-                    file_to_send = extractionFolder + '/data/' + metadata.checksum   
-                    res.download(file_to_send, metadata.file_name)
+                    var archive = archiver('zip', {zlib: {level: 9}})
+                    
+                    var output = fs.createWriteStream(__dirname + '/../' + bagFolder + '/' + file_name + '_data.zip')
+                    output.on('close', function() {
+                      res.download(__dirname + '/../' + bagFolder + '/' + file_name + '_data.zip', 'data.zip')
+                    })
+
+                    archive.pipe(output)
+                    let files_to_send = fs.readdirSync(extractionFolder + '/data/');
+                    for (let i in files_to_send){
+                      archive.file(extractionFolder + '/data/' + files_to_send[i], { name: new_names[files_to_send[i]] })
+                    }
+                    archive.finalize()
                   })
                   .catch(err => console.log(err))
               });
             })
             .catch((err) => { console.log(err) })
-          */
-
-
         })
         .catch((err) => { console.log(err) })
     }
-    console.log(files)
   }
   else{
     // TODO: erro
