@@ -234,9 +234,9 @@ block channel_cont
         let format = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full  px-6 py-4").text(f.file.metadata.file_type)
         let tags = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full  px-6 py-4").text("TAGS")
         let fileSize = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full  px-6 py-4").text(formatFilesize(f.file.metadata.file_size))
-        let dwnld= $("<img>").attr("class","z-0 w-4 h-4 dark:invert").attr("src",'/images/svgs/download.svg')
-        let dwnl_a = $('<a>').attr("class","z-10").attr("href", '/file/download/' + f.file.metadata._id)
-        let tr_dwnl = $('<td>').attr("class","px-6 py-4").append(dwnl_a.append(dwnld))
+        let dwnld= $("<img>").attr("class","dark:invert").attr("src",'/images/svgs/download.svg')
+        let dwnl_a = $('<a>').attr("href", '/file/download/' + f.file.metadata._id)
+        let tr_dwnl = $('<td>').attr("class","w-32 px-6 py-4").append(dwnl_a.append(dwnld))
 
         if (#{channel.role =="pub"}){       
             let tr_a = $('<td>').attr('id', '_'+f.name).attr("class","px-6 py-4")

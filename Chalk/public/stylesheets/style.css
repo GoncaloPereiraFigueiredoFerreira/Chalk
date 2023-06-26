@@ -1038,9 +1038,6 @@ input:checked + .toggle-bg{
 .top-3{
   top: 0.75rem;
 }
-.z-0{
-  z-index: 0;
-}
 .z-10{
   z-index: 10;
 }
@@ -1169,9 +1166,6 @@ input:checked + .toggle-bg{
 }
 .ml-6{
   margin-left: 1.5rem;
-}
-.ml-64{
-  margin-left: 16rem;
 }
 .ml-auto{
   margin-left: auto;
@@ -1320,6 +1314,12 @@ input:checked + .toggle-bg{
 .w-5{
   width: 1.25rem;
 }
+.w-52{
+  width: 13rem;
+}
+.w-56{
+  width: 14rem;
+}
 .w-6{
   width: 1.5rem;
 }
@@ -1340,18 +1340,6 @@ input:checked + .toggle-bg{
 }
 .w-screen{
   width: 100vw;
-}
-.w-96{
-  width: 24rem;
-}
-.w-40{
-  width: 10rem;
-}
-.w-auto{
-  width: auto;
-}
-.w-56{
-  width: 14rem;
 }
 .max-w-2xl{
   max-width: 42rem;
