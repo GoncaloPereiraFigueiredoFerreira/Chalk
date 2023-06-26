@@ -774,4 +774,63 @@ getDirContents = (contentTree, dir) => {
   return tmpTree.files
 }
 
+router.get('/:chID/files', verifyAuthentication, verifyChannelRole, function(req, res) {
+  if ('files' in req.query){
+    req.query['files'] = req.query['files'].substring(1, req.query['files'].length - 1)
+    const files = req.query['files'].split(";");
+    if (files.length == 1 && files[0] === ''){
+      res.redirect('back')
+    }
+    else{
+      axios.get(archive_location + '/acess/file/files?files=\"' + req.query['files'] + "\"")
+        .then((files) => {
+          files = files.data
+
+          let locations = ""
+          for (let i in files){
+            if (i != 0)
+              locations += ';' + files[i].location
+            else
+              locations = files[i].location
+          }
+
+          axios.get(storage_location + '/files?locations=\"' + locations + "\"")
+            .then((result) => { console.log(result) })
+            .catch((err) => { console.log(err) })
+
+          /*
+          axios.get(storage_location + '/files?locations=\"' + locations + "\"")
+            .then((result) => {
+              /*
+              outputBag = __dirname + '/../' + bagFolder + '/' + metadata.checksum + '.zip'
+              if (!fs.existsSync(__dirname + '/../' + bagFolder)){
+                fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
+              }
+
+              fs.writeFile(outputBag, result.data, "binary", (err) => {
+                if (err) throw err;
+              
+                extractionFolder = __dirname + '/../' + bagFolder + '/' + metadata.checksum
+                bagit.unpack_bag(outputBag, extractionFolder)
+                  .then(() => {
+                    file_to_send = extractionFolder + '/data/' + metadata.checksum   
+                    res.download(file_to_send, metadata.file_name)
+                  })
+                  .catch(err => console.log(err))
+              });
+            })
+            .catch((err) => { console.log(err) })
+          */
+
+
+        })
+        .catch((err) => { console.log(err) })
+    }
+    console.log(files)
+  }
+  else{
+    // TODO: erro
+  }
+})
+
 module.exports = router

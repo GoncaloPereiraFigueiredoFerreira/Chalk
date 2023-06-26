@@ -38,6 +38,10 @@ module.exports.getFileMetadataByID = function getFileMetadataByID(ID){
     return Metadata.findById(ID)
 }
 
+module.exports.getFilesMetadataByID = function getFilesMetadataByID(list){
+    return Metadata.find({_id: {$in: list}});
+}
+
 module.exports.getFilesByLocation = function getFilesByLocation(location){
     return Metadata.find({location: location})
 }
