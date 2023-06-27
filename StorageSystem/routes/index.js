@@ -2,8 +2,14 @@ var express = require('express');
 var fs = require("fs")
 var archiver = require('archiver')
 var bagit = require('../bagit/bagit')
+require("dotenv").config()
+let dirpath = __dirname + '/../' 
+if (process.env.STORAGE_FOLDER != undefined && process.env.STORAGE_FOLDER!=""){
+  dirpath = process.env.STORAGE_FOLDER
+}
 
-const storageFolder = 'storage'
+
+const storageFolder = dirpath + 'storage'
 const bagFolder = '/bagit/bags/'
 const uploadFolder = 'uploads'
 const uploadBagFolder = uploadFolder + '/bags'
@@ -13,12 +19,12 @@ const upload = multer({ dest: uploadBagFolder });
 var router = express.Router();
 
 router.post("/uploadfile", upload.single('file'), function(req, res){
-  if (!fs.existsSync(__dirname + '/../' + storageFolder)){
-    fs.mkdirSync(__dirname + '/../' + storageFolder, { recursive: true });
+  if (!fs.existsSync(storageFolder)){
+    fs.mkdirSync(storageFolder, { recursive: true });
   }
 
   bagPath = __dirname + '/../' + req.file.path
-  mvPath = __dirname + '/../' + storageFolder + '/' + req.body.checksum
+  mvPath = storageFolder + '/' + req.body.checksum
 
   extractionFolder = __dirname + '/../' + uploadFolder + '/' + req.file.filename
   bagit.unpack_bag(bagPath, extractionFolder, req.body.filename, mvPath)
@@ -27,7 +33,7 @@ router.post("/uploadfile", upload.single('file'), function(req, res){
 })
 
 router.delete("/:location", function(req, res){
-  fs.unlink(__dirname + '/../' + storageFolder + '/' + req.params.location, (err) => { 
+  fs.unlink(storageFolder + '/' + req.params.location, (err) => { 
     if (err){ console.log(err); res.sendStatus(500) }
     res.sendStatus(200)
   });
@@ -43,7 +49,7 @@ router.get('/files', (req, res) => {
 
     ogPaths = []
     for (let i = 0; i < locations.length; i++){
-      ogPaths.push(__dirname + '/../' + storageFolder + '/' + locations[i])
+      ogPaths.push(storageFolder + '/' + locations[i])
     }
 
     var archive = archiver('zip', {zlib: {level: 9}})
@@ -74,7 +80,7 @@ router.get("/file/:filepath", (req, res) => {
   if (!fs.existsSync(__dirname + '/../' + bagFolder)){
     fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
   }
-  ogPath = __dirname + '/../' + storageFolder + '/' + req.params.filepath
+  ogPath = storageFolder + '/' + req.params.filepath
 
   var archive = archiver('zip', {zlib: {level: 9}})
   const promise = bagit.create_bag(archive, ogPath, req.params.filepath, __dirname + '/../bagit/bags')

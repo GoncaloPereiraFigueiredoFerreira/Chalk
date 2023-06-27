@@ -24,6 +24,7 @@ services:
       - storage_data:/data/files
     environment:
       - PORT=15015
+      - STORAGE_FOLDER=/data/files/
 
   archival:
     build: ./ArchivalSystem

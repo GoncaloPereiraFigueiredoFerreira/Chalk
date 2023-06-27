@@ -116,7 +116,8 @@ module.exports.unpack_bag = (bagPath, extractionFolder, filename, mvPath) => {
 
                         if (hashNew === hashOG){
                             if (!fs.existsSync(mvPath)) {
-                                fs.rename(fileOldPath, mvPath, () => { })
+                                fs.copyFileSync(fileOldPath, mvPath)
+                                //fs.rename(fileOldPath, mvPath, (err) => { console.log(err) })
                             }
 
                             // TODO: acabar unpacking (i.e. remover os ficheiros)
