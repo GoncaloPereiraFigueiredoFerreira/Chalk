@@ -116,25 +116,23 @@ block channel_cont
   script.
     var files = #{folders};
     var current = files;
+    var path = ["Home"]
+    var downloaded = []
+    var search = {}
+    let tableRows = $('#folders').find('tbody')
+
 
     // this would be the way to search files in a directory
     function findNestedObj(entireObj, keyToFind) {
-      let foundObj = [];
-      JSON.stringify(entireObj, (_, nestedValue) => {
-        if (nestedValue && nestedValue[keyToFind] !== undefined) {
-          foundObj.push(nestedValue);
+      let foundObj = {};
+      JSON.stringify(entireObj, (nestedkey, nestedvalue) => {
+        if (nestedkey.toUpperCase().search(keyToFind.toUpperCase())!==-1 && nestedvalue["type"]==="file") {
+          foundObj[nestedkey] = nestedvalue
         }
-        return nestedValue;
+        return nestedvalue;
       });
       return foundObj;
     };
-
-
-
-
-    var path = ["Home"]
-    var downloaded = []
-    let tableRows = $('#folders').find('tbody')
 
     function formatFilesize(filesize){
       if (filesize < 1000){
@@ -168,6 +166,126 @@ block channel_cont
 
       return res
     }
+
+
+
+    function composeFolderSearch(){
+ 
+      let fils=[]
+      for (let i in search){
+          let dic = {}
+          dic["metadata"] = search[i]["metadata"]
+          fils.push({name: i, file: dic})
+      }
+      
+      for (let f of fils){
+        let checkbox = $('<td>').attr("class","px-6 py-4")
+        let checkbox_input = $('<input>').attr('id', f.file.metadata._id).attr('type', 'checkbox').attr('value', "1").attr('class', "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600")
+        checkbox.append(checkbox_input)
+
+        let tr = $('<tr>').attr('id', f.name).attr("class","flex cursor-pointer justify-between bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600")
+        let file= $("<object>").attr("class","w-4 h-4 mr-2 dark:invert").attr("data",'/images/svgs/file.svg').attr("type",'image/svg+xml')
+        let name = $('<td>').attr("data-file",  f.file.metadata._id).attr("class","click_file w-full flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white")
+        let textspan = $('<span>').attr("class","w-56 truncate overflow-hidden").text(f.name)
+        name.append(file).append(textspan)
+        let format = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full  px-6 py-4").text(f.file.metadata.file_type)
+        let tags = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full  px-6 py-4").text("TAGS")
+        let fileSize = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full  px-6 py-4").text(formatFilesize(f.file.metadata.file_size))
+        let dwnld= $("<img>").attr("class","dark:invert").attr("src",'/images/svgs/download.svg')
+        let dwnl_a = $('<a>').attr("href", '/file/download/' + f.file.metadata._id)
+        let tr_dwnl = $('<td>').attr("class","w-32 px-6 py-4").append(dwnl_a.append(dwnld))
+
+        
+        tableRows.append(tr.append(name).append(tags).append(format).append(fileSize).append(tr_dwnl))
+        
+       }
+      $(".click_file").each(function(index, value) {
+        $(this).on("click",function(){
+            window.location.href = '/file/' + this.dataset.file;
+        })})
+
+      $('input').each(function(index, value){
+        if ($(this).attr('type') === 'checkbox'){
+          let id = $(this).attr('id')
+          $('#' + id).change(function(){
+            if(this.checked) {
+              downloaded.push(id)
+            }
+            else{
+              let index = findIDIndex(downloaded, id)
+              downloaded.splice(index, 1)
+            }
+
+            let res = ''
+            for (let i = 0; i < downloaded.length; i++){
+              if (i != 0)
+                res += ';' + downloaded[i]
+              else
+                res = downloaded[i]
+            } 
+            $('#download_multiple_files').attr('href', '/channel/' + $("#channel_id").val() +  '/files?files=\"' + res + '\"')
+          })
+        }
+      })
+
+      $(".click_dir").each(function(index, value) {
+        $(this).on("click",function(){
+          downloaded = []
+          tableRows.empty();
+          let dir_ = ''
+          path.push(this.dataset.directory);
+          for (let i in path){
+            if (i != 0)
+              dir_ = dir_ + '/' + path[i]
+          }
+          $('#add_dir').attr('href', '/channel/' + $("#channel_id").val() + '/adddir?dir=\"' + dir_ + '\"')
+          $('#add_file').attr('href', '/channel/' + $("#channel_id").val() + '/addfile?dir=\"' + dir_ + '\"')
+          composeFolder()
+        })
+      })
+
+
+      $("#dirnav > li > a").each(function(index, value) {
+         $(this).on("click",function(){
+            downloaded = []
+            let flag = false 
+            let counter = path.length -1
+            while (!flag){
+                if (this.text != path[counter]){
+                  path.splice(counter, 1); 
+                }
+                else
+                  flag=true
+                counter--
+            }
+            
+            let dir_ = ''
+            for (let i in path){
+              if (i != 0)
+                dir_ = dir_ + '/' + path[i]
+            }
+            tableRows.empty();
+            $('#add_dir').attr('href', '/channel/' + $("#channel_id").val() + '/adddir?dir=\"' + dir_ + '\"')
+            $('#add_file').attr('href', '/channel/' + $("#channel_id").val() + '/addfile?dir=\"' + dir_ + '\"')
+            composeFolder()
+          }
+         )
+      })
+    }
+
+    $("#table-search").on("input", e=>{
+      const value = e.target.value
+      if (value.length==0) {
+          tableRows.empty();
+          composeFolder()
+      }
+      else{
+          tableRows.empty();
+          search = findNestedObj(files,value)
+          composeFolderSearch()
+      }
+    })
+
 
     function composeFolder(){
       $("#dirnav").empty()
