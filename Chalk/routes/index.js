@@ -135,9 +135,11 @@ router.get("/createChannel",verifyAuthentication,(req,res,next)=>{
 
 router.post("/createChannel",verifyAuthentication,(req,res,next)=>{
   req.body.publishers=[req.user.username]
+  if (req.body.banner===undefined || req.body.banner==="") req.body.banner="https://media.discordapp.net/attachments/733843321671385160/1124079817843818697/image.png?width=1440&height=155"
+  console.log(req.body)
   axios.post(archive_location+"/ingest/newchannel",{channel:req.body}).then((response)=>{
     res.redirect("/channel/"+response.data._id)
-  })
+  }).catch(err=>{res.redirect("/")})
 })
 
 
