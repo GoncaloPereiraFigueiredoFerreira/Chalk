@@ -10,13 +10,13 @@ block channel_cont
                 ul.mt-4.overflow-auto
                   .justify-items-start
                     li
-                      .p-5(class="bg-blue-600 dark:bg-blue-800 text-white")
+                      .p-5(class="bg-white dark:bg-gray-800 dark:text-white")
                         a(href="/channel/settings/"+channel._id).text-white Edit Channel
                     li
                       .p-5(class="bg-white dark:bg-gray-800 dark:text-white")
                         a(href="/channel/students/"+channel._id) Student List
                     li
-                      .p-5(class="bg-white dark:bg-gray-800 dark:text-white")
+                      .p-5(class="bg-blue-600 dark:bg-blue-800 text-white")
                         a(href="/channel/addPublisher/"+channel._id) Add Publisher
                     li
                       .p-5(class="bg-white dark:bg-gray-800 dark:text-white")
@@ -43,31 +43,8 @@ block channel_cont
                 .mt-10 
                   form(method="POST")
                     .flex.items-center
-                      p.font-medium(class="dark:text-white") Change channel name:
-                      input.ml-4.rounded-lg(name="name" type="text" value=channel.name required="")
+                      p.font-medium(class="dark:text-white") Add publisher email:
+                      input.ml-4.rounded-lg(name="email" type="text" placeholder="email" required="")
                     
-                    .flex.items-center.mt-10 
-                      p.font-medium(class="dark:text-white") Change channel banner:
-                      input.ml-4.rounded-lg(name="banner" type="text" size=40 value=channel.banner required="")
-
-                    .flex.items-center.mt-10 
-                      p.font-medium(class="dark:text-white") Change entry code:
-                      input.ml-4.rounded-lg(name="entry_code" type="text" size=40 value=channel.entry_code required="")
-                      
-
-                    .mt-10 
-                      p.font-medium(class="dark:text-white") Change channel description:
-                      .border.border-gray-200.rounded-lg.bg-gray-50(class='w-3/5 dark:bg-gray-700 dark:border-gray-600')
-                        textarea.w-full.text-sm.text-gray-800.bg-white.border-0(name="description" rows='8' class=' dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400' placeholder='' required='' ) #{channel.description}
-                    
-                 
                     .absolute.bottom-5.right-8.items-center.flex
-                      button.font-medium.shadow.px-3.py-2.text-white.rounded-lg.bg-blue-600.ml-4(type="Submit" class="dark:text-white") Save Changes
-
-              
-              
-                 
-                    
-                  
-
-              
+                      button.font-medium.shadow.px-3.py-2.text-white.rounded-lg.bg-blue-600.ml-4(type="submit" class="dark:text-white") Add publisher
