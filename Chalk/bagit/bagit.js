@@ -15,12 +15,18 @@ Tag-File-Character-Encoding: ${encoding}`
     });
 }
 
-module.exports.manifest_file = (filename, checksum, file) => {
-    var text = `${checksum} ${file}`
-    
+module.exports.manifest_file = (filename, checksums, files) => {
+    var text = ''
+    for (let i = 0; i < checksums.length; i++){
+        text += `${checksums[i]} ${files[i]}`
+        if (i + 1 != checksums.length){
+            text += '\n'
+        }
+    }
+
     fs.writeFile(filename, text, err => {
         if (err)
-            throw err
+        throw err
     });
 }
 
@@ -31,25 +37,35 @@ module.exports.checksum_sha256 = (file) => {
     return hash.update(fileBuffer).digest('hex')
 }
 
-module.exports.create_bag = (archive, original_path, new_name, output_dir) => {
+module.exports.create_bag = (archive, original_paths, new_names, output_dir) => {
     return new Promise((resolve, reject) => {
-        var hash256 = this.checksum_sha256(original_path)
+        let checksums = []
+        for (let i = 0; i < original_paths.length; i++){
+            checksums.push(this.checksum_sha256(original_paths[i]))
+        }
 
+        let hash256 = crypto.randomBytes(32).toString('hex');
         this.bag_declaration(output_dir + '/bagit.txt')
-        this.manifest_file(output_dir + '/manifest-sha256.txt', hash256, new_name)
+        this.manifest_file(output_dir + '/manifest-sha256.txt', checksums, new_names)
     
         var output = fs.createWriteStream(output_dir + '/' + hash256 + '.zip')
         output.on('close', function () {
-            // TODO: maybe not unlink
-            fs.unlink(original_path, (err) => { if (err) throw err });
+            for (let i = 0; i < original_paths.length; i++){
+                fs.unlink(original_paths[i], (err) => { if (err) throw err });
+            }
             fs.unlink(output_dir + '/bagit.txt', (err) => { if (err) throw err });
             fs.unlink(output_dir + '/manifest-sha256.txt', (err) => { if (err) throw err });
 
-            resolve(hash256);
+            let res = {}
+            res['checksums'] = checksums
+            res['bag_name'] = hash256 
+            resolve(res);
         });
         archive.pipe(output)
     
-        archive.file(original_path, { name: 'data/' + new_name })
+        for (let i = 0; i < original_paths.length; i++){
+            archive.file(original_paths[i], { name: 'data/' + new_names[i] })
+        }
         archive.file(output_dir + '/bagit.txt', { name: 'bagit.txt' })
         archive.file(output_dir + '/manifest-sha256.txt', { name: 'manifest-sha256.txt' })
         archive.finalize()

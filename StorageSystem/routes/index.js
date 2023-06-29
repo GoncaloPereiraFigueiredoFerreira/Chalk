@@ -22,13 +22,23 @@ router.post("/uploadfile", upload.single('file'), function(req, res){
   if (!fs.existsSync(storageFolder)){
     fs.mkdirSync(storageFolder, { recursive: true });
   }
+  
+  let bagPath = __dirname + '/../' + req.file.path
+  let extractionFolder = __dirname + '/../' + uploadFolder + '/' + req.file.filename
 
-  bagPath = __dirname + '/../' + req.file.path
-  mvPath = storageFolder + '/' + req.body.checksum
+  const promise = bagit.unpack_bag(bagPath, extractionFolder)
+  Promise.all([promise])
+          .then(result => { 
+            for (let i = 0; i < req.body.nr_files; i++){
+              let fileOldPath = extractionFolder + '/data/' + req.body['filename' + i]
+              let mvPath = storageFolder + '/' + req.body['checksum' + i]
 
-  extractionFolder = __dirname + '/../' + uploadFolder + '/' + req.file.filename
-  bagit.unpack_bag(bagPath, extractionFolder, req.body.filename, mvPath)
-          .then(() => { res.sendStatus(200) })
+              if (!fs.existsSync(mvPath)) {
+                fs.copyFileSync(fileOldPath, mvPath)
+              }
+            }
+            res.sendStatus(200) 
+          })
           .catch(err => { console.log(err); res.sendStatus(500) })
 })
 

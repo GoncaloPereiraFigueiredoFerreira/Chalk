@@ -89,43 +89,45 @@ module.exports.create_bag = (archive, original_path, new_name, output_dir) => {
     })
 }
 
-// extrai o bag
-// verifica a integridade do bag
-// move o que está presente na diretoria para um local específico
-module.exports.unpack_bag = (bagPath, extractionFolder, filename, mvPath) => {
+module.exports.unpack_bag = (bagPath, extractionFolder) => {
     return decompress(bagPath, extractionFolder)
             .then((files) => {
-                fileOldPath = extractionFolder + '/data/' + filename
-
-                // get manifest encoding from bagit.txt
-                fs.readFile(extractionFolder + '/bagit.txt', 'UTF-8', (err, bag) => {
-                    if (err) {
-                      console.error(err);
-                    }
-                    var lines = bag.split('\n')
-                    var encoding = lines[1].substring(29, lines[1].length)
-
-                    // comparing checksum values and comparing with the file's checksum
-                    fs.readFile(extractionFolder + '/manifest-sha256.txt', encoding, (err, manifest) => {
+                return new Promise((resolve, reject) => {
+                    fs.readFile(extractionFolder + '/bagit.txt', 'UTF-8', (err, bag) => {
                         if (err) {
-                            return err
+                          console.error(err);
                         }
-                        var hashOG = manifest.substring(0, 64)
-                        var manifest_filename = manifest.substring(65, manifest.length)
-                        var hashNew = this.checksum_sha256(extractionFolder + '/data/' + manifest_filename)
-
-                        if (hashNew === hashOG){
-                            if (!fs.existsSync(mvPath)) {
-                                fs.copyFileSync(fileOldPath, mvPath)
-                                //fs.rename(fileOldPath, mvPath, (err) => { console.log(err) })
+                        var lines = bag.split('\n')
+                        var encoding = lines[1].substring(29, lines[1].length)
+                        fs.readFile(extractionFolder + '/manifest-sha256.txt', encoding, (err, manifest) => {
+                            if (err) {
+                                return err
                             }
 
-                            // TODO: acabar unpacking (i.e. remover os ficheiros)
-                            return
-                        }
-                        else {
-                            // TODO: tratar do erro
-                        }
+                            const lines = manifest.split('\n')
+                            let correct = true
+                            for(let i in lines){
+                                let line = lines[i]
+                                var hashOG = line.substring(0, 64)
+                                var manifest_filename = line.substring(65, line.length)
+                                var hashNew = this.checksum_sha256(extractionFolder + '/data/' + manifest_filename)
+
+                                if (hashNew !== hashOG){
+                                    correct = false
+                                    break
+                                }
+                                else {
+                                    // TODO: acabar unpacking (i.e. remover os ficheiros)
+                                }
+                            }
+
+                            if (correct){
+                                resolve()
+                            }
+                            else{
+                                // TODO: dar erro
+                            }
+                        })
                     })
                 })
             })

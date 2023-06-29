@@ -71,7 +71,7 @@ router.get("/:chID/subscribe",verifyAuthentication,verifyChannelRole,(req,res,ne
       user: req.user.username,
       channel:req.params.chID
     }).then(()=>{res.redirect("back")})
-    .catch((err)=>{console.log(err)})
+    .catch((err)=> { console.log(err) })
   }
   else {
     next(createHttpError(403))
@@ -449,7 +449,7 @@ router.get("/:chID/addfile", verifyAuthentication,verifyChannelRole, (req, res, 
   }
 });
 
-router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.single('myFile'), function(req, res) {
+router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.array('myFiles'), function(req, res) {
   if (req.info.role == "pub"){
     if ('dir' in req.query){
       let dir = req.query['dir']
@@ -459,47 +459,55 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
       else{
         dir = req.query['dir'].substring(2, req.query['dir'].length - 1)
       }
-      let tags = []
-      let i = 1
-      while(true){
-        let tag = 'tag' + i
-        if (tag in req.body){
-          tags.push(req.body[tag])
-        }
-        else
-          break
-        i += 1
-      }
 
+      let tags = getTags(req.files.length, req.body)
       var archive = archiver('zip', {zlib: {level: 9}})
       if (!fs.existsSync(__dirname + '/../' + bagFolder)){
         fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
       }
 
-      const promise1 = bagit.create_bag(archive, __dirname + '/../' + req.file.path, req.body.filename, __dirname + '/../' + bagFolder)
+      OGpaths = []
+      NEWpaths = []
+      for (let i = 0; i < req.files.length; i++){
+        let file = req.files[i]
+        OGpaths.push(__dirname + '/../' + file.path)
+        NEWpaths.push(req.body['filename' + i])
+      }
+
+      const promise1 = bagit.create_bag(archive, OGpaths, NEWpaths, __dirname + '/../' + bagFolder)
       const promise2 = axios.get(archive_location + '/acess/channel/contentTree/' + req.params.chID)
       
       Promise.all([promise1, promise2])
-        .then(([checksum, channel_contents]) => {
-          if (!fileExistsInDir(channel_contents.data, dir, req.body.filename)){
-            let extension = getExtension(req.file.originalname, req.body.filename)
-            let metadata = {
-              file_size:      req.file.size,
-              publisher:      req.user.username,
-              file_name:      req.body.filename,
-              file_extension: extension,
-              file_type:      req.file.mimetype,
-              location:       checksum,
-              checksum:       checksum,
-              tags:           tags
+        .then(([bag_result, channel_contents]) => {
+          if (!filesExistsInDir(channel_contents.data, dir, NEWpaths)){
+            let files_metadata = []
+            for (let i = 0; i < req.files.length; i++){
+              let file = req.files[i]
+              let extension = getExtension(file.originalname, req.body['filename' + i])
+              let metadata = {
+                file_size:      file.size,
+                publisher:      req.user.username,
+                file_name:      req.body['filename' + i],
+                file_extension: extension,
+                file_type:      file.mimetype,
+                location:       bag_result.checksums[i],
+                checksum:       bag_result.checksums[i],
+                tags:           tags[i]
+              }
+              files_metadata.push(metadata)
             }
-            console.log(metadata)
 
-            let file = fs.createReadStream(__dirname + '/../' + bagFolder + '/' + checksum + '.zip')
+            
+            let file = fs.createReadStream(__dirname + '/../' + bagFolder + '/' + bag_result.bag_name + '.zip')
             var form = new FormData()
             form.append('file', file)
-            form.append('checksum', metadata.checksum)
-            form.append('filename', metadata.file_name)
+            form.append('nr_files', req.files.length)
+            for (let i = 0; i < req.files.length; i++){
+              form.append('checksum' + i, bag_result.checksums[i])
+            }
+            for (let i = 0; i < req.files.length; i++){
+              form.append('filename' + i, req.body['filename' + i])
+            }
           
             axios.post(storage_location + '/uploadfile', form, {
                 headers: {
@@ -507,20 +515,27 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
                 }
             })
             .then(response1 => {
-                axios.post(archive_location + '/ingest/uploadfile', {
-                    'channel': req.params.chID,
-                    'path': dir,
-                    'file': metadata
-                  }
-                )
-                .then(response2 => {
-                  automaticPost(req.params.chID, req.body, req.user)
-                  res.redirect('/channel/' + req.params.chID) 
-                })
-                .catch(err => { err => 
-                  // TODO: dar erro concreto
-                  console.log(err) 
-                })
+                let promises = []
+                for (let i = 0; i < req.files.length; i++){
+                  promises.push(
+                    axios.post(archive_location + '/ingest/uploadfile', {
+                        'channel': req.params.chID,
+                        'path': dir,
+                        'file': files_metadata[i]
+                      }
+                    )
+                  )
+                }
+
+                Promise.all(promises)
+                  .then(response2 => {
+                    automaticPost(req.params.chID, req.body, req.user)
+                    res.redirect('/channel/' + req.params.chID) 
+                  })
+                  .catch(err => { err => 
+                    // TODO: dar erro concreto
+                    console.log(err) 
+                  })
             })
             .catch(err => {
               // TODO: dar erro concreto
@@ -528,7 +543,7 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
           }
           else{
             // TODO: dar erro concreto
-            res.sendStatus(404)
+            res.sendStatus(400)
           }
         })
         .catch(err => console.log(err))
@@ -543,18 +558,38 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.sin
   }
 });
 
-fileExistsInDir = (contentTree, dir, filename) => {
-  const path = dir.split("/")
+getTags = (nrFiles, body) => {
+  let tags = {}
 
-  let tmpTree = contentTree[path[0]]
-  for (let i=1; i < path.length; i++){
-    tmpTree = tmpTree.files[path[i]]
+  for(let i = 0; i < nrFiles; i++){
+    tags[i] = []
+    let tagFile = 'tag_' + i + '_'
+
+    let j = 0
+    let tagID = tagFile + j
+    while(tagID in body){
+      tags[i].push(body[tagID])
+      j += 1
+      tagID = tagFile + j
+    }
   }
 
-  if (filename in tmpTree.files)
-    return true
-  else
-    return false
+  return tags
+}
+
+filesExistsInDir = (contentTree, dir, filenames) => {
+  let content = getDirContents(contentTree, dir)
+  let result = false
+
+  for (let i in filenames){
+    let name = filenames[i]
+    if (name in content){
+      result = true
+      break
+    }
+  }
+
+  return result
 }
 
 getExtension = (original_name, new_name) => {

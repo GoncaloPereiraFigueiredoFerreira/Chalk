@@ -1,23 +1,12 @@
 extends base
  
 block channel_cont
-    .block.w-full.border-gray-200.rounded-lg.shadow.bg-white(class="dark:bg-gray-800")
-      h1.p-4.text-xl(class="dark:text-white") Upload file:
-      form(method='POST' enctype="multipart/form-data" id='form').p-8
+    .block.w-full.border-gray-200.rounded-lg.shadow.bg-white(class="dark:bg-gray-800" id='mult_files')
+      h1.p-4.text-xl(class="dark:text-white") Upload multiple files:
+      form(method='POST' enctype="multipart/form-data").p-8
         
-        .mb-6
-          label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') File name:
-          input.bg-gray-50.border.border-gray-300.text-gray-900.text-sm.rounded-lg.block.w-full(id="filename" name="filename" type='text' class='focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='' required=true)
-
-        .mb-6
-          label.block.mb-2.text-sm.font-medium.text-gray-900(for='name' class='dark:text-white') Tags: 
-          .flex.flex-col
-            .relative
-              input(type="search" id="tag" class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder='')
-              button(type="button" onClick='addTag()' class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800") Add Tag
-              script(src="/javascripts/uploadFileForm.js")
-          .my-3.flex.flex-wrap.-m-1(id='tags')
-            .relative(id='tags_div')
+        div(id='form' type='hidden')
+        ol(id='files_info' class="divide-y divide-gray-200 dark:divide-gray-700") 
         
         .flex.items-center.mb-4
           input(id="checkbox" type="checkbox" name='automatic' value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600")
@@ -37,38 +26,42 @@ block channel_cont
           
       
         .mb-6
-          label.block.mb-2.text-sm.font-medium.text-gray-900(for='dropzone-file' class='dark:text-white') Choose file:
-          .flex.items-center.justify-center.w-full
-            label.flex.flex-col.items-center.justify-center.w-full.h-64.border-2.border-gray-300.border-dashed.rounded-lg.cursor-pointer.bg-gray-50(for='dropzone-file' class='dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600')
-              .flex.flex-col.items-center.justify-center.pt-5.pb-6
-                svg.w-10.h-10.mb-3.text-gray-400(aria-hidden='true' fill='none' stroke='currentColor' viewbox='0 0 24 24' xmlns='http://www.w3.org/2000/svg')
-                  path(stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12')
-                p.mb-2.text-sm.text-gray-500(class='dark:text-gray-400')
-                  span.font-semibold Click to upload
-                  |  or drag and drop
-              input#dropzone-file.hidden(type='file' name="myFile" required)
-  
-       
+          label.block.mb-2.text-sm.font-medium.text-gray-900(for='dropzone-file' class='dark:text-white') Choose files:
+          input(class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="multiple_files" name='myFiles' type="file" required multiple)
+
 
         .flex.items-start.mb-6
           button.text-white.bg-blue-700.font-medium.rounded-lg.text-sm.w-full.px-5.text-center(type='submit' class='hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 sm:w-auto py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800') Submit
+  
+       
+
+        
 
 
     script. 
 
-        // Get file input element
         let checkbox =  $('#checkbox')
-        let fileInput = document.getElementById('dropzone-file');
-        let input = document.getElementById('filename');
-        // Fires on file upload
-        fileInput.addEventListener('change', function(event){
-            
-            // Get file name
-            let fileName = fileInput.files[0].name;
-            
-            // Update file name in span
-            input.value = fileName;
+        let multFileInput = document.getElementById('multiple_files');
+        let nrFiles = 0
+        let nrTags = {}
+        let tags = {}
+
+        showFiles()
+        showTags()
+
+        multFileInput.addEventListener('change', function(event){
+          tags = {}
+          nrTags = {}
+
+          nrFiles = multFileInput.files.length 
+          for (let i = 0; i < nrFiles; i++){
+            tags[i] = []
+            nrTags[i] = 0
+          }
+          showFiles()
+          showTags()
         });
+
         checkbox.on('change', function(event){
             if (checkbox.is(":checked")){
               $("#ann_content").show()
@@ -79,3 +72,105 @@ block channel_cont
               $("#ann_title").hide()
             }
         });
+
+        function showFiles(){
+          $("#files_info").empty()
+          for (let i in multFileInput.files){
+            let index = parseInt(i)
+            if (i !== 'length' && i !== 'item'){
+              let file = multFileInput.files[i]
+              let div_input = $('<div>').attr('class', 'mb-6')
+              let div_tag = $('<div>').attr('class', 'mb-6')
+
+              let label_input = $('<label>').attr('class', 'block mb-2 text-sm font-medium text-gray-900 dark:text-white').attr('for', 'name').text('File Name ' + (index+1) + ':')
+              let input = $('<input>').attr('class', 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500').attr('for', 'name')
+              input.attr('type', "text").attr('required', 'true').attr('id', 'filename' + i).attr('name', 'filename' + i)
+              input.attr('value', file.name)
+              div_input.append(label_input).append(input)
+
+              let label_tag = $('<label>').attr('class', 'block mb-2 text-sm font-medium text-gray-900 dark:text-white').text('Tags: ')
+              let div1 = $('<div>').attr('class', 'flex flex-col')
+              let div2 = $('<div>').attr('class', 'relative')
+              let input_tag = $('<input>').attr('type', 'search').attr('id', 'tag'+i).attr('class', 'block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500').attr('placeholder', '')
+              let button_tag = $('<button>').attr('type', 'button').attr('onClick', 'addTag(' + i + ')').attr('class', 'text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800').text('Add Tag')
+              let div3 = $('<div>').attr('id', 'tags').attr('class', 'my-3 flex flex-wrap -m-1')
+              let div4 = $('<div>').attr('id', 'tags_div_' + i).attr('class', 'relative')
+
+              div1.append(div2.append(input_tag).append(button_tag))
+              div3.append(div4)
+              div_tag.append(label_tag).append(div1).append(div3)
+
+              let li = $('<li>').attr('class', 'pb-3 sm:pb-4')
+              if (index == 0){
+                li.append(div_input).append(div_tag)
+              }
+              else{
+                let br = '<br>'
+                li.append(br).append(div_input).append(div_tag)
+              }
+              $('#files_info').append(li)
+            }
+          }
+        }
+
+        function showTags(){
+          $('#form').empty()
+          let form = document.getElementById('form')
+
+          for(let i in tags){
+            $('#tags_div_' + i).empty()
+            for (let j in tags[i]){
+              // storing value
+              let tagID = 'tag_' + i + '_' + j
+              let new_input = document.createElement('input')
+              new_input.type = 'hidden'
+              new_input.id = 'tagValue'
+              new_input.name = tagID
+              new_input.value = tags[i][j]
+
+              form.appendChild(new_input)
+
+              // showing tag
+              let tagDiv = document.createElement('div')
+              tagDiv.className = 'ml-3 text-sm font-normal'
+              tagDiv.textContent = tags[i][j]
+
+              let btn = document.createElement('button')
+              btn.setAttribute('type', 'button')
+              btn.className = 'ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700'
+              btn.setAttribute('onClick', 'removeTag(' + i + ', ' + j + ')')
+              btn.textContent = 'X'
+
+              let widerTagDiv = document.createElement('div') 
+              widerTagDiv.className = 'flex items-center w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800'
+              widerTagDiv.id = tagID + '_'
+              widerTagDiv.appendChild(tagDiv)
+              widerTagDiv.appendChild(btn)
+
+              let div = document.getElementById('tags_div_' + i)
+              div.appendChild(widerTagDiv)
+            }
+          }
+        }
+
+        function addTag(index){
+          let input = document.getElementById('tag' + index)
+          if (input.value !== ''){
+            let value = input.value
+            input.value = ''
+            nrTags[index] += 1
+            tags[index].push(value)
+            showTags()
+          }
+        }
+
+        function removeTag(fileIndex, tagIndex){
+          let input = document.getElementById('tag' + fileIndex)
+          let value = input.value
+          input.value = ''
+          console.log(tags[fileIndex])
+          tags[fileIndex].splice(tagIndex, 1)
+          console.log(tags[fileIndex])
+          nrTags[fileIndex] -= 1
+          showTags()
+        }
