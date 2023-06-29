@@ -13,6 +13,13 @@ module.exports.remChannels = ()=>{
   return Channel.deleteMany()
 }
 
+module.exports.addPublisher = (channel,email) =>{
+  return Promise.all([
+      Channel.updateOne({_id:channel},{ $addToSet: {"publishers": email}}),
+      Channel.updateOne({_id:channel},{ $pull:{"consumers": email}})
+  ])
+}
+
 
 module.exports.addSubscriptor = (email,channel)=>{
   return Channel.updateOne({_id:channel},{ $addToSet: {"consumers": email}})

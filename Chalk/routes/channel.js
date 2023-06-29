@@ -80,8 +80,6 @@ router.get("/:chID/subscribe",verifyAuthentication,verifyChannelRole,(req,res,ne
 });
   
 
-  
-
 
 router.post("/:chID/subscribewec",verifyAuthentication,verifyChannelRole,(req,res,next)=>{
   if (req.body.entrycode == req.info.entry_code){
@@ -149,6 +147,27 @@ router.post("/posts/:chID/addcomment",verifyAuthentication,verifyChannelRole,(re
 });
 
 /////////// Routes for Pubs ///////////
+
+router.get("/addPublisher/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
+  if (req.info.role=="pub" || req.user.level == "admin")
+    res.render("channel/addPublisher",{user:req.user, channel:req.info})
+  else{
+        next(createHttpError(401))
+  }
+})
+
+
+router.post("/addPublisher/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
+  let chn = req.params.chID
+  if (req.info.role=="pub" || req.user.level == "admin"){
+    axios.post(archive_location+"/manage/channel/addPublisher/"+chn,req.body).then(()=>{
+      res.redirect("/channel/addPublisher/"+chn)
+    })
+  }
+  else{
+    next(createHttpError(401))
+    }
+})
 
 //Edit channel route
 router.get("/settings/:chID",verifyAuthentication,verifyChannelRole,(req, res, next)=>{
@@ -253,7 +272,6 @@ router.post("/addpost/:chID",verifyAuthentication,verifyChannelRole,(req,res,nex
         next(createHttpError(401))
   }
 });
-
 
 // Edit Post
 router.get("/posts/:chID/edit",verifyAuthentication,verifyChannelRole,(req,res,next)=>{

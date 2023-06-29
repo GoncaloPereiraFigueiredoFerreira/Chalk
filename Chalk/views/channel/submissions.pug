@@ -10,14 +10,17 @@ block channel_cont
                 ul.mt-4.overflow-auto
                   .justify-items-start
                     li
-                      .p-5(class="bg-white dark:bg-gray-800 dark:text-white")
-                        a(href="/channel/settings/"+channel._id) Edit Channel
+                      .p-5(class="bg-blue-600 dark:bg-blue-800 text-white")
+                        a(href="/channel/settings/"+channel._id).text-white Edit Channel
                     li
                       .p-5(class="bg-white dark:bg-gray-800 dark:text-white")
                         a(href="/channel/students/"+channel._id) Student List
                     li
-                      .p-5(class="bg-blue-600 dark:bg-blue-800 dark:text-white")
-                        a(href="/channel/submissions/"+channel._id).text-white Submissions
+                      .p-5(class="bg-white dark:bg-gray-800 dark:text-white")
+                        a(href="/channel/addPublisher/"+channel._id) Add Publisher
+                    li
+                      .p-5(class="bg-white dark:bg-gray-800 dark:text-white")
+                        a(href="/channel/submissions/"+channel._id) Submissions
                 
                 .mt-auto 
                   form(method="GET" action="/channel/delete/"+channel._id)
