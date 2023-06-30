@@ -382,10 +382,10 @@ router.post("/:chID/submitForm/:submit",verifyAuthentication,verifyChannelRole,u
     if (!fs.existsSync(__dirname + '/../' + bagFolder)){
       fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
     }
-    const promise1 = bagit.create_bag(archive, __dirname + '/../' + req.file.path, req.body.filename, __dirname + '/../' + bagFolder)
 
+    const promise1 = bagit.create_bag(archive, [__dirname + '/../' + req.file.path], [req.body.filename], __dirname + '/../' + bagFolder)
     Promise.all([promise1])
-      .then(([checksum]) => {
+      .then(([result]) => {
         let extension = getExtension(req.file.originalname, req.body.filename)
         metadata = {
           file_size:      req.file.size,
@@ -393,16 +393,17 @@ router.post("/:chID/submitForm/:submit",verifyAuthentication,verifyChannelRole,u
           file_name:      req.body.filename,
           file_extension: extension,
           file_type:      req.file.mimetype,
-          location:       checksum,
-          checksum:       checksum,
+          location:       result.bag_name,
+          checksum:       result.bag_name,
           tags:           []
         }
 
-        let file = fs.createReadStream(__dirname + '/../' + bagFolder + '/' + checksum + '.zip')
+        let file = fs.createReadStream(__dirname + '/../' + bagFolder + '/' + result.bag_name + '.zip')
         var form = new FormData()
         form.append('file', file)
-        form.append('checksum', metadata.checksum)
-        form.append('filename', metadata.file_name)
+        form.append('nr_files', 1)
+        form.append('checksum0', metadata.checksum)
+        form.append('filename0', metadata.file_name)
       
         axios.post(storage_location + '/uploadfile', form, {
             headers: {
@@ -410,6 +411,7 @@ router.post("/:chID/submitForm/:submit",verifyAuthentication,verifyChannelRole,u
             }
         })
         .then(response1 => {
+          fs.unlink(__dirname + '/../' + bagFolder + '/' + result.bag_name + '.zip', (err) => { if (err) throw err });
           axios.post(archive_location+"/ingest/submitfile", {
             channel: chn,
             submission:subm,
@@ -418,7 +420,7 @@ router.post("/:chID/submitForm/:submit",verifyAuthentication,verifyChannelRole,u
             file: metadata
           })
             .then((resp)=>{
-              res.redirect("back")
+              res.redirect('/channel/' + req.params.chID)
             })
             .catch(err => { res.sendStatus(400).end() })
         })
@@ -888,7 +890,6 @@ router.get('/:chID/files', verifyAuthentication, verifyChannelRole, function(req
                             fs.rmSync(__dirname + '/../' + bagFolder + '/' + tmp_bag, { recursive: true, force: true })
                         }
                       }
-                      console.log(bags_remaining)
                     })
 
                     archive.pipe(output)
@@ -910,6 +911,71 @@ router.get('/:chID/files', verifyAuthentication, verifyChannelRole, function(req
   else{
     // TODO: erro
   }
+})
+
+/// File Routing
+router.get("/:chID/file/download/:fileID", verifyAuthentication, (req, res, next) => {
+  console.log('hello')
+  axios.get(archive_location + '/acess/file/' + req.params.fileID)
+    .then((file) => {
+      metadata = file.data
+      axios.get(storage_location + '/file/' + metadata.location)
+        .then((result) => {
+          let outputBag = __dirname + '/../' + bagFolder + '/' + metadata.checksum + '.zip'
+          if (!fs.existsSync(__dirname + '/../' + bagFolder)){
+            fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
+          }
+          
+          fs.writeFile(outputBag, result.data, "binary", (err) => {
+            if (err) throw err;
+
+            extractionFolder = __dirname + '/../' + bagFolder + '/' + metadata.checksum
+            bagit.unpack_bag(outputBag, extractionFolder)
+              .then(() => {
+                fs.copyFileSync(extractionFolder + '/data/' + metadata.checksum, dataFolder + '/' + metadata.file_name)
+                res.download(dataFolder + '/' + metadata.file_name, metadata.file_name)
+                fs.unlink(outputBag, (err) => { if (err) throw err })
+                fs.rmSync(extractionFolder, { recursive: true, force: true })
+              })
+              .catch(err => console.log(err))
+          });
+        })
+        .catch((err) => { console.log(err) })
+    })
+    .catch((err) => { console.log(err) })
+}) 
+
+router.get('/:chID/file/:fileID', verifyAuthentication, verifyChannelRole, function(req, res) {
+  axios.get(archive_location + '/acess/file/' + req.params.fileID)
+    .then((file) => {
+      let metadata = file.data
+      axios.get(storage_location + '/file/' + metadata.location)
+        .then((result) => {
+          let outputBag = __dirname + '/../' + bagFolder + '/' + metadata.checksum + '.zip'
+          if (!fs.existsSync(__dirname + '/../' + bagFolder)){
+            fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
+          }
+          if (!fs.existsSync(__dirname + '/../' + dataFolder)){
+            fs.mkdirSync(__dirname + '/../' + dataFolder, { recursive: true });
+          }
+          
+          fs.writeFile(outputBag, result.data, "binary", (err) => {
+            if (err) throw err;
+            let extractionFolder = bagFolder + '/' + metadata.checksum
+            bagit.unpack_bag(outputBag, extractionFolder)
+              .then(() => {
+                //copia do ficheiro para o verdadeiro nome dele
+                fs.copyFileSync(extractionFolder + '/data/' + metadata.checksum, dataFolder + '/' + metadata.file_name)
+                res.redirect('/' + metadata.file_name)
+                fs.unlink(outputBag, (err) => { if (err) throw err })
+                fs.rmSync(extractionFolder, { recursive: true, force: true })
+              })
+              .catch(err => console.log(err))
+          });
+        })
+        .catch((err) => { console.log(err) })
+    })
+    .catch((err) => { console.log(err) })
 })
 
 module.exports = router
