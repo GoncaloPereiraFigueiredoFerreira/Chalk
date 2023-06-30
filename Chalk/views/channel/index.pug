@@ -211,14 +211,14 @@ block channel_cont
 
         let fileSize = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full  px-6 py-4").text(formatFilesize(f.file.metadata.file_size))
         let dwnld= $("<img>").attr("class","dark:invert").attr("src",'/images/svgs/download.svg')
-        let dwnl_a = $('<a>').attr("href", '/file/download/' + f.file.metadata._id)
+        let dwnl_a = $('<a>').attr("href", '/channel/' + $("#channel_id").val() + '/file/download/' + f.file.metadata._id)
         let tr_dwnl = $('<td>').attr("class","w-32 px-6 py-4").append(dwnl_a.append(dwnld))
 
         tableRows.append(tr.append(name).append(tags).append(format).append(fileSize).append(tr_dwnl))
        }
       $(".click_file").each(function(index, value) {
         $(this).on("click",function(){
-            window.location.href = '/file/' + this.dataset.file;
+            window.location.href = '/channel/' + $("#channel_id").val() + '/file/' + this.dataset.file;
         })})
 
       $('input').each(function(index, value){
@@ -410,7 +410,7 @@ block channel_cont
 
         let fileSize = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full  px-6 py-4").text(formatFilesize(f.file.metadata.file_size))
         let dwnld= $("<img>").attr("class","dark:invert").attr("src",'/images/svgs/download.svg')
-        let dwnl_a = $('<a>').attr("href", '/file/download/' + f.file.metadata._id)
+        let dwnl_a = $('<a>').attr("href", '/channel/' + $("#channel_id").val() + '/file/download/' + f.file.metadata._id)
         let tr_dwnl = $('<td>').attr("class","w-32 px-6 py-4").append(dwnl_a.append(dwnld))
 
         if (#{channel.role =="pub"}){       
@@ -430,7 +430,7 @@ block channel_cont
 
       $(".click_file").each(function(index, value) {
         $(this).on("click",function(){
-            window.location.href = '/file/' + this.dataset.file;
+            window.location.href = '/channel/' + $("#channel_id").val() + '/file/' + this.dataset.file;
         })})
 
       $('input').each(function(index, value){
