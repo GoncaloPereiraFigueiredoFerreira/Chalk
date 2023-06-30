@@ -11,6 +11,7 @@ var bagit = require('../bagit/bagit')
 var multer = require('multer')
 const bagFolder = 'bagit/bags'
 const uploadFolder = 'uploads'
+const dataFolder = 'data'
 var upload = multer({ dest: uploadFolder })
 var fs = require("fs");
 
@@ -874,12 +875,27 @@ router.get('/:chID/files', verifyAuthentication, verifyChannelRole, function(req
                     var output = fs.createWriteStream(__dirname + '/../' + bagFolder + '/' + file_name + '_data.zip')
                     output.on('close', function() {
                       res.download(__dirname + '/../' + bagFolder + '/' + file_name + '_data.zip', 'data.zip')
+                      fs.unlink(outputBag, (err) => { if (err) throw err })
+                      fs.rmSync(extractionFolder, { recursive: true, force: true })
+                      let bags_remaining = fs.readdirSync(__dirname + '/../' + bagFolder);
+                      for (let i in bags_remaining){
+                        let tmp_bag = bags_remaining[i]
+                        if (tmp_bag !== file_name + '_data.zip'){
+                          let extension = tmp_bag.substring(tmp_bag.length - 4, tmp_bag.length)
+                          if (extension === '.zip')
+                            fs.unlink(__dirname + '/../' + bagFolder + '/' + tmp_bag, (err) => { if (err) throw err })
+                          else
+                            fs.rmSync(__dirname + '/../' + bagFolder + '/' + tmp_bag, { recursive: true, force: true })
+                        }
+                      }
+                      console.log(bags_remaining)
                     })
 
                     archive.pipe(output)
                     let files_to_send = fs.readdirSync(extractionFolder + '/data/');
                     for (let i in files_to_send){
                       archive.file(extractionFolder + '/data/' + files_to_send[i], { name: new_names[files_to_send[i]] })
+                      fs.copyFileSync(extractionFolder + '/data/' + files_to_send[i], dataFolder + '/' + new_names[files_to_send[i]])
                     }
                     archive.finalize()
                   })

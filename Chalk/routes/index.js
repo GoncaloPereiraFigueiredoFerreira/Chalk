@@ -4,6 +4,7 @@ const axios = require("axios")
 const verifyAuthentication = require("./utils").verifyAuthentication
 var bagit = require('../bagit/bagit')
 const bagFolder = 'bagit/bags'
+const dataFolder = 'data'
 var fs = require("fs");
 let loggedIn={}
 
@@ -147,22 +148,27 @@ router.post("/createChannel",verifyAuthentication,(req,res,next)=>{
 router.get("/file/:fileID", verifyAuthentication, (req, res, next) => {
   axios.get(archive_location + '/acess/file/' + req.params.fileID)
     .then((file) => {
-      metadata = file.data
+      let metadata = file.data
       axios.get(storage_location + '/file/' + metadata.location)
         .then((result) => {
-          outputBag = __dirname + '/../' + bagFolder + '/' + metadata.checksum + '.zip'
+          let outputBag = __dirname + '/../' + bagFolder + '/' + metadata.checksum + '.zip'
           if (!fs.existsSync(__dirname + '/../' + bagFolder)){
             fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
+          }
+          if (!fs.existsSync(__dirname + '/../' + dataFolder)){
+            fs.mkdirSync(__dirname + '/../' + dataFolder, { recursive: true });
           }
           
           fs.writeFile(outputBag, result.data, "binary", (err) => {
             if (err) throw err;
-            extractionFolder = bagFolder + '/' + metadata.checksum
+            let extractionFolder = bagFolder + '/' + metadata.checksum
             bagit.unpack_bag(outputBag, extractionFolder)
               .then(() => {
                 //copia do ficheiro para o verdadeiro nome dele
-                fs.copyFileSync(extractionFolder + '/data/' + metadata.checksum,extractionFolder + '/data/' + metadata.file_name)
-                res.redirect("/"+metadata.checksum + '/data/' + metadata.file_name)
+                fs.copyFileSync(extractionFolder + '/data/' + metadata.checksum, dataFolder + '/' + metadata.file_name)
+                res.redirect('/' + metadata.file_name)
+                fs.unlink(outputBag, (err) => { if (err) throw err })
+                fs.rmSync(extractionFolder, { recursive: true, force: true })
               })
               .catch(err => console.log(err))
           });
@@ -191,8 +197,10 @@ router.get("/file/download/:fileID", verifyAuthentication, (req, res, next) => {
             extractionFolder = __dirname + '/../' + bagFolder + '/' + metadata.checksum
             bagit.unpack_bag(outputBag, extractionFolder)
               .then(() => {
-                file_to_send = extractionFolder + '/data/' + metadata.checksum   
-                res.download(file_to_send, metadata.file_name)
+                fs.copyFileSync(extractionFolder + '/data/' + metadata.checksum, dataFolder + '/' + metadata.file_name)
+                res.download(dataFolder + '/' + metadata.file_name, metadata.file_name)
+                fs.unlink(outputBag, (err) => { if (err) throw err })
+                fs.rmSync(extractionFolder, { recursive: true, force: true })
               })
               .catch(err => console.log(err))
           });
