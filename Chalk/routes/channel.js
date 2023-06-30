@@ -533,6 +533,7 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.arr
                 }
             })
             .then(response1 => {
+                fs.unlink(__dirname + '/../' + bagFolder + '/' + bag_result.bag_name + '.zip', (err) => { if (err) throw err });
                 let promises = []
                 for (let i = 0; i < req.files.length; i++){
                   promises.push(

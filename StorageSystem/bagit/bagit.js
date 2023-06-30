@@ -93,6 +93,7 @@ module.exports.unpack_bag = (bagPath, extractionFolder) => {
     return decompress(bagPath, extractionFolder)
             .then((files) => {
                 return new Promise((resolve, reject) => {
+                    fs.unlink(bagPath, (err) => { if (err) throw err });
                     fs.readFile(extractionFolder + '/bagit.txt', 'UTF-8', (err, bag) => {
                         if (err) {
                           console.error(err);

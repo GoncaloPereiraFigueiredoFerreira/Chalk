@@ -14,6 +14,7 @@ const bagFolder = '/bagit/bags/'
 const uploadFolder = 'uploads'
 const uploadBagFolder = uploadFolder + '/bags'
 const multer = require("multer");
+
 const upload = multer({ dest: uploadBagFolder });
 
 var router = express.Router();
@@ -21,6 +22,9 @@ var router = express.Router();
 router.post("/uploadfile", upload.single('file'), function(req, res){
   if (!fs.existsSync(storageFolder)){
     fs.mkdirSync(storageFolder, { recursive: true });
+  }
+  if (!fs.existsSync(dirpath + uploadBagFolder)){
+    fs.mkdirSync(dirpath + uploadBagFolder, { recursive: true });
   }
   
   let bagPath = __dirname + '/../' + req.file.path
@@ -37,6 +41,8 @@ router.post("/uploadfile", upload.single('file'), function(req, res){
                 fs.copyFileSync(fileOldPath, mvPath)
               }
             }
+            console.log(extractionFolder)
+            fs.rmSync(extractionFolder, { recursive: true, force: true })
             res.sendStatus(200) 
           })
           .catch(err => { console.log(err); res.sendStatus(500) })
