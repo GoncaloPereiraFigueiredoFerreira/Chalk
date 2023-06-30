@@ -10,8 +10,8 @@ block channel_cont
                 ul.mt-4.overflow-auto
                   .justify-items-start
                     li
-                      .p-5(class="bg-white dark:bg-gray-800 dark:text-white")
-                        a(href="/channel/settings/"+channel._id).text-white Edit Channel
+                      .p-5(class="text-black bg-white dark:bg-gray-800 dark:text-white")
+                        a(href="/channel/settings/"+channel._id) Edit Channel
                     li
                       .p-5(class="bg-white dark:bg-gray-800 dark:text-white")
                         a(href="/channel/students/"+channel._id) Student List
@@ -38,7 +38,7 @@ block channel_cont
                 
             .block.col-span-4(class='lg:col-span-5')
               .p-5
-                h1.text-xl.font-medium(class="dark:text-white") Edit Channel 
+                h1.text-xl.font-medium(class="dark:text-white") Add Publisher
                 
                 .mt-10 
                   form(method="POST")
