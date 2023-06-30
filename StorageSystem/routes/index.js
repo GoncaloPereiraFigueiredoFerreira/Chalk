@@ -72,7 +72,6 @@ router.get('/files', (req, res) => {
     const promise = bagit.create_bag_files(archive, ogPaths, locations, __dirname + '/../bagit/bags')
     Promise.all([promise])
       .then(([result]) => {
-        console.log(result)
         bagPath = __dirname + '/../bagit/bags/' + result + '.zip'
 
         if (fs.existsSync(bagPath)) {
@@ -80,7 +79,9 @@ router.get('/files', (req, res) => {
             "Content-Type": "application/octet-stream",
             "Content-Disposition": "attachment; filename=" + result + '.zip'
           });
-          fs.createReadStream(bagPath, {encoding: 'binary'}).pipe(res);
+          fs.createReadStream(bagPath, {encoding: 'binary'})
+            .on('end', () => { fs.unlink(bagPath, (err) => { if (err) throw err }); })
+            .pipe(res);
         }
         else
           res.sendStatus(500)
@@ -109,7 +110,9 @@ router.get("/file/:filepath", (req, res) => {
           "Content-Type": "application/octet-stream",
           "Content-Disposition": "attachment; filename=" + result + '.zip'
         });
-        fs.createReadStream(bagPath, {encoding: 'binary'}).pipe(res);
+        fs.createReadStream(bagPath, {encoding: 'binary'})
+          .on('end', () => { fs.unlink(bagPath, (err) => { if (err) throw err }); })
+          .pipe(res);
       }
       else
         res.sendStatus(500)
