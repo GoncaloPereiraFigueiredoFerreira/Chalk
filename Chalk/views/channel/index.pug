@@ -122,7 +122,6 @@ block channel_cont
     let tableRows = $('#folders').find('tbody')
 
 
-    // this would be the way to search files in a directory
     function findNestedObj(entireObj, keyToFind) {
       let foundObj = {};
       JSON.stringify(entireObj, (nestedkey, nestedvalue) => {
@@ -189,32 +188,23 @@ block channel_cont
         let textspan = $('<span>').attr("class","w-56 truncate overflow-hidden").text(f.name)
         name.append(file).append(textspan)
         let format = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full  px-6 py-4").text(f.file.metadata.file_type)
-        let tags = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full  px-6 py-4")
+        let tags = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full  px-6 py-4 overflow-hidden")
         if (f.file.metadata.tags.length > 0){
-          let popover = $('<div>').attr('class', 'w-64 text-sm text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800')
-          let popover_div = $('<div>').attr('class', 'px-3 py-2')
-
-          let tags_content = ''
-          for (let i = 0; i < f.file.metadata.tags.length; i++){
-            let tag = f.file.metadata.tags[i]
-            if (parseInt(i) + 1 == f.file.metadata.tags.length)
-              tags_content += '#' + tag
-            else{
-              tags_content += '#' + tag + ' '
+            let tagList =$('<span>')
+            for (let tagID of f.file.metadata.tags){
+              let tag = $("<span>").attr('class', 'ml-3 p-1 text-sm text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800').text(tagID)
+              tagList.append(tag)
             }
-          }
-
-          let tag1 = $('<p>').text(tags_content)
-          popover.append(popover_div.append(tag1))
-          tags.append(popover)
+            tags.append(tagList)
         }
+        
 
         let fileSize = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full  px-6 py-4").text(formatFilesize(f.file.metadata.file_size))
         let dwnld= $("<img>").attr("class","dark:invert").attr("src",'/images/svgs/download.svg')
         let dwnl_a = $('<a>').attr("href", '/file/download/' + f.file.metadata._id)
         let tr_dwnl = $('<td>').attr("class","w-32 px-6 py-4").append(dwnl_a.append(dwnld))
 
-        tableRows.append(tr.append(name).append(tags).append(format).append(fileSize).append(tr_dwnl))
+        tableRows.append(tr.append(checkbox).append(name).append(tags).append(format).append(fileSize).append(tr_dwnl))
        }
       $(".click_file").each(function(index, value) {
         $(this).on("click",function(){
@@ -386,29 +376,19 @@ block channel_cont
         let name = $('<td>').attr("data-file",  f.file.metadata._id).attr("class","click_file w-full flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white")
         let textspan = $('<span>').attr("class","w-56 truncate overflow-hidden").text(f.name)
         name.append(file).append(textspan)
-        let format = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full  px-6 py-4").text(f.file.metadata.file_type)
-        let tags = $('<td>').attr("data-file",f.file.metadata._id).attr("class","w-full  px-6 py-4")
+        let format = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  text-center w-full  px-6 py-4").text(f.file.metadata.file_type)
+        let tags = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full text-center  px-6 py-4")
 
         if (f.file.metadata.tags.length > 0){
-          let popover = $('<div>').attr('class', 'w-64 text-sm text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800')
-          let popover_div = $('<div>').attr('class', 'px-3 py-2')
-
-          let tags_content = ''
-          for (let i = 0; i < f.file.metadata.tags.length; i++){
-            let tag = f.file.metadata.tags[i]
-            if (parseInt(i) + 1 == f.file.metadata.tags.length)
-              tags_content += '#' + tag
-            else{
-              tags_content += '#' + tag + ' '
+            let tagList =$('<span>')
+            for (let tagID of f.file.metadata.tags){
+              let tag = $("<span>").attr('class', 'ml-3 p-1 text-sm text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800').text(tagID)
+              tagList.append(tag)
             }
-          }
-
-          let tag1 = $('<p>').text(tags_content)
-          popover.append(popover_div.append(tag1))
-          tags.append(popover)
+            tags.append(tagList)
         }
 
-        let fileSize = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  w-full  px-6 py-4").text(formatFilesize(f.file.metadata.file_size))
+        let fileSize = $('<td>').attr("data-file",f.file.metadata._id).attr("class","click_file  text-center w-full  px-6 py-4").text(formatFilesize(f.file.metadata.file_size))
         let dwnld= $("<img>").attr("class","dark:invert").attr("src",'/images/svgs/download.svg')
         let dwnl_a = $('<a>').attr("href", '/file/download/' + f.file.metadata._id)
         let tr_dwnl = $('<td>').attr("class","w-32 px-6 py-4").append(dwnl_a.append(dwnld))
@@ -421,10 +401,10 @@ block channel_cont
             else 
               a = $('<a>').attr('href', '/channel/' + $("#channel_id").val() + '/rmfile/' + f.file.metadata._id).text('X')
             tr_a.append(a)
-            tableRows.append(tr.append(name).append(checkbox).append(tags).append(format).append(fileSize).append(tr_dwnl).append(tr_a))
+            tableRows.append(tr.append(checkbox).append(name).append(tags).append(format).append(fileSize).append(tr_dwnl).append(tr_a))
         }
         else{
-            tableRows.append(tr.append(name).append(tags).append(format).append(fileSize).append(tr_dwnl))
+            tableRows.append(tr.append(checkbox).append(name).append(tags).append(format).append(fileSize).append(tr_dwnl))
         }
       }
 
