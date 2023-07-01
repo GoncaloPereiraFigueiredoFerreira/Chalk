@@ -15,7 +15,7 @@ const dataFolder = 'data'
 var upload = multer({ dest: uploadFolder })
 var fs = require("fs");
 
-let max_cache_size = 2
+let max_cache_size = 50
 let cache = []
 
 function verifyChannelRole(req,res,next){
@@ -881,6 +881,9 @@ router.get('/:chID/files', verifyAuthentication, verifyChannelRole, function(req
                 if (!fs.existsSync(__dirname + '/../' + bagFolder)){
                   fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
                 }
+                if (!fs.existsSync(__dirname + '/../' + dataFolder)){
+                  fs.mkdirSync(__dirname + '/../' + dataFolder, { recursive: true });
+                }
                 let outputBag = __dirname + '/../' + bagFolder + '/' + zip_name
 
                 fs.writeFile(outputBag, result.data, "binary", (err) => {
@@ -977,6 +980,9 @@ router.get("/:chID/file/download/:fileID", verifyAuthentication, (req, res, next
             let outputBag = __dirname + '/../' + bagFolder + '/' + metadata.checksum + '.zip'
             if (!fs.existsSync(__dirname + '/../' + bagFolder)){
               fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
+            }
+            if (!fs.existsSync(__dirname + '/../' + dataFolder)){
+              fs.mkdirSync(__dirname + '/../' + dataFolder, { recursive: true });
             }
 
             fs.writeFile(outputBag, result.data, "binary", (err) => {
