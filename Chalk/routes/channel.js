@@ -701,7 +701,7 @@ router.get("/:chID/adddir", verifyAuthentication, verifyChannelRole,function(req
     if ('dir' in req.query){
       res.render("channel/create_dir", {
         user: req.user,
-        channel: req.params.chID
+        channel: req.info
       })
     }
   }
