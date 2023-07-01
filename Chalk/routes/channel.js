@@ -15,6 +15,9 @@ const dataFolder = 'data'
 var upload = multer({ dest: uploadFolder })
 var fs = require("fs");
 
+let max_cache_size = 2
+let cache = []
+
 function verifyChannelRole(req,res,next){
     let chn = req.params.chID
     axios.get(archive_location+"/acess/channel/info/"+chn+"?user="+req.user.username).then(response=>{
@@ -915,65 +918,136 @@ router.get('/:chID/files', verifyAuthentication, verifyChannelRole, function(req
 
 /// File Routing
 router.get("/:chID/file/download/:fileID", verifyAuthentication, (req, res, next) => {
-  console.log('hello')
   axios.get(archive_location + '/acess/file/' + req.params.fileID)
     .then((file) => {
-      metadata = file.data
-      axios.get(storage_location + '/file/' + metadata.location)
-        .then((result) => {
-          let outputBag = __dirname + '/../' + bagFolder + '/' + metadata.checksum + '.zip'
-          if (!fs.existsSync(__dirname + '/../' + bagFolder)){
-            fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
-          }
-          
-          fs.writeFile(outputBag, result.data, "binary", (err) => {
-            if (err) throw err;
+      let metadata = file.data
 
-            extractionFolder = __dirname + '/../' + bagFolder + '/' + metadata.checksum
-            bagit.unpack_bag(outputBag, extractionFolder)
-              .then(() => {
-                fs.copyFileSync(extractionFolder + '/data/' + metadata.checksum, dataFolder + '/' + metadata.file_name)
-                res.download(dataFolder + '/' + metadata.file_name, metadata.file_name)
-                fs.unlink(outputBag, (err) => { if (err) throw err })
-                fs.rmSync(extractionFolder, { recursive: true, force: true })
-              })
-              .catch(err => console.log(err))
-          });
-        })
-        .catch((err) => { console.log(err) })
+      let cache_check = isFileInCache(metadata.checksum)
+      if (cache_check != -1){
+        let file_under = cache_check[cache_check.under]
+        res.download(dataFolder + '/' + file_under, metadata.file_name)
+        manage_cache([metadata.checksum], [metadata.file_name], [cache_check.under])
+      }
+      else{
+        axios.get(storage_location + '/file/' + metadata.location)
+          .then((result) => {
+            let outputBag = __dirname + '/../' + bagFolder + '/' + metadata.checksum + '.zip'
+            if (!fs.existsSync(__dirname + '/../' + bagFolder)){
+              fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
+            }
+
+            fs.writeFile(outputBag, result.data, "binary", (err) => {
+              if (err) throw err;
+
+              extractionFolder = __dirname + '/../' + bagFolder + '/' + metadata.checksum
+              bagit.unpack_bag(outputBag, extractionFolder)
+                .then(() => {
+                  fs.copyFileSync(extractionFolder + '/data/' + metadata.checksum, dataFolder + '/' + metadata.checksum)
+                  res.download(dataFolder + '/' + metadata.checksum, metadata.file_name)
+
+                  manage_cache([metadata.checksum], [metadata.file_name], ['checksum'])
+                  fs.unlink(outputBag, (err) => { if (err) throw err })
+                  fs.rmSync(extractionFolder, { recursive: true, force: true })
+                })
+                .catch(err => console.log(err))
+            });
+          })
+          .catch((err) => { console.log(err) })
+      }
     })
     .catch((err) => { console.log(err) })
 }) 
+
+isFileInCache = (file_checksum) => {
+  let res = -1
+
+  for (let i in cache){
+    if (file_checksum === cache[i].checksum){
+      res = cache[i]
+      break
+    }
+  }
+
+  return res
+}
+
+manage_cache = (checksums, new_names, denominations) => {
+  console.log(cache)
+
+  for (let i in checksums){
+    let insert
+    if (denominations[i] !== 'not_new'){
+      insert = {
+        checksum: checksums[i],
+        file_name: new_names[i],
+        under: denominations[i]
+      }
+    }
+    else{
+      insert = isFileInCache(checksums[i])
+    }
+    cache.push(insert)
+  }
+
+  let files_to_remove = cache.length - max_cache_size
+  for (let i = 0; i < files_to_remove; i++){
+    let removed = cache.shift()
+    let cache_check = isFileInCache(removed.checksum)
+    if (cache_check == -1 || removed[removed.under] !== cache_check[cache_check.under]){
+      fs.unlink(__dirname + '/../' + dataFolder + '/' + removed[removed.under], (err) => { if (err) throw err })
+    }
+  }
+
+  console.log(cache)
+}
 
 router.get('/:chID/file/:fileID', verifyAuthentication, verifyChannelRole, function(req, res) {
   axios.get(archive_location + '/acess/file/' + req.params.fileID)
     .then((file) => {
       let metadata = file.data
-      axios.get(storage_location + '/file/' + metadata.location)
-        .then((result) => {
-          let outputBag = __dirname + '/../' + bagFolder + '/' + metadata.checksum + '.zip'
-          if (!fs.existsSync(__dirname + '/../' + bagFolder)){
-            fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
-          }
-          if (!fs.existsSync(__dirname + '/../' + dataFolder)){
-            fs.mkdirSync(__dirname + '/../' + dataFolder, { recursive: true });
-          }
-          
-          fs.writeFile(outputBag, result.data, "binary", (err) => {
-            if (err) throw err;
-            let extractionFolder = bagFolder + '/' + metadata.checksum
-            bagit.unpack_bag(outputBag, extractionFolder)
-              .then(() => {
-                //copia do ficheiro para o verdadeiro nome dele
-                fs.copyFileSync(extractionFolder + '/data/' + metadata.checksum, dataFolder + '/' + metadata.file_name)
-                res.redirect('/' + metadata.file_name)
-                fs.unlink(outputBag, (err) => { if (err) throw err })
-                fs.rmSync(extractionFolder, { recursive: true, force: true })
-              })
-              .catch(err => console.log(err))
-          });
-        })
-        .catch((err) => { console.log(err) })
+      let cache_check = isFileInCache(metadata.checksum)
+      if (cache_check != -1){
+        let file_under = cache_check[cache_check.under]
+        if (cache_check.under === 'checksum'){
+          fs.copyFileSync(dataFolder + '/' + file_under, dataFolder + '/' + metadata.file_name)
+          res.redirect('/' + metadata.file_name)
+        }
+        else{
+          res.redirect('/' + file_under)
+        }
+
+        manage_cache([metadata.checksum], [metadata.file_name], ['file_name'])
+      }
+      else{
+        axios.get(storage_location + '/file/' + metadata.location)
+          .then((result) => {
+            let outputBag = __dirname + '/../' + bagFolder + '/' + metadata.checksum + '.zip'
+            if (!fs.existsSync(__dirname + '/../' + bagFolder)){
+              fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
+            }
+            if (!fs.existsSync(__dirname + '/../' + dataFolder)){
+              fs.mkdirSync(__dirname + '/../' + dataFolder, { recursive: true });
+            }
+
+            fs.writeFile(outputBag, result.data, "binary", (err) => {
+              if (err) throw err;
+              let extractionFolder = bagFolder + '/' + metadata.checksum
+              bagit.unpack_bag(outputBag, extractionFolder)
+                .then(() => {
+                  //copia do ficheiro para o verdadeiro nome dele
+                  fs.copyFileSync(extractionFolder + '/data/' + metadata.checksum, dataFolder + '/' + metadata.file_name)
+                  fs.copyFileSync(extractionFolder + '/data/' + metadata.checksum, dataFolder + '/' + metadata.file_name)
+                  res.redirect('/' + metadata.file_name)
+
+                  manage_cache([metadata.checksum], [metadata.file_name], ['file_name'])
+                  fs.unlink(outputBag, (err) => { if (err) throw err })
+                  fs.rmSync(extractionFolder, { recursive: true, force: true })
+                })
+                .catch(err => console.log(err))
+            });
+          })
+          .catch((err) => { console.log(err) })
+      }
     })
     .catch((err) => { console.log(err) })
 })
