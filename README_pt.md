@@ -13,7 +13,7 @@ English Report Version: [EN](https://github.com/GoncaloPereiraFigueiredoFerreira
 3.1 [Frontend Server](#chalk-frontend)  
 3.2 [Backend Server](#archival-system)  
 3.3 [Authentication Server](#authentication-server)  
-3.4 [File Storage Server](#sistema-de-armazenamento)  
+3.4 [Servidor de Armazenamento de Ficheiros](#sistema-de-armazenamento)  
 
 
 ---
@@ -70,7 +70,7 @@ The Chalk service is composed of 4 different APIs, each with a distinct part to 
 - The frontend API ([Chalk](#chalk-frontend))
 - The backend API ([Archival System](#archival-system))
 - An Authentication API ([Authentication Server](#authentication-server))
-- The file storage server ([Storage System](#storage-system))
+- Servidor de Armazenamento de Ficheiros ([Sistema de Armazenamento](#sistema-de-armazenamento))
 
 
 In the figure below it is possible to see how the different system components interact:
@@ -89,6 +89,12 @@ This approach to the system design was mainly directed towards an easily scalabl
 
 ### Sistema de Armazenamento
 
+O sistema de armazenamento é onde os ficheiros são mantidos e as suas funcionalides incluem armazenamento de novos ficheiros, eliminar um ficheiro e recuperar ficheiros.
+- Armazenar novos ficheiros: Uma operação de upload de ficheiros é realizada através do envio de um ficheiro no formato de empacotamento BagIt. Esse ficheiro (com uma extensão .zip) é extraído para uma certa diretoria e é feita a verificação da integridade dos seus dados. Os ficheiros são guardados se a verificação tiver sucesso e são nomeados de acordo com os seus checksums.
+
+- Eliminar um ficheiro: Uma operação de eliminição é feita através da especificação da localização do ficheiro a ser removido com um método HTTP DELETE.
+
+- Recuperação de ficheiros: A recuperação de um conjunto de ficheiros é conseguida ao empacotar todos os ficheiros selecionados (os ficheiros são selecionados especificando os seus checksums) num bag do tipo BagIt, que é enviado para o frontend do Chalk. 
 
 
 
