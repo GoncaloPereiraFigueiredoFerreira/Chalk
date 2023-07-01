@@ -117,16 +117,13 @@ module.exports.unpack_bag = (bagPath, extractionFolder) => {
                                     correct = false
                                     break
                                 }
-                                else {
-                                    // TODO: acabar unpacking (i.e. remover os ficheiros)
-                                }
                             }
 
                             if (correct){
                                 resolve()
                             }
                             else{
-                                // TODO: dar erro
+                                reject()
                             }
                         })
                     })

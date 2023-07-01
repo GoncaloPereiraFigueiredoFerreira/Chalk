@@ -11,7 +11,7 @@ router.get("/files", function(req, res){
             .catch((err) => { res.status(500).jsonp(err).end() })
     }
     else{
-        // TODO: devolver erro
+        res.sendStatus(400)
     }
 })
 

@@ -122,8 +122,7 @@ router.post("/newdir",function(req,res){
       }
       
       if (alreadyExists){
-        // TODO: mandar erro concreto?
-        res.sendStatus(500)
+        res.sendStatus(400)
       }
       else{
         return Channels.createDir(req.body.channel, req.body.path)
@@ -156,6 +155,7 @@ router.post("/newaccount",function(req,res){
       res.sendStatus(200)
 
   }).catch((err)=>{
+      console.log(err)
       //ver erro e responder em conformidade
       res.sendStatus(500)
   })

@@ -907,7 +907,7 @@ router.get('/:chID/files', verifyAuthentication, verifyChannelRole, function(req
     }
   }
   else{
-    // TODO: erro
+    res.render("errors/error",{ error_msg: 'No file requested!' })
   }
 })
 
