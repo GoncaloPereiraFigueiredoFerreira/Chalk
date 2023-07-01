@@ -13,7 +13,7 @@ English Report Version: [EN](https://github.com/GoncaloPereiraFigueiredoFerreira
 3.1 [Frontend Server](#chalk-frontend)  
 3.2 [Backend Server](#archival-system)  
 3.3 [Authentication Server](#authentication-server)  
-3.4 [File Storage Server](#storage-system)  
+3.4 [File Storage Server](#sistema-de-armazenamento)  
 
 
 ---
