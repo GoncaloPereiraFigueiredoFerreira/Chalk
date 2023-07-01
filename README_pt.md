@@ -1,6 +1,6 @@
 # RPCW-Chalk
 
-Portuguese Report Version: [PT](https://github.com/GoncaloPereiraFigueiredoFerreira/RPCW-Chalk/blob/main/README_pt.md)  
+English Report Version: [EN](https://github.com/GoncaloPereiraFigueiredoFerreira/RPCW-Chalk/blob/main/README.md)  
 
 ---
 
@@ -88,11 +88,6 @@ This approach to the system design was mainly directed towards an easily scalabl
 
 
 ### Storage System 
-
-
-
-
-
 
 
 
