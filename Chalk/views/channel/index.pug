@@ -55,11 +55,11 @@ block channel_cont
           input#table-search.block.p-2.pl-10.text-sm.text-gray-900.border.border-gray-300.rounded-lg.w-80.bg-gray-50(type='text' class='focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Search for files') 
 
       // Table of contents
-      .relative.bg-white.h-80.overflow-x-auto.shadow-md(class='sm:rounded-lg dark:bg-gray-800')
-        table.table-fixed.w-full.text-sm.text-left.text-gray-500.overflow-x-auto(id="folders" class='dark:text-gray-400')
+      .relative.bg-white.h-80.shadow-md(class='sm:rounded-lg dark:bg-gray-800')
+        table.table-fixed.w-full.text-sm.text-left.text-gray-500.rounded-lg(id="folders" class='dark:text-gray-400')
           thead.text-xs.text-gray-700(class='dark:bg-gray-700 dark:text-gray-400')
             // Table head with current and past folders
-            nav.flex.items-center.justify-between.px-5.py-3.text-gray-800.bg-gray-50(class='dark:bg-gray-800 dark:border-gray-700')
+            nav.flex.items-center.justify-between.rounded-lg.px-5.py-3.text-gray-800.bg-gray-50(class='dark:bg-gray-800 dark:border-gray-700')
               ol.inline-flex.items-center.space-x-1(class='md:space-x-3' id="dirnav")
               if channel.role=="pub" || user.role=="admin"
                 a.ml-4.text-sm.inline-flex.font-medium.text-blue-600(id='add_dir' href='/channel/' + channel._id + '/adddir?dir=""' class='hover:underline dark:text-blue-500')
