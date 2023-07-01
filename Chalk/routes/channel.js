@@ -845,68 +845,60 @@ router.get('/:chID/files', verifyAuthentication, verifyChannelRole, function(req
       axios.get(archive_location + '/acess/file/files?files=\"' + req.query['files'] + "\"")
         .then((files) => {
           files = files.data
-
-          let locations = ""
           let new_names = {}
+          let files_in_cache = []
+          let files_to_request = []
+
           for (let i in files){
-            if (i != 0){
-              locations += ';' + files[i].location
+            let file = files[i]
+            let cache_check = isFileInCache(file.checksum)
+            if (cache_check != -1){
+              files_in_cache.push(cache_check)
             }
             else{
-              locations = files[i].location
+              files_to_request.push(file)
             }
-            new_names[files[i].location] = files[i].file_name
+            new_names[file.location] = file.file_name
           }
 
-          axios.get(storage_location + '/files?locations=\"' + locations + "\"")
-            .then((result) => {
-              let file_name = result.headers['content-disposition']
-              let zip_name = file_name.substring(21, file_name.length)
-              file_name = file_name.substring(21, file_name.length - 4)
-              
-              if (!fs.existsSync(__dirname + '/../' + bagFolder)){
-                fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
-              }
-              let outputBag = __dirname + '/../' + bagFolder + '/' + zip_name
+          let locations = ""
+          for (let i in files_to_request){
+            if (i != 0){
+              locations += ';' + files_to_request[i].location
+            }
+            else{
+              locations = files_to_request[i].location
+            }
+          }
 
-              fs.writeFile(outputBag, result.data, "binary", (err) => {
-                if (err) throw err;
-              
-                let extractionFolder = __dirname + '/../' + bagFolder + '/' + file_name
-                bagit.unpack_bag(outputBag, extractionFolder)
-                  .then(() => {
-                    var archive = archiver('zip', {zlib: {level: 9}})
-                    
-                    var output = fs.createWriteStream(__dirname + '/../' + bagFolder + '/' + file_name + '_data.zip')
-                    output.on('close', function() {
-                      res.download(__dirname + '/../' + bagFolder + '/' + file_name + '_data.zip', 'data.zip')
-                      fs.unlink(outputBag, (err) => { if (err) throw err })
-                      fs.rmSync(extractionFolder, { recursive: true, force: true })
-                      let bags_remaining = fs.readdirSync(__dirname + '/../' + bagFolder);
-                      for (let i in bags_remaining){
-                        let tmp_bag = bags_remaining[i]
-                        if (tmp_bag !== file_name + '_data.zip'){
-                          let extension = tmp_bag.substring(tmp_bag.length - 4, tmp_bag.length)
-                          if (extension === '.zip')
-                            fs.unlink(__dirname + '/../' + bagFolder + '/' + tmp_bag, (err) => { if (err) throw err })
-                          else
-                            fs.rmSync(__dirname + '/../' + bagFolder + '/' + tmp_bag, { recursive: true, force: true })
-                        }
-                      }
+          if (locations !== ''){
+            axios.get(storage_location + '/files?locations=\"' + locations + "\"")
+              .then((result) => {
+                let file_name = result.headers['content-disposition']
+                let zip_name = file_name.substring(21, file_name.length)
+                file_name = file_name.substring(21, file_name.length - 4)
+
+                if (!fs.existsSync(__dirname + '/../' + bagFolder)){
+                  fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
+                }
+                let outputBag = __dirname + '/../' + bagFolder + '/' + zip_name
+
+                fs.writeFile(outputBag, result.data, "binary", (err) => {
+                  if (err) throw err;
+                
+                  let extractionFolder = __dirname + '/../' + bagFolder + '/' + file_name
+                  bagit.unpack_bag(outputBag, extractionFolder)
+                    .then(() => {
+                      send_data_bag(res, file_name, new_names, files_in_cache, outputBag, extractionFolder)
                     })
-
-                    archive.pipe(output)
-                    let files_to_send = fs.readdirSync(extractionFolder + '/data/');
-                    for (let i in files_to_send){
-                      archive.file(extractionFolder + '/data/' + files_to_send[i], { name: new_names[files_to_send[i]] })
-                      fs.copyFileSync(extractionFolder + '/data/' + files_to_send[i], dataFolder + '/' + new_names[files_to_send[i]])
-                    }
-                    archive.finalize()
-                  })
-                  .catch(err => console.log(err))
-              });
-            })
-            .catch((err) => { console.log(err) })
+                    .catch(err => console.log(err))
+                });
+              })
+              .catch((err) => { console.log(err) })
+          }
+          else{
+            send_data_bag(res, '', new_names, files_in_cache, '', '')
+          }
         })
         .catch((err) => { console.log(err) })
     }
@@ -915,6 +907,57 @@ router.get('/:chID/files', verifyAuthentication, verifyChannelRole, function(req
     // TODO: erro
   }
 })
+
+send_data_bag = (res, file_name, new_names, files_in_cache, outputBag, extractionFolder) => {
+  let archive = archiver('zip', {zlib: {level: 9}})
+  let cache_checksums = []
+  let cache_names = []
+  let cache_under = []
+    
+  var output = fs.createWriteStream(__dirname + '/../' + bagFolder + '/' + file_name + '_data.zip')
+  output.on('close', function() {
+    res.download(__dirname + '/../' + bagFolder + '/' + file_name + '_data.zip', 'data.zip')
+    if (outputBag !== ''){
+      fs.unlink(outputBag, (err) => { if (err) throw err })
+    }
+    if (extractionFolder !== ''){
+      fs.rmSync(extractionFolder, { recursive: true, force: true })
+    }
+    let bags_remaining = fs.readdirSync(__dirname + '/../' + bagFolder);
+    for (let i in bags_remaining){
+      let tmp_bag = bags_remaining[i]
+      if (tmp_bag !== file_name + '_data.zip'){
+        let extension = tmp_bag.substring(tmp_bag.length - 4, tmp_bag.length)
+        if (extension === '.zip')
+          fs.unlink(__dirname + '/../' + bagFolder + '/' + tmp_bag, (err) => { if (err) throw err })
+        else
+          fs.rmSync(__dirname + '/../' + bagFolder + '/' + tmp_bag, { recursive: true, force: true })
+      }
+    }
+
+    manage_cache(cache_checksums, cache_names, cache_under)
+  })
+
+  archive.pipe(output)
+  if (extractionFolder !== ''){
+    let files_to_send = fs.readdirSync(extractionFolder + '/data/');
+    for (let i in files_to_send){
+      archive.file(extractionFolder + '/data/' + files_to_send[i], { name: new_names[files_to_send[i]] })
+      fs.copyFileSync(extractionFolder + '/data/' + files_to_send[i], dataFolder + '/' + files_to_send[i])
+      cache_checksums.push(files_to_send[i])
+      cache_names.push(new_names[files_to_send[i]])
+      cache_under.push('checksum')
+    }
+  }
+  for (let i in files_in_cache){
+    let cache_file = files_in_cache[i]
+    archive.file(__dirname + '/../' + dataFolder + '/' + cache_file[cache_file.under], { name: new_names[cache_file.checksum] })
+    cache_checksums.push(cache_file.checksum)
+    cache_names.push(cache_file.file_name)
+    cache_under.push(cache_file.under)
+  }
+  archive.finalize()
+}
 
 /// File Routing
 router.get("/:chID/file/download/:fileID", verifyAuthentication, (req, res, next) => {
@@ -972,8 +1015,6 @@ isFileInCache = (file_checksum) => {
 }
 
 manage_cache = (checksums, new_names, denominations) => {
-  console.log(cache)
-
   for (let i in checksums){
     let insert
     if (denominations[i] !== 'not_new'){
@@ -997,8 +1038,6 @@ manage_cache = (checksums, new_names, denominations) => {
       fs.unlink(__dirname + '/../' + dataFolder + '/' + removed[removed.under], (err) => { if (err) throw err })
     }
   }
-
-  console.log(cache)
 }
 
 router.get('/:chID/file/:fileID', verifyAuthentication, verifyChannelRole, function(req, res) {
