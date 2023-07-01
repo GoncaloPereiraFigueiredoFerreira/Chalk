@@ -86,10 +86,10 @@ router.get('/files', (req, res) => {
         else
           res.sendStatus(500)
       })
-      .catch(err => console.log(err))
+      .catch(err => { console.log(err); res.sendStatus(500) })
   }
   else[
-    // TODO: devolver erro
+    res.sendStatus(400)
   ]
 })
 
@@ -117,7 +117,7 @@ router.get("/file/:filepath", (req, res) => {
       else
         res.sendStatus(500)
     })
-    .catch(err => console.log(err))
+    .catch(err => { console.log(err); res.sendStatus(500) })
 })
 
 module.exports = router;

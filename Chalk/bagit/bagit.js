@@ -88,8 +88,6 @@ module.exports.unpack_bag = (bagPath, extractionFolder) => {
                     var lines = bag.split('\n')
                     var encoding = lines[1].substring(29, lines[1].length)
 
-                    let promises = []
-
                     // comparing checksum values and comparing with the file's checksum
                     fs.readFile(extractionFolder + '/manifest-sha256.txt', encoding, (err, manifest) => {
                         if (err) {
@@ -107,10 +105,6 @@ module.exports.unpack_bag = (bagPath, extractionFolder) => {
                             if (hashNew !== hashOG){
                                 correct = false
                                 break
-                                // TODO: tratar do erro
-                            }
-                            else {
-                                // TODO: acabar unpacking (i.e. remover os ficheiros)
                             }
                         }
 
@@ -118,7 +112,7 @@ module.exports.unpack_bag = (bagPath, extractionFolder) => {
                             return
                         }
                         else{
-                            // TODO: dar erro
+                            return 'error occurred when checking cheksums'
                         }
                     })  
                 })

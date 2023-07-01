@@ -15,7 +15,7 @@ const dataFolder = 'data'
 var upload = multer({ dest: uploadFolder })
 var fs = require("fs");
 
-let max_cache_size = 2
+let max_cache_size = 50
 let cache = []
 
 function verifyChannelRole(req,res,next){
@@ -75,7 +75,7 @@ router.get("/:chID/subscribe",verifyAuthentication,verifyChannelRole,(req,res,ne
       user: req.user.username,
       channel:req.params.chID
     }).then(()=>{res.redirect("back")})
-    .catch((err)=> { console.log(err) })
+    .catch((err)=> { console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' }) })
   }
   else {
     next(createHttpError(403))
@@ -92,7 +92,7 @@ router.post("/:chID/subscribewec",verifyAuthentication,verifyChannelRole,(req,re
       user: req.user.username,
       channel:req.params.chID
     }).then(()=>{res.redirect("back")})
-    .catch((err)=>{console.log(err)})
+    .catch((err)=> {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })} )
 
   }
   else{
@@ -142,8 +142,7 @@ router.post("/posts/:chID/addcomment",verifyAuthentication,verifyChannelRole,(re
     
     }).then(()=>{
         res.redirect("/channel/posts/"+req.params.chID+"?post="+req.query.announcement)
-    }).catch((err)=>{
-    })
+    }).catch((err)=>{console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
   }
   else{
     next(createHttpError(401))
@@ -268,9 +267,7 @@ router.post("/addpost/:chID",verifyAuthentication,verifyChannelRole,(req,res,nex
     
     }).then(()=>{
         res.redirect("/channel/"+req.params.chID)
-    }).catch((err)=>{
-
-    })
+    }).catch((err)=>{console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
   }
   else{
         next(createHttpError(401))
@@ -341,9 +338,7 @@ router.post("/adddate/:chID",verifyAuthentication,verifyChannelRole,(req,res,nex
       }
     }).then(()=>{
         res.redirect("/channel/"+req.params.chID)
-    }).catch((err)=>{
-  
-    })
+    }).catch((err)=>{console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
   }
   else{
         next(createHttpError(401))
@@ -425,11 +420,11 @@ router.post("/:chID/submitForm/:submit",verifyAuthentication,verifyChannelRole,u
             .then((resp)=>{
               res.redirect('/channel/' + req.params.chID)
             })
-            .catch(err => { res.sendStatus(400).end() })
+            .catch(err => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred while uploading file info!' })})
         })
-        .catch(err => { })
+        .catch(err => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred while uploading file!' })})
     })
-    .catch(err => { res.sendStatus(400).end() })
+    .catch(err => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred while retrieving file!' })} )
   }
   else{
         next(createHttpError(401))
@@ -444,7 +439,7 @@ router.get("/:chID/unsubscribe",verifyAuthentication,verifyChannelRole,(req,res,
       user: req.user.username,
       channel:req.params.chID
     }).then(()=>{res.redirect("/")})
-    .catch((err)=>{})
+    .catch((err)=>{console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
   }
   else{
     next(createHttpError(401))
@@ -558,28 +553,27 @@ router.post("/:chID/addfile", verifyAuthentication,verifyChannelRole, upload.arr
                     res.redirect('/channel/' + req.params.chID) 
                   })
                   .catch(err => { err => 
-                    // TODO: dar erro concreto
-                    console.log(err) 
+                    console.log(err)
+                    res.render("errors/error",{ error_msg: 'Error occurred when uploading file information!' })
                   })
             })
             .catch(err => {
-              // TODO: dar erro concreto
+              console.log(err)
+              res.render("errors/error",{ error_msg: 'Error occurred while uploading file!' })
             })
           }
           else{
-            // TODO: dar erro concreto
-            res.sendStatus(400)
+            res.render("errors/error",{ error_msg: 'Uploading file with the same name as an already existing file!' })
           }
         })
-        .catch(err => console.log(err))
-        // TODO: do something com os erros
+        .catch(err => { console.log(err); res.render("errors/error",{ error_msg: 'Error occurred when retrieving file(s)!' }) })
     }
     else{
-        // TODO: do something com os erros
+      res.render("errors/error",{ error_msg: 'No uploading directory specified' })
     }
   }  
   else{
-        next(createHttpError(401))
+    next(createHttpError(401))
   }
 });
 
@@ -650,7 +644,7 @@ automaticPost = (chID, body, user) => {
         channel: chID
       }
     })
-    .catch(err => { console.log(err) })
+    .catch(err => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred while making new post!' })})
   }
 }
 
@@ -683,17 +677,17 @@ router.get("/:chID/rmfile/:fileID", verifyAuthentication, (req, res, next) => {
                       .then((res5) => {
                         res.redirect('back')
                       })
-                      .catch(err => { console.log(err); })
+                      .catch(err => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
                   }
                   else
                     res.redirect('back')
                 })
-                .catch(err => { console.log(err); })
+                .catch(err => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
             })
         })
-        .catch(err => { console.log(err) })
+        .catch(err => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
     })
-    .catch(err => { console.log(err); })
+    .catch(err => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
 })
 
 router.get("/:chID/adddir", verifyAuthentication, verifyChannelRole,function(req, res) {
@@ -729,7 +723,8 @@ router.post("/:chID/adddir", verifyAuthentication,verifyChannelRole, function(re
       })
         .then((result) => { res.redirect('/channel/' + req.params.chID) })
         .catch(err => { 
-          //TODO: tratar do erro 
+          console.log(err)
+          res.render("errors/error",{ error_msg: 'Error occurred while creating directory!' })
         })
     }
   }
@@ -761,13 +756,13 @@ router.get("/:chID/rmdir", verifyAuthentication,verifyChannelRole, function(req,
               res.redirect('back')
             })
             .catch(err => { 
-              //TODO: tratar do erro 
               console.log(err)
+              res.render("errors/error",{ error_msg: 'Error occurred while deleting directory!' })
             })
         })
         .catch(err => { 
-          //TODO: tratar do erro 
           console.log(err)
+          res.render("errors/error",{ error_msg: 'Error occurred while deleting directory!' })
         })
     }
   }
@@ -798,17 +793,16 @@ removeDir = (contentTree, chID, context, dir) => {
 
   axios.delete(archive_location + '/ingest/rmdir/' + chID + '?dir=\"' + insideContext + '\"')
     .catch(err => { 
-      //TODO: tratar do erro 
       console.log(err)
+      res.render("errors/error",{ error_msg: 'Error occurred while deleting directory!' })
     })
 }
 
 removeFile = (elem) => {
   axios.delete(archive_location + '/ingest/rmfile/' + elem.metadata._id)
     .catch(err => { 
-      //TODO: tratar do erro 
       console.log(err)
-      //next(createHttpError(401))
+      res.render("errors/error",{ error_msg: 'Error occurred while removing file!' })
     })
 
   axios.get(archive_location + '/acess/file/location/' + elem.metadata.location)
@@ -816,10 +810,10 @@ removeFile = (elem) => {
       files = res3.data
       if (files.length == 0){
         axios.delete(storage_location + '/' + elem.metadata.location)
-          .catch(err => { console.log(err); })
+          .catch(err => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
       }
     })
-    .catch(err => { console.log(err); })
+    .catch(err => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
 }
 
 getDirContents = (contentTree, dir) => {
@@ -845,76 +839,122 @@ router.get('/:chID/files', verifyAuthentication, verifyChannelRole, function(req
       axios.get(archive_location + '/acess/file/files?files=\"' + req.query['files'] + "\"")
         .then((files) => {
           files = files.data
-
-          let locations = ""
           let new_names = {}
+          let files_in_cache = []
+          let files_to_request = []
+
           for (let i in files){
-            if (i != 0){
-              locations += ';' + files[i].location
+            let file = files[i]
+            let cache_check = isFileInCache(file.checksum)
+            if (cache_check != -1){
+              files_in_cache.push(cache_check)
             }
             else{
-              locations = files[i].location
+              files_to_request.push(file)
             }
-            new_names[files[i].location] = files[i].file_name
+            new_names[file.location] = file.file_name
           }
 
-          axios.get(storage_location + '/files?locations=\"' + locations + "\"")
-            .then((result) => {
-              let file_name = result.headers['content-disposition']
-              let zip_name = file_name.substring(21, file_name.length)
-              file_name = file_name.substring(21, file_name.length - 4)
-              
-              if (!fs.existsSync(__dirname + '/../' + bagFolder)){
-                fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
-              }
-              let outputBag = __dirname + '/../' + bagFolder + '/' + zip_name
+          let locations = ""
+          for (let i in files_to_request){
+            if (i != 0){
+              locations += ';' + files_to_request[i].location
+            }
+            else{
+              locations = files_to_request[i].location
+            }
+          }
 
-              fs.writeFile(outputBag, result.data, "binary", (err) => {
-                if (err) throw err;
-              
-                let extractionFolder = __dirname + '/../' + bagFolder + '/' + file_name
-                bagit.unpack_bag(outputBag, extractionFolder)
-                  .then(() => {
-                    var archive = archiver('zip', {zlib: {level: 9}})
-                    
-                    var output = fs.createWriteStream(__dirname + '/../' + bagFolder + '/' + file_name + '_data.zip')
-                    output.on('close', function() {
-                      res.download(__dirname + '/../' + bagFolder + '/' + file_name + '_data.zip', 'data.zip')
-                      fs.unlink(outputBag, (err) => { if (err) throw err })
-                      fs.rmSync(extractionFolder, { recursive: true, force: true })
-                      let bags_remaining = fs.readdirSync(__dirname + '/../' + bagFolder);
-                      for (let i in bags_remaining){
-                        let tmp_bag = bags_remaining[i]
-                        if (tmp_bag !== file_name + '_data.zip'){
-                          let extension = tmp_bag.substring(tmp_bag.length - 4, tmp_bag.length)
-                          if (extension === '.zip')
-                            fs.unlink(__dirname + '/../' + bagFolder + '/' + tmp_bag, (err) => { if (err) throw err })
-                          else
-                            fs.rmSync(__dirname + '/../' + bagFolder + '/' + tmp_bag, { recursive: true, force: true })
-                        }
-                      }
+          if (locations !== ''){
+            axios.get(storage_location + '/files?locations=\"' + locations + "\"")
+              .then((result) => {
+                let file_name = result.headers['content-disposition']
+                let zip_name = file_name.substring(21, file_name.length)
+                file_name = file_name.substring(21, file_name.length - 4)
+
+                if (!fs.existsSync(__dirname + '/../' + bagFolder)){
+                  fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
+                }
+                if (!fs.existsSync(__dirname + '/../' + dataFolder)){
+                  fs.mkdirSync(__dirname + '/../' + dataFolder, { recursive: true });
+                }
+                let outputBag = __dirname + '/../' + bagFolder + '/' + zip_name
+
+                fs.writeFile(outputBag, result.data, "binary", (err) => {
+                  if (err) throw err;
+                
+                  let extractionFolder = __dirname + '/../' + bagFolder + '/' + file_name
+                  bagit.unpack_bag(outputBag, extractionFolder)
+                    .then(() => {
+                      send_data_bag(res, file_name, new_names, files_in_cache, outputBag, extractionFolder)
                     })
-
-                    archive.pipe(output)
-                    let files_to_send = fs.readdirSync(extractionFolder + '/data/');
-                    for (let i in files_to_send){
-                      archive.file(extractionFolder + '/data/' + files_to_send[i], { name: new_names[files_to_send[i]] })
-                      fs.copyFileSync(extractionFolder + '/data/' + files_to_send[i], dataFolder + '/' + new_names[files_to_send[i]])
-                    }
-                    archive.finalize()
-                  })
-                  .catch(err => console.log(err))
-              });
-            })
-            .catch((err) => { console.log(err) })
+                    .catch(err => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
+                });
+              })
+              .catch((err) => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
+          }
+          else{
+            send_data_bag(res, '', new_names, files_in_cache, '', '')
+          }
         })
-        .catch((err) => { console.log(err) })
+        .catch((err) => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
     }
   }
   else{
-    // TODO: erro
+    res.render("errors/error",{ error_msg: 'No file requested!' })
   }
 })
+
+send_data_bag = (res, file_name, new_names, files_in_cache, outputBag, extractionFolder) => {
+  let archive = archiver('zip', {zlib: {level: 9}})
+  let cache_checksums = []
+  let cache_names = []
+  let cache_under = []
+    
+  var output = fs.createWriteStream(__dirname + '/../' + bagFolder + '/' + file_name + '_data.zip')
+  output.on('close', function() {
+    res.download(__dirname + '/../' + bagFolder + '/' + file_name + '_data.zip', 'data.zip')
+    if (outputBag !== ''){
+      fs.unlink(outputBag, (err) => { if (err) throw err })
+    }
+    if (extractionFolder !== ''){
+      fs.rmSync(extractionFolder, { recursive: true, force: true })
+    }
+    let bags_remaining = fs.readdirSync(__dirname + '/../' + bagFolder);
+    for (let i in bags_remaining){
+      let tmp_bag = bags_remaining[i]
+      if (tmp_bag !== file_name + '_data.zip'){
+        let extension = tmp_bag.substring(tmp_bag.length - 4, tmp_bag.length)
+        if (extension === '.zip')
+          fs.unlink(__dirname + '/../' + bagFolder + '/' + tmp_bag, (err) => { if (err) throw err })
+        else
+          fs.rmSync(__dirname + '/../' + bagFolder + '/' + tmp_bag, { recursive: true, force: true })
+      }
+    }
+
+    manage_cache(cache_checksums, cache_names, cache_under)
+  })
+
+  archive.pipe(output)
+  if (extractionFolder !== ''){
+    let files_to_send = fs.readdirSync(extractionFolder + '/data/');
+    for (let i in files_to_send){
+      archive.file(extractionFolder + '/data/' + files_to_send[i], { name: new_names[files_to_send[i]] })
+      fs.copyFileSync(extractionFolder + '/data/' + files_to_send[i], dataFolder + '/' + files_to_send[i])
+      cache_checksums.push(files_to_send[i])
+      cache_names.push(new_names[files_to_send[i]])
+      cache_under.push('checksum')
+    }
+  }
+  for (let i in files_in_cache){
+    let cache_file = files_in_cache[i]
+    archive.file(__dirname + '/../' + dataFolder + '/' + cache_file[cache_file.under], { name: new_names[cache_file.checksum] })
+    cache_checksums.push(cache_file.checksum)
+    cache_names.push(cache_file.file_name)
+    cache_under.push(cache_file.under)
+  }
+  archive.finalize()
+}
 
 /// File Routing
 router.get("/:chID/file/download/:fileID", verifyAuthentication, (req, res, next) => {
@@ -935,6 +975,9 @@ router.get("/:chID/file/download/:fileID", verifyAuthentication, (req, res, next
             if (!fs.existsSync(__dirname + '/../' + bagFolder)){
               fs.mkdirSync(__dirname + '/../' + bagFolder, { recursive: true });
             }
+            if (!fs.existsSync(__dirname + '/../' + dataFolder)){
+              fs.mkdirSync(__dirname + '/../' + dataFolder, { recursive: true });
+            }
 
             fs.writeFile(outputBag, result.data, "binary", (err) => {
               if (err) throw err;
@@ -949,13 +992,13 @@ router.get("/:chID/file/download/:fileID", verifyAuthentication, (req, res, next
                   fs.unlink(outputBag, (err) => { if (err) throw err })
                   fs.rmSync(extractionFolder, { recursive: true, force: true })
                 })
-                .catch(err => console.log(err))
+                .catch(err => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
             });
           })
-          .catch((err) => { console.log(err) })
+          .catch((err) => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
       }
     })
-    .catch((err) => { console.log(err) })
+    .catch((err) => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
 }) 
 
 isFileInCache = (file_checksum) => {
@@ -972,8 +1015,6 @@ isFileInCache = (file_checksum) => {
 }
 
 manage_cache = (checksums, new_names, denominations) => {
-  console.log(cache)
-
   for (let i in checksums){
     let insert
     if (denominations[i] !== 'not_new'){
@@ -997,8 +1038,6 @@ manage_cache = (checksums, new_names, denominations) => {
       fs.unlink(__dirname + '/../' + dataFolder + '/' + removed[removed.under], (err) => { if (err) throw err })
     }
   }
-
-  console.log(cache)
 }
 
 router.get('/:chID/file/:fileID', verifyAuthentication, verifyChannelRole, function(req, res) {
@@ -1043,13 +1082,13 @@ router.get('/:chID/file/:fileID', verifyAuthentication, verifyChannelRole, funct
                   fs.unlink(outputBag, (err) => { if (err) throw err })
                   fs.rmSync(extractionFolder, { recursive: true, force: true })
                 })
-                .catch(err => console.log(err))
+                .catch(err => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
             });
           })
-          .catch((err) => { console.log(err) })
+          .catch((err) => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
       }
     })
-    .catch((err) => { console.log(err) })
+    .catch((err) => {console.log(err); res.render("errors/error",{ error_msg: 'Error occurred!' })})
 })
 
 module.exports = router
