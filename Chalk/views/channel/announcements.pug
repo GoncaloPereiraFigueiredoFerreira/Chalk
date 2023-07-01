@@ -48,17 +48,17 @@ block channel_cont
                   .my-4.mb-6.ml-6.w-full.flex.justify-between(class='dark:text-white')
                     div
                       h1.text-3xl.text-gray-600.font-bold.text-gray-600(class='dark:text-white') #{announcement.title}
-                      p Docente: #{announcement.publisher}
+                      p Publisher: #{announcement.publisher}
                     p.text-lg #{announcement.date} 
 
                   
                 .relative.w-full.p-6.overflow-y-auto(class='h-[20rem] dark:text-white')
-                  p #{announcement.content}
+                  div #{announcement.content}
                 hr
 
                 // Comment Section variables = [{author:"",date:"",text:""}]
                 .relative.w-full.overflow-y-auto(class='h-[20rem]')
-                  h2.my-4.ml-6.text-lg.text-gray-600.font-bold.text-gray-600(class="dark:text-gray-200") Secção dos Comentários
+                  h2.my-4.ml-6.text-lg.text-gray-600.font-bold.text-gray-600(class="dark:text-gray-200") Comment Section
                   if announcement.comments
                     each comment in announcement.comments
                       section.bg-white.py-4.ml-6(class="dark:bg-gray-800 dark:border-gray-700 dark:text-white")
