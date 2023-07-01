@@ -1,6 +1,6 @@
 # RPCW-Chalk
 
-Portuguese Report Version: [PT]()  
+Portuguese Report Version: [PT](https://github.com/GoncaloPereiraFigueiredoFerreira/RPCW-Chalk/blob/main/README_pt.md)  
 
 ---
 
