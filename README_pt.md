@@ -87,7 +87,7 @@ This approach to the system design was mainly directed towards an easily scalabl
 ### Authentication Server
 
 
-### Storage System 
+### Sistema de Armazenamento
 
 
 
