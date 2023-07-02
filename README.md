@@ -1,10 +1,11 @@
-# RPCW-Chalk
+![](https://media.discordapp.net/attachments/733843321671385160/1124986307169501234/image.png)
 
+__Authors__: Gonçalo Ferreira & Rui Braga  
 Portuguese Report Version: [PT](https://github.com/GoncaloPereiraFigueiredoFerreira/RPCW-Chalk/blob/main/README_pt.md)  
 
 ---
 
-## Index
+# Index
 
 1. [Pitch and Objectives](#pitch-and-objectives)  
 1.1 [Technologies](#tecnologies-involved)
@@ -16,9 +17,9 @@ Portuguese Report Version: [PT](https://github.com/GoncaloPereiraFigueiredoFerre
 3.4 [File Storage Server](#storage-system)  
 
 
----
 
-## Pitch and Objectives
+
+# Pitch and Objectives
 
 Chalk is a web-based platform, that allows the management and distribution of educational resources, mainly developed for a university/college environment. The platform supports multiple features that allow content publishers to organize their channels, arrange deliveries and create announcements for all subscribers.  
 With this being said, the main objectives being the development of this service, were:
@@ -62,7 +63,7 @@ The main features offered by the Chalk are:
 
 
 
-## System Architecture
+# System Architecture
 
 In this section we'll enter a bit deeper into the system's functionality and how it was implemented. 
 
@@ -78,9 +79,21 @@ In the figure below it is possible to see how the different system components in
 
 This approach to the system design was mainly directed towards an easily scalable system; All the APIs are stateless and replication of the system would be trivial, even for the MongoDB instances that allow for replication through the MongoDB replication API; the only problem would be the replication of the files stored in each Storage System, but we designed the storage system to act as a sort of Content Driven Network (CDN), where we store each file storage server, with it's metadata in the MongoDB Chalk; this way, each server will know where is each file.
 
-### Chalk Frontend
+## Chalk Frontend
 
-##### Channel Page
+The Chalk Frontend is the service component responsible for moderating client interaction; This application is responsible for serving HTML pages to the client's browser, limiting user acess to pages according to their role in each channel. 
+
+This service utilizes Pug HTML templating, to customize each user's page, according their channel subscriptions and publications.
+
+The sections bellow will demonstrate some of the develloped user interfaces
+
+### Dashboard
+![](https://media.discordapp.net/attachments/733843321671385160/1125006858957103134/image.png?width=1252&height=614)
+Fig3: User Dashboard
+
+### Channel Page
+![](https://media.discordapp.net/attachments/733843321671385160/1125005422630293524/image.png?width=1283&height=614)
+Fig4: Channel view of a Publisher
 - ...
 - Content Tree
 
@@ -94,13 +107,13 @@ In the page dedicated to uploading files, there's a form with an input element f
 There's also the option to make an automatic announcement to notify other users about the files that were just uploaded.
 
 
-##### File Management
+### File Management
 - cache
 - upload file
 - get files
 
 
-### Archival System
+## Archival System
 
 The archival system manages metainformation that's crucial for the application to operate properly, which includes user data, metadata of the stored files and information about the active channels 
 
@@ -110,18 +123,26 @@ The archival system manages metainformation that's crucial for the application t
 - Announcements
 - Important Dates
 
+It serves as a backend API to all the Chalk service, providing several routes that allow the users to interact with the state of the application. Routes are grouped according to their actions:
+- Acess Routes (acess information about channels, users, etc)
+- Ingest Routes (add files, announcements, etc)
+- Manage Routes (delete or edit some components)
 
-### Authentication Server
 
+## Authentication Server
 
-### Storage System 
+The authentication server is responsible for storing and managing user accounts. Each time a user registers or logs in, the frontend must send the credentials to this service, that will then perform the createUser/loginUser operation, and attribute a JWT token for the user to store in its cookies.  
+
+In order to authenticate tokens created in this server, JWT tokens are generated with a RSA Key Pair; this way a frontend server, will be able to authenticate users using the public key (that is requested every time this server starts).  
+ 
+This API utilizes PassportJS to simplify the process of storing user accounts, by automatically hashing user passwords and providing methods to authenticate users. The user information stored in this API only involves their name, email, level of acess (user or admin) and last acessed and account creation dates.
+
+## Storage System 
 
 The storage system is where the actual files are kept and its funcionalities include storing new files, deleting a file and retrieving files.
 
 - Storing new files: An upload operation is made by sending a single file in the BagIt packaging format. That file (with a .zip extension) is extracted to a certain folder and the integrity of its data is verified. The files are stored if the verification proves to be successful and are named accordingly to their checksums.
-
 - Deleting a file: A delete operation is made by specifying the location of the file to be erased with a HTTP DELETE method.
-
 - Retrieving files: The retrieval of a set of files is achieved by packaging all the files selected (the files are selected by specifying their checksums) into a BagIt bag, which is sent to to the Chalk Frontend.
 
 
