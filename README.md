@@ -15,6 +15,7 @@ Portuguese Report Version: [PT](https://github.com/GoncaloPereiraFigueiredoFerre
 3.2 [Backend Server](#archival-system)  
 3.3 [Authentication Server](#authentication-server)  
 3.4 [File Storage Server](#storage-system)  
+4. [What's Next](#whats-next)
 
 
 
@@ -38,6 +39,7 @@ The main technologies used behind this project were:
 - __Pug__ (an HTML templating language that simplifies HTML creation)
 - __MongoDB__ (the DBMS for the Authentication and Backend Servers)
 - __PassportJS__ (to handle user account storage)
+- __JWT__ (used for session management)
 - __Docker__ (assembling of all the components and easier deployment of the service)
 
 
@@ -76,8 +78,9 @@ The Chalk service is composed of 4 different APIs, each with a distinct part to 
 
 In the figure below it is possible to see how the different system components interact:
 ![System Architecture](https://media.discordapp.net/attachments/1083491237652332635/1121175465474928760/image.png)
+Fig2: System Architecture Overview
 
-This approach to the system design was mainly directed towards an easily scalable system; All the APIs are stateless and replication of the system would be trivial, even for the MongoDB instances that allow for replication through the MongoDB replication API; the only problem would be the replication of the files stored in each Storage System, but we designed the storage system to act as a sort of Content Driven Network (CDN), where we store each file storage server, with it's metadata in the MongoDB Chalk; this way, each server will know where is each file.
+This approach to the system design was mainly directed towards an easily scalable system; All the APIs are stateless and replication of the system would be trivial, even for the MongoDB instances that allow replication natively; the only problem would be the replication of the files stored in each Storage System, but we designed the storage system to act as a sort of Content Driven Network (CDN), where we store each file storage server, with it's metadata in the MongoDB Chalk; this way, each server will know where is each file.
 
 ## Chalk Frontend
 
@@ -85,7 +88,7 @@ The Chalk Frontend is the service component responsible for moderating client in
 
 This service utilizes Pug HTML templating, to customize each user's page, according their channel subscriptions and publications.
 
-The sections bellow will demonstrate some of the develloped user interfaces
+The sections bellow will demonstrate some of the developed user interfaces
 
 ### Dashboard
 ![](https://media.discordapp.net/attachments/733843321671385160/1125006858957103134/image.png?width=1252&height=614)
@@ -104,7 +107,7 @@ adasdasdasdasd search functionality
 
 In the page dedicated to uploading files, there's a form with an input element for the user to select files to upload, which prompts the rest of the form to appear with input boxes to specify the name and include tags to describe each file. 
 
-There's also the option to make an automatic announcement to notify other users about the files that were just uploaded.
+
 
 
 ### File Management
@@ -147,8 +150,7 @@ The storage system is where the actual files are kept and its funcionalities inc
 
 
 
-
-
+# What's Next
 
 
 
