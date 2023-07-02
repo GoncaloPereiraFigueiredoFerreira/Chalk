@@ -77,6 +77,7 @@ O serviço Chalk é composto por 4 APIs diferentes, cada uma com papel distinto 
 
 Na figura abaixo é possivel observar como é que os diferentes componentes interagem:
 ![System Architecture](https://media.discordapp.net/attachments/1083491237652332635/1121175465474928760/image.png)
+
 Fig2: Vista geral sobre a arquitetura do sistema
 
 Esta abordagem ao design do sistema, foi desenvolvida com a facilidade de escalabilidade do sistema em mente; Todas as  APIs são "stateless" e a sua replicação seria trivial, até para as instancias da base de dados MongoDB que permitem a replicação nativamente; O único problema poderia ser na replicação dos ficheiros no interior do Storage System, mas desenhamos este sistema para agir como uma especie de CDN (rede de distribuição de conteúdos); na meta informação de cada ficheiro é guardado qual o servidor que guarda o ficheiro na sua integra
@@ -119,24 +120,29 @@ Fig4: Channel view of a Publisher
 
 A pesquisa por ficheiros poderá ser realizada na barra de pesquisa localizada no canto superior direito da árvore de contéudos. A pesquisa é feita com base no nome do ficheiro, e os ficheiros cujo nome corresponda à pesquisa, aparecerão na árvore.
 
+- Definições
+
+O publicador de um canal tem acesso à página das definições, onde pode editar o canal, obter a lista de alunos subscritos, verificar submissões, adicionar um novo publicador ou apagar por completo o canal
 
 - Árvore de conteúdo
 
 A árvore de conteúdo de cada canal contém a estrutura de diretorias associada a esse canal. É totalmente navegável, ou seja, um utilizador pode entrar/sair de uma diretoria, o que leva à exibição de diferentes arquivos, de acordo com o diretório em que o utilizador se encontra. Também é possível criar diretorias, fazer upload de novos arquivos, apagar, acessar e baixar arquivos (desde que o utilizador tenha permissão para fazê-lo).
 
-- Upload de arquivos
+Para gerir e otimizar a passagem de ficheiros pelo servidor foi necessário implementar alguns protocolos. Para fazer upload de ficheiros (sejam ficheiros para a árvore de conteúdo ou submissões), o servidor faz um "bag" com os ficheiros selecionados pelo utilizador no formato de empacotamento BagIt, que é enviado ao sistema de armazenamento e alguma metainformação é enviada ao servidor de backend. Para buscar ficheiros, o servidor mantém uma cache para diminuir os tempos de latência e antes que qualquer pedido seja feito ao servidor de armazenamento, verifica-se se algum dos ficheiros pedidos existe na cache. Se um ficheiro estiver presente na cache não é requisitado e os que não estiverem presentes são pedidos ao servidor de armazenamento. Em resposta a este pedido, o frontend do Chalk recebe um "bag", que é extraído e a integridade do seu conteúdo é verificada e depois, enviado ao utilizador (ou mantido numa diretoria pública caso o utilizador pretenda apenas visualizar o ficheiro selecionado). 
+
+
+### Upload Files Page
+
+![](https://i.imgur.com/MF63wbO.png)
+Fig5: Upload Files (dark mode)
 
 Na página dedicada ao upload de arquivos, há um formulário com um elemento de entrada para o utilizador selecionar os arquivos a serem carregados, o que causa que o restante do formulário apareça com caixas de entrada para especificar o nome e incluir tags para descrever cada arquivo.
 
-- Definições
+![](https://i.imgur.com/G0IZz0i.png)
+Fig6: Dinamically updated form (dark mode)
 
-O publicador de um canal tem acesso à página das definições, onde pode editar o canal, obter a lista de alunos subscritos, verificar submissões, adicionar um novo publicador ou apagar por completo o canal
+Existe também a opção de fazer uma anúncio automático para notificar outros utilizadores que novos ficheiros foram adicionados.
 
-
-### File Management
-- cache
-- upload file
-- get files
 
 ## Archival System
 
@@ -181,3 +187,4 @@ Após um periodo de descanso (bem necessário), ainda existiriam algumas feature
 - Mais operações de administração para admin, incluindo "account bans" e gestão de subscrições
 - Google e outras plataformas como forma de autenticação
 - Criação de salas de video-reuniões
+- Testes Online
