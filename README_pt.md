@@ -1,6 +1,6 @@
 ![](https://media.discordapp.net/attachments/733843321671385160/1124986307169501234/image.png)
 
-__Autores__: Gonçalo Ferreira & Rui Braga
+__Autores__: Gonçalo Ferreira & Rui Braga  
 English Report Version: [EN](https://github.com/GoncaloPereiraFigueiredoFerreira/RPCW-Chalk/blob/main/README.md)  
 
 ---
