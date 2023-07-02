@@ -93,7 +93,7 @@ As secções abaixo irão demonstrar algumas das interfaces de utilizador desenv
 
 ### Dashboard
 ![](https://media.discordapp.net/attachments/733843321671385160/1125006858957103134/image.png?width=1252&height=614)
-Fig3: User Dashboard
+Fig3: Dashboard do utilizador
 
 - Pesquisa por canal
 
@@ -114,7 +114,7 @@ Na dashboard, serão apresnetados todos os anúncios e datas importantes de todo
 
 ### Channel Page
 ![](https://media.discordapp.net/attachments/733843321671385160/1125005422630293524/image.png?width=1283&height=614)
-Fig4: Channel view of a Publisher
+Fig4: Vista de um canal para um publicador
 
 - Pesquisa por ficheiros
 
@@ -134,12 +134,12 @@ Para gerir e otimizar a passagem de ficheiros pelo servidor foi necessário impl
 ### Upload Files Page
 
 ![](https://i.imgur.com/MF63wbO.png)
-Fig5: Upload Files (dark mode)
+Fig5: Upload de ficheiros (dark mode)
 
 Na página dedicada ao upload de arquivos, há um formulário com um elemento de entrada para o utilizador selecionar os arquivos a serem carregados, o que causa que o restante do formulário apareça com caixas de entrada para especificar o nome e incluir tags para descrever cada arquivo.
 
 ![](https://i.imgur.com/G0IZz0i.png)
-Fig6: Dinamically updated form (dark mode)
+Fig6: Formulário dinâmico (dark mode)
 
 Existe também a opção de fazer uma anúncio automático para notificar outros utilizadores que novos ficheiros foram adicionados.
 
