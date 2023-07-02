@@ -89,7 +89,7 @@ adasdasdasdasd search functionality
 
 - Uploading files
 
-In the page dedicated to uploading files, there's a form with an input element for the user to select files to upload, which prompts the rest of the form to appear with input boxes for specifying the name and tags to describe each file. 
+In the page dedicated to uploading files, there's a form with an input element for the user to select files to upload, which prompts the rest of the form to appear with input boxes to specify the name and include tags to describe each file. 
 
 There's also the option to make an automatic announcement to notify other users about the files that were just uploaded.
 
