@@ -83,6 +83,14 @@ This approach to the system design was mainly directed towards an easily scalabl
 
 ### Archival System
 
+The archival system manages metainformation that's crucial for the application to operate properly, which includes user data, metadata of the stored files and information about the active channels 
+
+##### User Data
+##### Channels Data
+##### Files Metadata
+##### Announcements
+##### Important Dates
+
 
 ### Authentication Server
 
@@ -90,6 +98,7 @@ This approach to the system design was mainly directed towards an easily scalabl
 ### Storage System 
 
 The storage system is where the actual files are kept and its funcionalities include storing new files, deleting a file and retrieving files.
+
 - Storing new files: An upload operation is made by sending a single file in the BagIt packaging format. That file (with a .zip extension) is extracted to a certain folder and the integrity of its data is verified. The files are stored if the verification proves to be successful and are named accordingly to their checksums.
 
 - Deleting a file: A delete operation is made by specifying the location of the file to be erased with a HTTP DELETE method.
