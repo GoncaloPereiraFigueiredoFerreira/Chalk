@@ -78,6 +78,7 @@ The Chalk service is composed of 4 different APIs, each with a distinct part to 
 
 In the figure below it is possible to see how the different system components interact:
 ![System Architecture](https://media.discordapp.net/attachments/1083491237652332635/1121175465474928760/image.png)
+
 Fig2: System Architecture Overview
 
 This approach to the system design was mainly directed towards an easily scalable system; All the APIs are stateless and replication of the system would be trivial, even for the MongoDB instances that allow replication natively; the only problem would be the replication of the files stored in each Storage System, but we designed the storage system to act as a sort of Content Driven Network (CDN), where we store each file storage server, with it's metadata in the MongoDB Chalk; this way, each server will know where is each file.
