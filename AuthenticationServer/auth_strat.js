@@ -29,7 +29,7 @@ exports.getToken = function(user) {
   
     return jwt.sign(user, privateKEY,{expiresIn: 3600, algorithm:"RS512"});
 };
-
+/*
 exports.googlePassport = passport.use(new GoogleStrategy({
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
@@ -65,7 +65,7 @@ exports.googlePassport = passport.use(new GoogleStrategy({
       }
     }
   ));
- 
+ */
 // Options to specify for my JWT based strategy.
 var opts = {};
  
