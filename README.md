@@ -80,16 +80,35 @@ This approach to the system design was mainly directed towards an easily scalabl
 
 ### Chalk Frontend
 
+##### Channel Page
+- ...
+- Content Tree
+
+The content tree for each channel contains the directory structure associated with said channel. It is fully navigable, as in, an user can enter/leave a directory, that leads to the display of different files, according to the directory that the user is in. It is also possible to create directories, upload new files, delete, access and download files (given that the user has permission to do so).
+adasdasdasdasd search functionality
+
+- Uploading files
+
+In the page dedicated to uploading files, there's a form with an input element for the user to select files to upload, which prompts the rest of the form to appear with input boxes for specifying the name and tags to describe each file. 
+
+There's also the option to make an automatic announcement to notify other users about the files that were just uploaded.
+
+
+##### File Management
+- cache
+- upload file
+- get files
+
 
 ### Archival System
 
 The archival system manages metainformation that's crucial for the application to operate properly, which includes user data, metadata of the stored files and information about the active channels 
 
-##### User Data
-##### Channels Data
-##### Files Metadata
-##### Announcements
-##### Important Dates
+- User Data
+- Channels Data
+- Files Metadata
+- Announcements
+- Important Dates
 
 
 ### Authentication Server
