@@ -9,15 +9,15 @@ English Report Version: [EN](https://github.com/GoncaloPereiraFigueiredoFerreira
 
 # Índice
 
-1. [Introdução e Objectivos](#)
-1.1 [Tecnologias](#)
-2. [Principais Funcionalidades](#)
-3. [Arquitetura do sistema](#)
-3.1 [Servidor Frontend](#)
-3.2 [Servidor Backend](#)
-3.3 [Servidor de Autenticação](#)
-3.4 [Servidor de armazenamento de arquivos](#)
-4. [Trabalho Futuro](#)
+1. [Introdução e Objectivos](#introdução-e-objetivos)
+1.1 [Tecnologias](#tecnologias-envolvidas)
+2. [Principais Funcionalidades](#funcionalidades-principais)
+3. [Arquitetura do sistema](#arquitetura-do-sistema)
+3.1 [Servidor Frontend](#chalk-frontend)
+3.2 [Servidor Backend](#archival-system)
+3.3 [Servidor de Autenticação](#authentication-server)
+3.4 [Servidor de armazenamento de arquivos](#sistema-de-armazenamento)
+4. [Trabalho Futuro](#trabalho-futuro)
 
 
 
@@ -64,7 +64,7 @@ As principais funcionalidades do serviço Chalk são:
 - Utilizadores poderão encontrar todos os canais criados na barra de pesquisa vísivel na barra superior
 - Ficheiros carregados poderão ser acompanhados por um anúncio automático que notifica os subscritores em caso de um novo anúncio ser criado
 
-# System Architecture
+# Arquitetura do sistema
 
 Nesta secção exploraremos a funcionalidade do sistema bem como, como foi implementado.  
 
@@ -77,7 +77,7 @@ O serviço Chalk é composto por 4 APIs diferentes, cada uma com papel distinto 
 
 Na figura abaixo é possivel observar como é que os diferentes componentes interagem:
 ![System Architecture](https://media.discordapp.net/attachments/1083491237652332635/1121175465474928760/image.png)
-
+Fig2: Vista geral sobre a arquitetura do sistema
 
 Esta abordagem ao design do sistema, foi desenvolvida com a facilidade de escalabilidade do sistema em mente; Todas as  APIs são "stateless" e a sua replicação seria trivial, até para as instancias da base de dados MongoDB que permitem a replicação nativamente; O único problema poderia ser na replicação dos ficheiros no interior do Storage System, mas desenhamos este sistema para agir como uma especie de CDN (rede de distribuição de conteúdos); na meta informação de cada ficheiro é guardado qual o servidor que guarda o ficheiro na sua integra
 
@@ -94,9 +94,31 @@ As secções abaixo irão demonstrar algumas das interfaces de utilizador desenv
 ![](https://media.discordapp.net/attachments/733843321671385160/1125006858957103134/image.png?width=1252&height=614)
 Fig3: User Dashboard
 
+- Pesquisa por canal
+
+Em qualquer página da aplicação é possível procurar por um canal, utilizando keywords. Quando submitidas, uma página com uma listagem de canais será apresentada, com todos os canais que dão match a essas keywords
+
+- Barra lateral
+
+Em todas as paǵinas da aplicação é possível aceder à barra lateral que permite desligar a sessão, ou aceder à dashboard ou canais subscritos.
+
+- Acionar o modo escuro
+
+Em qualquer página da aplicação é possível ligar o modo escuro, alterando as cores da interface gráfica para um tom de cores mais escuro
+
+- Agregação de informações de canais
+
+Na dashboard, serão apresnetados todos os anúncios e datas importantes de todos os canais subscritos, ordenados pela sua data, tornando a navegação mais fácil para cada canal ou anúncio.
+
+
 ### Channel Page
 ![](https://media.discordapp.net/attachments/733843321671385160/1125005422630293524/image.png?width=1283&height=614)
 Fig4: Channel view of a Publisher
+
+- Pesquisa por ficheiros
+
+A pesquisa por ficheiros poderá ser realizada na barra de pesquisa localizada no canto superior direito da árvore de contéudos. A pesquisa é feita com base no nome do ficheiro, e os ficheiros cujo nome corresponda à pesquisa, aparecerão na árvore.
+
 
 - Árvore de conteúdo
 
@@ -105,6 +127,10 @@ A árvore de conteúdo de cada canal contém a estrutura de diretorias associada
 - Upload de arquivos
 
 Na página dedicada ao upload de arquivos, há um formulário com um elemento de entrada para o utilizador selecionar os arquivos a serem carregados, o que causa que o restante do formulário apareça com caixas de entrada para especificar o nome e incluir tags para descrever cada arquivo.
+
+- Definições
+
+O publicador de um canal tem acesso à página das definições, onde pode editar o canal, obter a lista de alunos subscritos, verificar submissões, adicionar um novo publicador ou apagar por completo o canal
 
 
 ### File Management

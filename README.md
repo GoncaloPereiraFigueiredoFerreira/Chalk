@@ -94,21 +94,44 @@ The sections bellow will demonstrate some of the developed user interfaces
 ![](https://media.discordapp.net/attachments/733843321671385160/1125006858957103134/image.png?width=1252&height=614)
 Fig3: User Dashboard
 
+
+- Channel Search
+
+In every page of the application, it is possible to search for a channel, using keywords. If submited, a page containning a list of all the channels will be shown, with every channel that matches those keywords.
+
+- Side bar
+
+Across all pages, it is possible to acess the side bar, that allows users, to sign out or acess the dashboard or the subscribed or published channels
+
+
+- Toggle Darkmode
+
+In every page of the app, it is possible to toggle darkmode, changing the colors of the interface to a darker tone.
+
+- Dashboard channel infomation aggregation
+
+In the dashboard, all the subscribed channels announcements and important dates are shown, ordered by date, making it easier to navigate to each channel and announcement
+
+
 ### Channel Page
 ![](https://media.discordapp.net/attachments/733843321671385160/1125005422630293524/image.png?width=1283&height=614)
 Fig4: Channel view of a Publisher
-- ...
+
+- File search
+
+File search can be achieved by using the search bar placed on the top right corner of the content tree. Files that match the keywords used, will appear on the content tree
+
 - Content Tree
 
 The content tree for each channel contains the directory structure associated with said channel. It is fully navigable, as in, an user can enter/leave a directory, that leads to the display of different files, according to the directory that the user is in. It is also possible to create directories, upload new files, delete, access and download files (given that the user has permission to do so).
-adasdasdasdasd search functionality
 
 - Uploading files
 
 In the page dedicated to uploading files, there's a form with an input element for the user to select files to upload, which prompts the rest of the form to appear with input boxes to specify the name and include tags to describe each file. 
 
+- Settings page 
 
-
+The publisher of a channel has acess to a settings page, where it can edit channel features, check the student list, see all the submissions, add a co-publisher, or completly delete a channel
 
 ### File Management
 - cache
