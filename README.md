@@ -97,34 +97,31 @@ Fig3: User Dashboard
 ### Channel Page
 ![](https://media.discordapp.net/attachments/733843321671385160/1125005422630293524/image.png?width=1283&height=614)
 Fig4: Channel view of a Publisher
-- ...
+
 - Content Tree
 
-The content tree for each channel contains the directory structure associated with said channel. It is fully navigable, as in, an user can enter/leave a directory, that leads to the display of different files, according to the directory that the user is in. It is also possible to create directories, upload new files, delete, access and download files (given that the user has permission to do so).
-adasdasdasdasd search functionality
+The content tree for each channel contains the directory structure associated with said channel. It is fully navigable, as in, an user can enter/leave a directory, that leads to the display of different files, according to the directory that the user is in. It is also possible to create directories, upload new files, delete, access and download files (given that the user has permission to do so) and there's the option to find a file by searching its name, as well.
 
-- Uploading files
+- cache
+- - upload file
+- get files
+
+### Upload Files Page
+
+![](https://i.imgur.com/MF63wbO.png)
+Fig5: Upload Files (dark mode)
 
 In the page dedicated to uploading files, there's a form with an input element for the user to select files to upload, which prompts the rest of the form to appear with input boxes to specify the name and include tags to describe each file. 
 
+![](https://i.imgur.com/G0IZz0i.png)
+Fig6: Dinamically updated form (dark mode)
 
-
-
-### File Management
-- cache
-- upload file
-- get files
+There's also the option to make an automatic announcement to notify other users about the files that were just uploaded.
 
 
 ## Archival System
 
 The archival system manages metainformation that's crucial for the application to operate properly, which includes user data, metadata of the stored files and information about the active channels 
-
-- User Data
-- Channels Data
-- Files Metadata
-- Announcements
-- Important Dates
 
 It serves as a backend API to all the Chalk service, providing several routes that allow the users to interact with the state of the application. Routes are grouped according to their actions:
 - Acess Routes (acess information about channels, users, etc)
