@@ -149,7 +149,14 @@ There's also the option to make an automatic announcement to notify other users 
 
 ## Archival System
 
-The archival system manages metainformation that's crucial for the application to operate properly, which includes user data, metadata of the stored files and information about the active channels 
+The archival system manages metainformation that's crucial for the application to operate properly, which includes user data, metadata of the stored files and information about the active channels.
+
+- User Data
+- Channels Data
+- Files Metadata
+- Announcements
+- Important Dates
+
 
 It serves as a backend API to all the Chalk service, providing several routes that allow the users to interact with the state of the application. Routes are grouped according to their actions:
 - Acess Routes (acess information about channels, users, etc)
@@ -183,3 +190,4 @@ After a much needed rest, there are still some features that the group would lik
 - More management operations for admins, including account bans and subscription management
 - Google and other platforms as a mean of authentication
 - Video chat room creation
+- Online Tests
