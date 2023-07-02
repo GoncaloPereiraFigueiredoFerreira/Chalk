@@ -9,15 +9,15 @@ English Report Version: [EN](https://github.com/GoncaloPereiraFigueiredoFerreira
 
 # Índice
 
-1. [Introdução e Objectivos](#introdução-e-objetivos)
-1.1 [Tecnologias](#tecnologias-envolvidas)
-2. [Principais Funcionalidades](#funcionalidades-principais)
-3. [Arquitetura do sistema](#arquitetura-do-sistema)
-3.1 [Servidor Frontend](#chalk-frontend)
-3.2 [Servidor Backend](#archival-system)
-3.3 [Servidor de Autenticação](#authentication-server)
-3.4 [Servidor de armazenamento de arquivos](#sistema-de-armazenamento)
-4. [Trabalho Futuro](#trabalho-futuro)
+1. [Introdução e Objectivos](#introdução-e-objetivos)  
+1.1 [Tecnologias](#tecnologias-envolvidas)  
+2. [Principais Funcionalidades](#funcionalidades-principais)  
+3. [Arquitetura do sistema](#arquitetura-do-sistema)  
+3.1 [Servidor Frontend](#chalk-frontend)  
+3.2 [Servidor Backend](#archival-system)  
+3.3 [Servidor de Autenticação](#authentication-server)  
+3.4 [Servidor de armazenamento de arquivos](#sistema-de-armazenamento)  
+4. [Trabalho Futuro](#trabalho-futuro)  
 
 
 
