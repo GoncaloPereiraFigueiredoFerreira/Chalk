@@ -45,8 +45,6 @@ services:
     environment:
       - PORT=7778
       - MONGODB=mongodb://chalkAuth-db/ChalkAuth
-    env_file:
-      - .env
 
   chalk-db:
     image: mongo
