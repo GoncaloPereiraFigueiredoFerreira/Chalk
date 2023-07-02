@@ -121,33 +121,35 @@ Fig4: Channel view of a Publisher
 
 File search can be achieved by using the search bar placed on the top right corner of the content tree. Files that match the keywords used, will appear on the content tree
 
-- Content Tree
-
-The content tree for each channel contains the directory structure associated with said channel. It is fully navigable, as in, an user can enter/leave a directory, that leads to the display of different files, according to the directory that the user is in. It is also possible to create directories, upload new files, delete, access and download files (given that the user has permission to do so).
-
-- Uploading files
-
-In the page dedicated to uploading files, there's a form with an input element for the user to select files to upload, which prompts the rest of the form to appear with input boxes to specify the name and include tags to describe each file. 
-
 - Settings page 
 
 The publisher of a channel has acess to a settings page, where it can edit channel features, check the student list, see all the submissions, add a co-publisher, or completly delete a channel
 
-### File Management
-- cache
-- upload file
-- get files
+
+- Content Tree
+
+The content tree for each channel contains the directory structure associated with said channel. It is fully navigable, as in, an user can enter/leave a directory, that leads to the display of different files, according to the directory that the user is in. It is also possible to create directories, upload new files, delete, access and download files (given that the user has permission to do so).
+
+To manage and optimize the income and outcome of files some protocols needed to be implemented. In order to upload files (whether they are files to the content tree or submissions), the server packages the files selected by the user into a "bag" in the BagIt packaging format, which is sent to the storage system and some metainformation is sent to the archival system. In order to get files, the server keeps a cache to help with latency times and before making any requests to retrieve files from the storage system, it checks if the files are present in the cache, if not, the request is made to the storage system. In response to the request, the chalk frontend receives a "bag", which is extracted and the integrity of the content inside is verified and then sent to the user (or kept in a public directory if the user whishes to only preview the selected file).
+
+
+
+### Upload Files Page
+
+![](https://i.imgur.com/MF63wbO.png)
+Fig5: Upload Files (dark mode)
+
+In the page dedicated to uploading files, there's a form with an input element for the user to select files to upload, which prompts the rest of the form to appear with input boxes to specify the name and include tags to describe each file. 
+
+![](https://i.imgur.com/G0IZz0i.png)
+Fig6: Dinamically updated form (dark mode)
+
+There's also the option to make an automatic announcement to notify other users about the files that were just uploaded.
 
 
 ## Archival System
 
 The archival system manages metainformation that's crucial for the application to operate properly, which includes user data, metadata of the stored files and information about the active channels 
-
-- User Data
-- Channels Data
-- Files Metadata
-- Announcements
-- Important Dates
 
 It serves as a backend API to all the Chalk service, providing several routes that allow the users to interact with the state of the application. Routes are grouped according to their actions:
 - Acess Routes (acess information about channels, users, etc)
@@ -175,6 +177,9 @@ The storage system is where the actual files are kept and its funcionalities inc
 
 # What's Next
 
+After a much needed rest, there are still some features that the group would like to work in and further develop:
 
-
-
+- Search files based on their tags
+- More management operations for admins, including account bans and subscription management
+- Google and other platforms as a mean of authentication
+- Video chat room creation

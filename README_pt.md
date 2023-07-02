@@ -175,3 +175,9 @@ O sistema de armazenamento é onde os ficheiros são mantidos e as suas funciona
 
 # Trabalho Futuro
 
+Após um periodo de descanso (bem necessário), ainda existiriam algumas features que o grupo gostaria de desenvolver mais aprofundadamente:
+
+- Pesquisa de ficheiros baseada em Tags
+- Mais operações de administração para admin, incluindo "account bans" e gestão de subscrições
+- Google e outras plataformas como forma de autenticação
+- Criação de salas de video-reuniões
