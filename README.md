@@ -2,7 +2,7 @@
 
 __Authors__: Gonçalo Ferreira & Rui Braga  
 Portuguese Report Version: [PT](https://github.com/GoncaloPereiraFigueiredoFerreira/RPCW-Chalk/blob/main/README_pt.md)  
-
+Final Grade:20/20
 ---
 
 # Index
