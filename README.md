@@ -1,4 +1,4 @@
-![](https://media.discordapp.net/attachments/733843321671385160/1124986307169501234/image.png)
+![](./docs/chalk.png)
 
 __Authors__: Gonçalo Ferreira & Rui Braga  
 Portuguese Report Version: [PT](https://github.com/GoncaloPereiraFigueiredoFerreira/RPCW-Chalk/blob/main/README_pt.md)  
@@ -77,7 +77,7 @@ The Chalk service is composed of 4 different APIs, each with a distinct part to 
 
 
 In the figure below it is possible to see how the different system components interact:
-![System Architecture](https://media.discordapp.net/attachments/1083491237652332635/1121175465474928760/image.png)
+![System Architecture](./docs/architecture.png)
 
 Fig2: System Architecture Overview
 
@@ -92,7 +92,7 @@ This service utilizes Pug HTML templating, to customize each user's page, accord
 The sections bellow will demonstrate some of the developed user interfaces
 
 ### Dashboard
-![](https://media.discordapp.net/attachments/733843321671385160/1125006858957103134/image.png?width=1252&height=614)
+![](./docs/main.png)
 Fig3: User Dashboard
 
 
@@ -115,7 +115,7 @@ In the dashboard, all the subscribed channels announcements and important dates 
 
 
 ### Channel Page
-![](https://media.discordapp.net/attachments/733843321671385160/1125005422630293524/image.png?width=1283&height=614)
+![](./docs/channel.png)
 Fig4: Channel view of a Publisher
 
 - File search
